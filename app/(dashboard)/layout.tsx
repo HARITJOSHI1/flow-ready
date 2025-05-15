@@ -2,7 +2,7 @@ import React from "react";
 import { Separator } from "@/components/ui/separator";
 import DesktopSidebar from "@/components/sidebar";
 import BreadcrumbHeader from "@/components/breadcrumb-header";
-
+import { ModeToggle } from "@/components/modals/theme-modal-toggle";
 function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex h-screen">
@@ -10,6 +10,10 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
       <div className="flex flex-col flex-1 min-h-screen">
         <header className="flex items-center justify-between py-4 px-6 h-[50px] container">
           <BreadcrumbHeader />
+
+          <div className="flex items-center gap-1">
+            <ModeToggle />
+          </div>
         </header>
 
         <Separator />

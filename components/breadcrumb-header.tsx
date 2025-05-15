@@ -3,12 +3,14 @@
 import React from "react";
 import { usePathname } from "next/navigation";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList } from "./ui/breadcrumb";
+import { MobileSidebar } from "./sidebar";
 const BreadcrumbHeader = () => {
   const pathname = usePathname();
   const paths = pathname === "/" ? [""] : pathname.split("/");
 
   return (
     <div className="flex items-center flex-start">
+      <MobileSidebar />
       <Breadcrumb>
         <BreadcrumbList>
           {paths.map((path, index) => (

@@ -3,13 +3,16 @@ import {
   CoinsIcon,
   HomeIcon,
   Layers2Icon,
+  MenuIcon,
   ShieldCheckIcon,
 } from "lucide-react";
 import React from "react";
 import Logo from "./logo";
 import Link from "next/link";
-import { buttonVariants } from "./ui/button";
+import { Button, buttonVariants } from "./ui/button";
 import { usePathname } from "next/navigation";
+import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
+import { useState } from "react";
 
 type Props = {};
 
@@ -52,7 +55,7 @@ const DesktopSidebar = (props: Props) => {
       </div>
 
       <div className="p-2">TODO CREDITS</div>
-      <div className="flex flex-col p-2">
+      <div className="flex flex-col gap-1 px-2">
         {routes.map((route) => (
           <Link
             key={route.href}
@@ -69,6 +72,56 @@ const DesktopSidebar = (props: Props) => {
           </Link>
         ))}
       </div>
+    </div>
+  );
+};
+
+export const MobileSidebar = () => {
+  const pathname = usePathname();
+  const [isOpen, setIsOpen] = useState(false);
+
+  //   find active route if none then default to home page route
+  const activeRoute =
+    routes.find(
+      (route) => route.href.length > 0 && pathname.includes(route.href)
+    ) || routes[0];
+
+  return (
+    <div className="block border-seperate bg-background md:hidden">
+      <nav className="flex items-center justify-between pr-8">
+        <Sheet open={isOpen} onOpenChange={setIsOpen}>
+          <SheetTrigger asChild>
+            <Button variant="ghost" size="icon">
+              <MenuIcon />
+            </Button>
+          </SheetTrigger>
+
+          <SheetContent
+            side="left"
+            className="w-[400px] sm:w-[540px] space-y-4"
+          >
+            <Logo />
+            <div className="flex flex-col gap-1">
+              {routes.map((route) => (
+                <Link
+                  onClick={() => setIsOpen(!isOpen)}
+                  key={route.href}
+                  href={route.href}
+                  className={buttonVariants({
+                    variant:
+                      route.href === activeRoute.href
+                        ? "sidebarActiveItem"
+                        : "sidebarItem",
+                  })}
+                >
+                  <route.icon size={20} />
+                  {route.label}
+                </Link>
+              ))}
+            </div>
+          </SheetContent>
+        </Sheet>
+      </nav>
     </div>
   );
 };
