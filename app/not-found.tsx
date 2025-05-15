@@ -11,7 +11,7 @@ const NotFound = () => {
         </h1>
         <h2 className="text-2xl font-semibold mb-2">Page Not Found</h2>
         <p className="text-muted-foreground mb-8 max-w-md">
-          Don't worry, even the best data on the net gets lost someti   mes.
+          Don&rsquo;t worry, even the best data on the net gets lost sometimes.
         </p>
 
         <div className="flex flex-col sm:flex-row justify-center gap-4">
