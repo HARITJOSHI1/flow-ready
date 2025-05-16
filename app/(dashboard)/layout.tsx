@@ -1,9 +1,17 @@
+"use client";
+
 import React from "react";
 import { Separator } from "@/components/ui/separator";
 import DesktopSidebar from "@/components/sidebar";
 import BreadcrumbHeader from "@/components/breadcrumb-header";
 import { ModeToggle } from "@/components/modals/theme-modal-toggle";
+import { SignedIn, UserButton } from "@clerk/nextjs";
+import { dark } from "@clerk/themes";
+import { useTheme } from "next-themes";
+
 function DashboardLayout({ children }: { children: React.ReactNode }) {
+  const { resolvedTheme } = useTheme();
+
   return (
     <div className="flex h-screen">
       <DesktopSidebar />
@@ -13,6 +21,18 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
 
           <div className="flex items-center gap-1">
             <ModeToggle />
+            <SignedIn>
+              <UserButton
+                appearance={{
+                  baseTheme:
+                    resolvedTheme === "dark" ||
+                    resolvedTheme === "system" ||
+                    resolvedTheme === undefined
+                      ? dark
+                      : undefined,
+                }}
+              />
+            </SignedIn>
           </div>
         </header>
 
