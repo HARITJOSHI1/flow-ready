@@ -3,7 +3,7 @@
 import React from "react";
 import { Separator } from "@/components/ui/separator";
 import DesktopSidebar from "@/components/sidebar";
-import BreadcrumbHeader from "@/components/breadcrumb-header";
+import BreadcrumbHeader from "@/components/header/breadcrumb-header";
 import { ModeToggle } from "@/components/modals/theme-modal-toggle";
 import { SignedIn, UserButton } from "@clerk/nextjs";
 import { dark } from "@clerk/themes";

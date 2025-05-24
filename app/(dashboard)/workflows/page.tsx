@@ -3,8 +3,9 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AlertCircle, InboxIcon, PlusIcon } from "lucide-react";
 import { redirect } from "next/navigation";
-import React, { Suspense } from "react";
+import React, { cache, Suspense } from "react";
 import CreateWorkflowDialog from "./_components/create-dialog";
+import ListWorkflows from "./_components/list-workflows";
 
 const page = () => {
   return (
@@ -39,41 +40,56 @@ const UserWorkflowsSkeleton = () => {
   );
 };
 
+
+
 const UserWorkflows = async () => {
   const [data] = await getUserWorkflows();
-  if (data && data.isErr() && data.error.type === "AUTH_CHECK_ERROR")
-    redirect("/sign-in");
+  console.log("DATA", data);
 
-  if (
-    data &&
-    data.isErr() &&
-    data.error.type === "WORKFLOW_ACTION_NO_WORKFLOWS_ERROR"
-  ) {
-    return (
-      <div className="flex flex-col gap-4 h-full items-center justify-center">
-        <div className="rounded-full bg-accent w-20 h-20 flex items-center justify-center">
-          <InboxIcon size={40} className="stroke-primary" />
-        </div>
+  if (!data) return <ErrorAlert />;
 
-        <div className="flex flex-col gap-1 text-center">
-          <p className="font-bold">No workflows created yet</p>
-          <p className="text-sm text-muted-foreground mb-4">
-            Click the button below to create a new workflow
-          </p>
-          <CreateWorkflowDialog triggerText="Create your first workflow" />
-        </div>
-      </div>
-    );
-  } else {
-    return (
-      <Alert variant="destructive">
-        <AlertCircle className="w-4 h-4" />
-        <AlertTitle>Error</AlertTitle>
-        <AlertDescription>
-          Something went wrong! Please try again later.
-        </AlertDescription>
-      </Alert>
-    );
+  switch (data.resolved) {
+    case "error":
+      switch (data.error.type) {
+        case "AUTH_CHECK_ERROR":
+          redirect("/sign-in");
+        case "NO_WORKFLOWS":
+          return (
+            <div className="flex flex-col gap-4 h-full items-center justify-center">
+              <div className="rounded-full bg-accent w-20 h-20 flex items-center justify-center">
+                <InboxIcon size={40} className="stroke-primary" />
+              </div>
+
+              <div className="flex flex-col gap-1 text-center">
+                <p className="font-bold">No workflows created yet</p>
+                <p className="text-sm text-muted-foreground mb-4">
+                  Click the button below to create a new workflow
+                </p>
+                <CreateWorkflowDialog triggerText="Create your first workflow" />
+              </div>
+            </div>
+          );
+        default:
+          return <ErrorAlert />;
+      }
+
+    case "success":
+      if (data.result.status === "SUCCESS")
+        return <ListWorkflows workflows={data.result.workflows} />;
+
+      return <ErrorAlert />;
+    default:
+      return <ErrorAlert />;
   }
 };
+
+const ErrorAlert = () => (
+  <Alert variant="destructive">
+    <AlertCircle className="w-4 h-4" />
+    <AlertTitle>Error</AlertTitle>
+    <AlertDescription>
+      Something went wrong! Please try again later.
+    </AlertDescription>
+  </Alert>
+);
 export default page;

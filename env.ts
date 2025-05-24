@@ -1,8 +1,7 @@
-import { z, TypeOf } from "zod";
+import { z, ZodIssue } from "zod";
 
-
-// ts def for env's
-const zodEnv = z.object({
+// ts def for private env's exclucidng NEXT_PUBLIC_ env 's
+const envSchema = z.object({
   NODE_ENV: z.enum(["development", "production", "test"]),
   DATABASE_URL: z.string(),
 });
@@ -10,21 +9,30 @@ const zodEnv = z.object({
 // to make env type defs globally available by using process.env
 declare global {
   namespace NodeJS {
-    interface ProcessEnv extends TypeOf<typeof zodEnv> {}
+    interface ProcessEnv extends z.infer<typeof envSchema> {}
   }
 }
 
-// if env not present in .env then send a custom error
-try {
-  zodEnv.parse(process.env);
-} catch (err) {
-  if (err instanceof z.ZodError) {
-    const { fieldErrors } = err.flatten();
-    const errorMessage = Object.entries(fieldErrors)
-      .map(([field, errors]) =>
-        errors ? `${field}: ${errors.join(", ")}` : field
-      )
-      .join("\n  ");
-    throw new Error(`Missing environment variables:\n  ${errorMessage}`);
+const constructEnvErrorMessages = (errors: ZodIssue[]): string[] => {
+  return errors.map((error, idx) => {
+    return `${idx + 1}) ${error.path.join(".")} : ${error.message}`;
+  });
+};
+
+// Register and validate environment variables at startup
+export async function register() {
+  const envValidationResult = envSchema.safeParse(process.env);
+
+  if (envValidationResult.error) {
+    const errorMessages = constructEnvErrorMessages(
+      envValidationResult.error.errors
+    );
+    throw new Error(
+      `\n\n❌ Error in loading environment variables:\n${errorMessages.join(
+        "\n"
+      )}\n`
+    );
   }
+
+  console.info("✅ Environment variables loaded successfully");
 }

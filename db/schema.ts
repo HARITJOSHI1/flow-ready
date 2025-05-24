@@ -1,5 +1,6 @@
-import { relations } from "drizzle-orm";
-import { pgTable, uuid, varchar, timestamp, text } from "drizzle-orm/pg-core";
+import { pgTable, uuid, varchar, timestamp, text, pgEnum } from "drizzle-orm/pg-core";
+
+export const workflowStatus = pgEnum("workflow_status", ["DRAFT", "PUBLISHED"]);
 
 // Tables
 export const workflow = pgTable("workflow", {
@@ -10,7 +11,7 @@ export const workflow = pgTable("workflow", {
   description: varchar("description", { length: 255 }),
   userId: text("user_id").notNull(),
   defination: text("defination").notNull(),
-  status: varchar("status", { length: 50 }).notNull(),
+  status: workflowStatus("status").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });

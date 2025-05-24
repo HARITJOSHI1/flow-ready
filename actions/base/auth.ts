@@ -1,21 +1,34 @@
+import z from "zod";
 import { auth } from "@clerk/nextjs/server";
 import { createServerActionProcedure } from "zsa";
-import { Result, ok, err } from "neverthrow";
-import { AUTH_STATE_RESULT, AUTH_SERVER_ACTION_ERROR } from "@/lib/types";
+import { AUTH_STATE_RESULT_SCHEMA, RESPONSE_STATUS } from "@/lib/types";
+import { ERROR_TYPES, SERVER_ACTION_ERROR_SCHEMA } from "@/lib/types/errors";
+import { createServerActionOutputSchema } from "@/lib/helpers";
 
-export const authedProcedure = createServerActionProcedure().handler(
-  async (): Promise<Result<AUTH_STATE_RESULT, AUTH_SERVER_ACTION_ERROR>> => {
+export const authedProcedure = createServerActionProcedure()
+  .output(
+    createServerActionOutputSchema(
+      AUTH_STATE_RESULT_SCHEMA,
+      SERVER_ACTION_ERROR_SCHEMA
+    )
+  )
+  .handler(async () => {
     const authState = auth();
-
     if (!authState.userId) {
-      return err({
-        type: "AUTH_CHECK_ERROR",
-        code: 400,
-        message: "User not authenticated",
-        shouldLog: false,
-      });
+      return {
+        resolved: "error",
+        error: {
+          type: ERROR_TYPES.AUTH_CHECK_ERROR,
+          status: RESPONSE_STATUS.UNAUTHORIZED,
+          code: 400,
+          message: "User not authenticated",
+          shouldLog: false,
+        },
+      };
     }
 
-    return ok({ userId: authState.userId });
-  }
-);
+    return {
+      resolved: "success",
+      result: { userId: authState.userId },
+    };
+  });

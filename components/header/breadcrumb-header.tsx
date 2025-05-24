@@ -2,8 +2,8 @@
 
 import React from "react";
 import { usePathname } from "next/navigation";
-import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList } from "./ui/breadcrumb";
-import { MobileSidebar } from "./sidebar";
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList } from "../ui/breadcrumb";
+import { MobileSidebar } from "../sidebar";
 const BreadcrumbHeader = () => {
   const pathname = usePathname();
   const paths = pathname === "/" ? [""] : pathname.split("/");

@@ -13,9 +13,6 @@ function ReactQueryProvider({ children }: React.PropsWithChildren) {
           staleTime: 1000 * 60 * 5,
           retry: false,
         },
-        mutations: {
-          retry: false,
-        },
       },
     })
   );
