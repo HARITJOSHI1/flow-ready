@@ -20,7 +20,7 @@ const routes = [
   {
     label: "Home",
     icon: HomeIcon,
-    href: "dashboard",
+    href: "",
   },
   {
     label: "Workflows",
@@ -59,7 +59,7 @@ const DesktopSidebar = (props: Props) => {
         {routes.map((route) => (
           <Link
             key={route.href}
-            href={route.href}
+            href={route.href === "" ? "/" : route.href}
             className={buttonVariants({
               variant:
                 route.href === activeRoute.href

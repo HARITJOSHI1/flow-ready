@@ -18,5 +18,5 @@ export const workflow = pgTable("workflow", {
 
 
 // types
-export type TWorkflow = typeof workflow.$inferSelect;
+export type Workflow = typeof workflow.$inferSelect;
 

@@ -24,13 +24,11 @@ export const useCreateWorkflowMutation = () => {
           description: "You can now edit the workflow",
         });
 
-        // Trigger server component re-render
         router.refresh();
-        // router.push(data.result.redirect_url);
+        router.push(data.result.redirect_url);
       },
 
       onError: (error) => {
-        console.log("ERROR", error);
         return toast({
           title: "Error creating workflow",
           description: "Something went wrong",

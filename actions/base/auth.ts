@@ -1,15 +1,14 @@
-import z from "zod";
+import { createServerActionOutputSchema } from "@/lib/helpers";
+import { ERROR_SCHEMA, ERROR_TYPES } from "@/lib/types/errors";
+import { AUTH_STATE_RESULT_SCHEMA, RESPONSE_STATUS } from "@/lib/types/server";
 import { auth } from "@clerk/nextjs/server";
 import { createServerActionProcedure } from "zsa";
-import { AUTH_STATE_RESULT_SCHEMA, RESPONSE_STATUS } from "@/lib/types";
-import { ERROR_TYPES, SERVER_ACTION_ERROR_SCHEMA } from "@/lib/types/errors";
-import { createServerActionOutputSchema } from "@/lib/helpers";
 
 export const authedProcedure = createServerActionProcedure()
   .output(
     createServerActionOutputSchema(
       AUTH_STATE_RESULT_SCHEMA,
-      SERVER_ACTION_ERROR_SCHEMA
+      ERROR_SCHEMA
     )
   )
   .handler(async () => {

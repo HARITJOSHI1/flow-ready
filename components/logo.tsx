@@ -8,7 +8,7 @@ type Props = {
   iconSize?: number;
 };
 
-const logo = ({ fontSize = "2xl", iconSize = 20 }: Props) => {
+const Logo = ({ fontSize = "2xl", iconSize = 20 }: Props) => {
   return (
     <Link
       href=""
@@ -31,4 +31,4 @@ const logo = ({ fontSize = "2xl", iconSize = 20 }: Props) => {
   );
 };
 
-export default logo;
+export default Logo;

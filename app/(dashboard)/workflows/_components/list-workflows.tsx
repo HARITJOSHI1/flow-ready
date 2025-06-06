@@ -1,14 +1,14 @@
 "use client";
 
-import React from "react";
+import React, { memo } from "react";
 import WorkflowCard from "./workflow-card";
-import { TWorkflow } from "@/db/schema";
+import { Workflow } from "@/db/schema";
 
 type Props = {
-  workflows: TWorkflow[];
+  workflows: Workflow[];
 };
 
-const ListWorkflows = ({ workflows }: Props) => {
+const ListWorkflows = memo(({ workflows }: Props) => {
   return (
     <div className="grid grid-cols-1 gap-4">
       {workflows.map((workflow) => (
@@ -16,6 +16,6 @@ const ListWorkflows = ({ workflows }: Props) => {
       ))}
     </div>
   );
-};
+});
 
 export default ListWorkflows;

@@ -26,7 +26,7 @@ export const useDeleteWorkflowMutation = () => {
       },
 
       onError: (error) => {
-        console.log("ERROR", error);
+        console.log("TError", error);
         return toast({
           title: "Error creating workflow",
           description: "Something went wrong",

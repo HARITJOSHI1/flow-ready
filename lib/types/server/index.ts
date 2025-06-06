@@ -1,10 +1,9 @@
-import { TWorkflow } from "@/db/schema";
+import { Workflow } from "@/db/schema";
 import { z } from "zod";
 
 // Enums
 export enum RESPONSE_STATUS {
   SUCCESS = "SUCCESS",
-  ERROR = "ERROR",
   WARNING = "WARNING",
   INFO = "INFO",
   NOT_FOUND = "NOT_FOUND",
@@ -27,7 +26,7 @@ export const AUTH_STATE_RESULT_SCHEMA = z.object({
 
 export const GET_WORKFLOW_ACTION_RESULT_SCHEMA = z.object({
   status: z.nativeEnum(RESPONSE_STATUS),
-  workflows: z.array(z.custom<TWorkflow>()),
+  workflows: z.array(z.custom<Workflow>()),
 });
 
 export const CREATE_WORKFLOW_ACTION_RESULT_SCHEMA = z.object({

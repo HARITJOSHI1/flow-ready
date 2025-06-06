@@ -6,15 +6,15 @@ import {
   GET_WORKFLOW_ACTION_RESULT_SCHEMA,
   CREATE_WORKFLOW_ACTION_RESULT_SCHEMA,
   DELETE_WORKFLOW_ACTION_SCHEMA,
-} from "@/lib/types";
+} from "@/lib/types/server";
 import { authedProcedure } from "../base/auth";
-import { SERVER_ACTION_ERROR_SCHEMA, ERROR_TYPES } from "@/lib/types/errors";
+import { ERROR_SCHEMA, ERROR_TYPES } from "@/lib/types/errors";
 import db from "@/db";
 import { workflow } from "@/db/schema";
 import { desc, eq } from "drizzle-orm";
 import { createWorkflowSchema } from "@/components/forms/workflows/schema";
 import { createServerActionOutputSchema } from "@/lib/helpers";
-import { unstable_cache, revalidateTag, revalidatePath } from "next/cache";
+import { unstable_cache, revalidateTag } from "next/cache";
 import { z } from "zod";
 
 // Cache the database query
@@ -31,7 +31,7 @@ export const getUserWorkflows = authedProcedure
   .output(
     createServerActionOutputSchema(
       GET_WORKFLOW_ACTION_RESULT_SCHEMA,
-      SERVER_ACTION_ERROR_SCHEMA
+      ERROR_SCHEMA
     )
   )
   .handler(async ({ ctx }) => {
@@ -73,7 +73,7 @@ export const createWorkflow = authedProcedure
   .output(
     createServerActionOutputSchema(
       CREATE_WORKFLOW_ACTION_RESULT_SCHEMA,
-      SERVER_ACTION_ERROR_SCHEMA
+      ERROR_SCHEMA
     )
   )
   .handler(async ({ ctx, input }) => {
@@ -113,7 +113,7 @@ export const createWorkflow = authedProcedure
       result: {
         status: RESPONSE_STATUS.SUCCESS,
         message: "Workflow created successfully",
-        redirect_url: `/workflows/editor/${result[0].id}`,
+        redirect_url: `/workflow/editor/${result[0].id}`,
       },
     };
   });
@@ -128,7 +128,7 @@ export const deleteWorkflow = authedProcedure
   .output(
     createServerActionOutputSchema(
       DELETE_WORKFLOW_ACTION_SCHEMA,
-      SERVER_ACTION_ERROR_SCHEMA
+      ERROR_SCHEMA
     )
   )
   .handler(async ({ ctx, input }) => {

@@ -2,8 +2,8 @@
 
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { TWorkflow } from "@/db/schema";
-import { WORKFLOW_STATUS } from "@/lib/types";
+import { Workflow } from "@/db/schema";
+import { WORKFLOW_STATUS } from "@/lib/types/server";
 import { cn } from "@/lib/utils";
 import { FileTextIcon, PlayIcon, ShuffleIcon } from "lucide-react";
 import Link from "next/link";
@@ -11,7 +11,7 @@ import React from "react";
 import WorkflowActions from "./workflow-actions";
 
 type Props = {
-  workflow: TWorkflow;
+  workflow: Workflow;
 };
 
 const statusColor = {
@@ -57,7 +57,7 @@ const WorkflowCard = ({ workflow }: Props) => {
 
         <div className="flex items-center space-x-2">
           <Link
-            href={`/workflows/editor/${workflow.id}`}
+            href={`/workflow/editor/${workflow.id}`}
             className={cn(
               buttonVariants({ variant: "outline", size: "sm" }),
               "flex items-center gap-2"
