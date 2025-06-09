@@ -1,16 +1,9 @@
-import { TError, ERROR_TYPES, Result } from "@/lib/types/errors";
-import { AppNode, TaskType } from "@/lib/types/nodes";
-import { LucideProps } from "lucide-react";
-import { LaunchBrowserTask } from "./launch-browser";
 import { err, Ok } from "@/lib/helpers";
+import { ERROR_TYPES, Result, TError } from "@/lib/types/errors";
+import { AppNode, Task, TaskType } from "@/lib/types/nodes";
 import exportTaskConfig from "./config";
+import { LaunchBrowserTask } from "./launch-browser";
 
-export interface Task {
-  type: TaskType;
-  label: string;
-  icon: (props: LucideProps) => JSX.Element;
-  isEntryPoint: boolean;
-}
 
 class TaskRegistryClass {
   private static instance: TaskRegistryClass;

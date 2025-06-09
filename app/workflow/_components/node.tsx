@@ -1,14 +1,25 @@
+import { isErr } from "@/lib/helpers";
+import { DataNode } from "@/lib/types/nodes";
+import { TaskRegistry } from "@/lib/workflow/task/registry";
 import { NodeProps } from "@xyflow/react";
 import { memo } from "react";
 import NodeCard from "./node-card";
 import NodeHeader from "./node-header";
-import { DataNode } from "@/lib/types/nodes";
+import { NodeInput, NodeInputs } from "./node-inputs";
 
 const NodeComponent = memo((props: NodeProps) => {
   const nodeData = props.data as DataNode;
+  const task = TaskRegistry.getTask(nodeData.type);
+  if (isErr(task)) return;
+
   return (
     <NodeCard nodeId={props.id} isSelected={props.selected}>
       <NodeHeader taskType={nodeData.type} />
+      <NodeInputs>
+        {task.data.inputs?.map((input, idx) => (
+          <NodeInput key={idx} input={input} nodeId={props.id} />
+        ))}
+      </NodeInputs>
     </NodeCard>
   );
 });

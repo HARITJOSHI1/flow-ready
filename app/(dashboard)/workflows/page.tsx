@@ -44,7 +44,6 @@ const UserWorkflowsSkeleton = () => {
 
 const UserWorkflows = async () => {
   const [data] = await getUserWorkflows();
-  console.log("DATA", data);
 
   if (!data) return <ErrorAlert />;
 
