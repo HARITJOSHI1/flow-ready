@@ -31,7 +31,7 @@ const NodeParamField = ({ param, nodeId }: Props) => {
     case TaskParamType.STRING:
       return (
         <StringParam
-          value={node.data.inputs[param.name] || ""}
+          value={value}
           param={param}
           updateNodeParamProps={updateNodeParamValue}
         />

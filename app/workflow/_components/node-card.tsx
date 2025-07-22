@@ -23,7 +23,7 @@ const NodeCard = ({ children, nodeId, isSelected }: Props) => {
         if (!position || !measured) return;
         const { width, height } = measured;
 
-        if (!width || !height || position.x || position.y) return;
+        if (!width || !height || !position.x || !position.y) return;
         const newPosition = {
           x: position.x + width / 2,
           y: position.y + height / 2,
