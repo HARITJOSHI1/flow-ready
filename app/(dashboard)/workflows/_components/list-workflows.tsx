@@ -18,4 +18,6 @@ const ListWorkflows = memo(({ workflows }: Props) => {
   );
 });
 
+ListWorkflows.displayName = "ListWorkflows";
+
 export default ListWorkflows;
