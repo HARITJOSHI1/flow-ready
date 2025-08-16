@@ -51,7 +51,7 @@ const FlowEditor = ({ workflow }: Props) => {
     if (!flow.viewport) return;
     const { x = 0, y = 0, zoom = 1 } = flow.viewport;
     setViewport({ x, y, zoom });
-  }, [workflow.defination, setEdges, setNodes, setViewport]);
+  }, [workflow.defination, setEdges, setNodes, setViewport, flow]);
 
   const ondragover = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -73,7 +73,7 @@ const FlowEditor = ({ workflow }: Props) => {
       position
     );
     setNodes((nds) => nds.concat(newNode));
-  }, []);
+  }, [screenToFlowPosition, setNodes]);
 
   return (
     <main className="h-full w-full">

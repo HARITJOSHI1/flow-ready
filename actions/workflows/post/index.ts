@@ -15,6 +15,7 @@ import { Edge } from "@xyflow/react";
 import { revalidateTag } from "next/cache";
 import { base } from "../../base";
 import { CREATE_WORKFLOW_ACTION_RESULT_SCHEMA } from "./types";
+import { WORKFLOW_STATUS } from "@/lib/workflow/type";
 
 export const createWorkflow = base
   .createServerAction()
@@ -47,7 +48,7 @@ export const createWorkflow = base
         description,
         defination: JSON.stringify(initFlow),
         userId,
-        status: WORKFLOW_STATU.DRAFT,
+        status: WORKFLOW_STATUS.DRAFT,
       })
       .returning();
 

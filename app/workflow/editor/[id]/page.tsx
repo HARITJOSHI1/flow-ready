@@ -10,7 +10,7 @@ type Props = {
   };
 };
 
-const page = ({ params }: Props) => {
+const Page = ({ params }: Props) => {
   const { id } = params;
   const { workflow, isPending, error } = useGetWorkflowQuery(id);
 
@@ -27,4 +27,4 @@ const page = ({ params }: Props) => {
   return <Editor workflow={workflow} />;
 };
 
-export default page;
+export default Page;
