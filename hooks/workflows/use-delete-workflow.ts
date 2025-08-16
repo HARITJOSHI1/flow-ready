@@ -1,9 +1,10 @@
 "use client";
 
-import { deleteWorkflow } from "@/actions/workflows";
+import { deleteWorkflow } from "@/actions/workflows/delete";
 import { useServerActionMutation } from "../global/server-action-hooks";
-import { toast } from "../use-toast";
+import { toast } from "../global/use-toast";
 import { useRouter } from "next/navigation";
+import { isServerActionError } from "@/lib/types/react-query";
 
 export const useDeleteWorkflowMutation = () => {
   const router = useRouter();
@@ -26,9 +27,9 @@ export const useDeleteWorkflowMutation = () => {
       },
 
       onError: (error) => {
-        console.log("TError", error);
+        const err = isServerActionError(error) ? error.error : undefined;
         return toast({
-          title: "Error creating workflow",
+          title: "Error deleting workflow",
           description: "Something went wrong",
           variant: "destructive",
         });

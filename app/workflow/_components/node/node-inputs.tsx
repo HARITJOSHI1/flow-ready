@@ -1,20 +1,27 @@
 "use client";
 
-import { TaskInputs } from "@/lib/types/nodes";
+
 import { cn } from "@/lib/utils";
 import { Handle, Position } from "@xyflow/react";
 import React from "react";
 import NodeParamField from "./node-param-field";
+import { TaskInputs } from "@/lib/types/tasks";
 
 type Props = {
   children?: React.ReactNode;
 };
 
-export const NodeInputs = ({ children }: Props) => {
+const NodeInputs = ({ children }: Props) => {
   return <div className="flex flex-col divide-y gap-2">{children} </div>;
 };
 
-export const NodeInput = ({ input, nodeId }: { input: TaskInputs, nodeId: string }) => {
+const NodeInput = ({
+  input,
+  nodeId,
+}: {
+  input: TaskInputs;
+  nodeId: string;
+}) => {
   return (
     <div className="flex justify-start relative p-3 bg-secondary w-full">
       <NodeParamField param={input} nodeId={nodeId} />
@@ -31,3 +38,5 @@ export const NodeInput = ({ input, nodeId }: { input: TaskInputs, nodeId: string
     </div>
   );
 };
+
+export { NodeInput, NodeInputs };

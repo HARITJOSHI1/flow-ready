@@ -1,4 +1,5 @@
-import { AppNode, TaskType } from "@/lib/types/nodes";
+import { AppNode} from "@/lib/types/nodes";
+import { TaskType } from "@/lib/types/tasks";
 
 const exportTaskConfig = (
   nodeType: TaskType,

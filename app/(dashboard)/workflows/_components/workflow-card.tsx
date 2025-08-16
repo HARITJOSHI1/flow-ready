@@ -3,15 +3,15 @@
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Workflow } from "@/db/schema";
-import { WORKFLOW_STATUS } from "@/lib/types/server";
 import { cn } from "@/lib/utils";
 import { FileTextIcon, PlayIcon, ShuffleIcon } from "lucide-react";
 import Link from "next/link";
 import React from "react";
 import WorkflowActions from "./workflow-actions";
+import { WORKFLOW_STATUS } from "@/lib/workflow/type";
 
 type Props = {
-  workflow: Workflow;
+  workflow: Pick<Workflow, "name" | "status" | "id">;
 };
 
 const statusColor = {

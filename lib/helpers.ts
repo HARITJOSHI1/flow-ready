@@ -1,5 +1,7 @@
 import { ZodType, z } from "zod";
-import { TError, Result } from "./types/errors";
+import {  } from "./types/errors/server.err";
+import { ActionError } from "./types/errors/base.action.err";
+import { Result } from "./types/errors";
 
 export const wait = (ms: number) =>
   new Promise((resolve) => setTimeout(resolve, ms));
@@ -20,7 +22,7 @@ export function createServerActionOutputSchema<
   ]);
 }
 
-export const err = <E extends TError>(error: E): Result<never, E> => ({
+export const err = <E extends ActionError>(error: E): Result<never, E> => ({
   success: false,
   error,
 });

@@ -1,7 +1,8 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { isErr } from "@/lib/helpers";
-import { TaskType } from "@/lib/types/nodes";
+import { TaskType } from "@/lib/types/tasks";
+
 import { TaskRegistry } from "@/lib/workflow/task/registry";
 import { CoinsIcon, GripVerticalIcon } from "lucide-react";
 

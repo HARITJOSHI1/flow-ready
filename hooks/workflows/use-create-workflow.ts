@@ -1,9 +1,12 @@
 "use client";
 
-import { createWorkflow } from "@/actions/workflows";
-import { useServerActionMutation } from "../global/server-action-hooks";
-import { toast } from "../use-toast";
+import { createWorkflow } from "@/actions/workflows/post";
+import { isServerActionError } from "@/lib/types/react-query";
 import { useRouter } from "next/navigation";
+import {
+  useServerActionMutation
+} from "../global/server-action-hooks";
+import { toast } from "../global/use-toast";
 
 export const useCreateWorkflowMutation = () => {
   const router = useRouter();
@@ -29,6 +32,7 @@ export const useCreateWorkflowMutation = () => {
       },
 
       onError: (error) => {
+        const err = isServerActionError(error) ? error.error : undefined;
         return toast({
           title: "Error creating workflow",
           description: "Something went wrong",

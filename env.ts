@@ -1,9 +1,13 @@
 import { z, ZodIssue } from "zod";
 
 // ts def for private env's exclucidng NEXT_PUBLIC_ env 's
-const envSchema = z.object({
+export const envSchema = z.object({
   NODE_ENV: z.enum(["development", "production", "test"]),
   DATABASE_URL: z.string(),
+  CLERK_SECRET_KEY: z.string(),
+  NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: z.string(),
+  NEXT_PUBLIC_CLERK_SIGN_IN_URL: z.string(),
+  NEXT_PUBLIC_CLERK_SIGN_UP_URL: z.string(),
 });
 
 // to make env type defs globally available by using process.env

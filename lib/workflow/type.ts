@@ -1,0 +1,4 @@
+export enum WORKFLOW_STATUS {
+  DRAFT = "DRAFT",
+  PUBLISHED = "PUBLISHED",
+}

@@ -1,8 +1,8 @@
-import db from "@/db";
-import { workflow } from "@/db/schema";
-import { auth } from "@clerk/nextjs/server";
-import { eq } from "drizzle-orm";
+"use client";
+
+import { useGetWorkflowQuery } from "@/hooks/workflows/use-get-workflow";
 import Editor from "../_components/editor";
+import { Loader2Icon } from "lucide-react";
 
 type Props = {
   params: {
@@ -10,15 +10,21 @@ type Props = {
   };
 };
 
-const page = async ({ params }: Props) => {
+const page = ({ params }: Props) => {
   const { id } = params;
-  const { userId } = auth();
+  const { workflow, isPending, error } = useGetWorkflowQuery(id);
 
-  if (!userId) return <div>unauthenticated</div>;
-  const data = await db.select().from(workflow).where(eq(workflow.id, id));
+  if (error) return <div>Error loading workflow</div>;
 
-  if (!data) return <div>No workflow</div>;
-  return <Editor workflow={data[0]} />;
+  if (isPending)
+    return (
+      <div className="flex h-screen w-full items-center justify-center">
+        <Loader2Icon size={30} className="animate-spin stroke-primary" />
+      </div>
+    );
+
+  if (!workflow) return;
+  return <Editor workflow={workflow} />;
 };
 
 export default page;

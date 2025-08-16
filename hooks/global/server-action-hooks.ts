@@ -4,7 +4,7 @@ import { useInfiniteQuery, useMutation, useQuery } from "@tanstack/react-query";
 import { setupServerActionHooks, createServerActionsKeyFactory } from "zsa-react-query";
 
 const QueryKeyFactory = createServerActionsKeyFactory({
-  workflows: () => ["workflows"],
+  getWorkflow: (workflowId: string) => ["get-workflow", workflowId],
 });
 
 const {

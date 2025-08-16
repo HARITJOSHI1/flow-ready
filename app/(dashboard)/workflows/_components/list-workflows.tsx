@@ -5,7 +5,7 @@ import WorkflowCard from "./workflow-card";
 import { Workflow } from "@/db/schema";
 
 type Props = {
-  workflows: Workflow[];
+  workflows: Pick<Workflow, "name" | "status" | "id">[];
 };
 
 const ListWorkflows = memo(({ workflows }: Props) => {

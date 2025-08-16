@@ -1,9 +1,12 @@
 import { err, Ok } from "@/lib/helpers";
-import { ERROR_TYPES, Result, TError } from "@/lib/types/errors";
-import { AppNode, Task, TaskType } from "@/lib/types/nodes";
+import { ERROR_TYPES, } from "@/lib/types/errors/server.err";
+import { AppNode } from "@/lib/types/nodes";
 import exportTaskConfig from "./config";
 import { LaunchBrowserTask } from "./launch-browser";
-
+import { PageToHTML } from "./page-to-html";
+import { Task, TaskType } from "@/lib/types/tasks";
+import { Result } from "@/lib/types/errors";
+import { ActionError } from "@/lib/types/errors/base.action.err";
 
 class TaskRegistryClass {
   private static instance: TaskRegistryClass;
@@ -11,7 +14,7 @@ class TaskRegistryClass {
 
   private constructor() {
     this.tasks = new Map();
-    this.registerTask(LaunchBrowserTask);
+    this.registerTasks(LaunchBrowserTask, PageToHTML);
   }
 
   public static getInstance(): TaskRegistryClass {
@@ -21,17 +24,20 @@ class TaskRegistryClass {
     return TaskRegistryClass.instance;
   }
 
-  public registerTask(task: Task) {
-    if (this.tasks.has(task.type))
-      return err({
-        message: "Task already exists",
-        type: ERROR_TYPES.TASK_NOT_FOUND_ERROR,
-      });
-    this.tasks.set(task.type, task);
-    return Ok({ success: true, message: "Task added to the registry" });
+  public registerTasks(...task: Task[]) {
+    for (const t of task)
+      if (this.tasks.has(t.type))
+        return err({
+          message: `Task with type ${t.type} already exists`,
+          type: ERROR_TYPES.TASK_NOT_FOUND_ERROR,
+        });
+
+    for (const t of task) this.tasks.set(t.type, t);
+
+    return Ok({ success: true, message: "Task(s) added to the registry" });
   }
 
-  public getTask(type: TaskType): Result<Task, TError> {
+  public getTask(type: TaskType): Result<Task, ActionError> {
     const task = this.tasks.get(type);
     if (!task)
       return err({

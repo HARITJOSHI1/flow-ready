@@ -1,9 +1,10 @@
-import { getUserWorkflows } from "@/actions/workflows";
+import { getUserWorkflows } from "@/actions/workflows/get";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Skeleton } from "@/components/ui/skeleton";
+import { ERROR_TYPES } from "@/lib/types/errors/server.err";
 import { AlertCircle, InboxIcon, PlusIcon } from "lucide-react";
 import { redirect } from "next/navigation";
-import React, { cache, Suspense } from "react";
+import { Suspense } from "react";
 import CreateWorkflowDialog from "./_components/create-dialog";
 import ListWorkflows from "./_components/list-workflows";
 
@@ -40,19 +41,22 @@ const UserWorkflowsSkeleton = () => {
   );
 };
 
-
-
 const UserWorkflows = async () => {
-  const [data] = await getUserWorkflows();
+  const selectable = {
+    name: true,
+    status: true,
+    id: true,
+  };
 
+  const [data] = await getUserWorkflows({ selectable });
   if (!data) return <ErrorAlert />;
 
   switch (data.resolved) {
     case "error":
       switch (data.error.type) {
-        case "AUTH_CHECK_ERROR":
+        case ERROR_TYPES.AUTH_CHECK_ERROR:
           redirect("/sign-in");
-        case "NO_WORKFLOWS":
+        case ERROR_TYPES.NO_WORKFLOWS:
           return (
             <div className="flex flex-col gap-4 h-full items-center justify-center">
               <div className="rounded-full bg-accent w-20 h-20 flex items-center justify-center">

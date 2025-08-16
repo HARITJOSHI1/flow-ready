@@ -1,9 +1,10 @@
 "use client";
 
-import { AppNode, TaskInputs, TaskParamType } from "@/lib/types/nodes";
+import { AppNode } from "@/lib/types/nodes";
 import { useReactFlow } from "@xyflow/react";
 import { useCallback } from "react";
-import StringParam from "./params/string-param";
+import StringParam from "../params/string-param";
+import { TaskInputs, TaskParamType } from "@/lib/types/tasks";
 
 type Props = {
   param: TaskInputs;
