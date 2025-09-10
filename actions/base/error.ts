@@ -10,17 +10,18 @@ import { handleApiError } from "./handlers/api.err";
 import { handleUnknownError } from "./handlers/unknown.err";
 import { handleZodError } from "./handlers/zod.err";
 import { handleZSAError } from "./handlers/zsa.err";
+import UnknownError from "@/lib/classes/Error/UnknownError";
 
 export const handleErrors = (
   error: unknown
 ): BaseErrReturnType<typeof ERROR_SCHEMA> => {
+  
+  UnknownError.initialize();
+
+
   if (error instanceof ApiError) {
     const result = handleApiError(error as ApiError<ActionError>);
     if (result) return result;
-  } 
-  
-  else if (error instanceof ZSAError) return handleZSAError(error);
-  else if (error instanceof ZodError) return handleZodError(error);
-
+  } else if (error instanceof ZSAError) return handleZSAError(error);
   return handleUnknownError(error);
 };

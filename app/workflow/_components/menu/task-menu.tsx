@@ -13,9 +13,7 @@ import { TaskRegistry } from "@/lib/workflow/task/registry";
 import { AccordionContent } from "@radix-ui/react-accordion";
 import React from "react";
 
-type Props = {};
-
-const TaskMenu = (props: Props) => {
+const TaskMenu = () => {
   return (
     <aside className="w-[340px] min-w-[340px] max-w-[340px] border-r-2 border-seperate h-full p-2 px-4 overflow-auto">
       <Accordion
@@ -28,8 +26,9 @@ const TaskMenu = (props: Props) => {
             Data Extraction
           </AccordionTrigger>
 
-          <AccordionContent className="flex flex-col gap-1">
+          <AccordionContent className="flex flex-col gap-4">
             <TaskMenuBtn taskType={TaskType.PAGE_TO_HTML} />
+            <TaskMenuBtn taskType={TaskType.EXTRACT_TEXT_FROM_ELEMENT} />
           </AccordionContent>
         </AccordionItem>
       </Accordion>
@@ -43,15 +42,17 @@ const TaskMenuBtn = ({ taskType }: { taskType: TaskType }) => {
   const task = TaskRegistry.getTask(taskType);
   if (isErr(task)) return;
 
-
-  const onDragStart = (e: React.DragEvent<HTMLButtonElement>, type: TaskType)   => {
+  const onDragStart = (
+    e: React.DragEvent<HTMLButtonElement>,
+    type: TaskType
+  ) => {
     e.dataTransfer.setData("application/reactflow", type);
     e.dataTransfer.effectAllowed = "move";
     e.dataTransfer.dropEffect = "move";
 
     // Add a class to indicate that this is being dragged
     e.currentTarget.classList.add("dragging");
-  }
+  };
 
   return (
     <Button

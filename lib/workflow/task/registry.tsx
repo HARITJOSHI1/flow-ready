@@ -7,6 +7,7 @@ import { PageToHTML } from "./page-to-html";
 import { Task, TaskType } from "@/lib/types/tasks";
 import { Result } from "@/lib/types/errors";
 import { ActionError } from "@/lib/types/errors/base.action.err";
+import { ExtractTextFrmElement } from "./extract-text-from-element";
 
 class TaskRegistryClass {
   private static instance: TaskRegistryClass;
@@ -14,7 +15,7 @@ class TaskRegistryClass {
 
   private constructor() {
     this.tasks = new Map();
-    this.registerTasks(LaunchBrowserTask, PageToHTML);
+    this.registerTasks(LaunchBrowserTask, PageToHTML, ExtractTextFrmElement);
   }
 
   public static getInstance(): TaskRegistryClass {

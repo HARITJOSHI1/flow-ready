@@ -3,10 +3,11 @@ import { DataNode } from "@/lib/types/nodes";
 import { TaskRegistry } from "@/lib/workflow/task/registry";
 import { NodeProps } from "@xyflow/react";
 import { memo } from "react";
-import NodeCard from "./node-card";
-import NodeHeader from "./node-header";
-import { NodeInput, NodeInputs } from "./node-inputs";
-import { NodeOutputs, NodeOutput } from "./node-output";
+import NodeCard from "./style/node-card";
+import NodeHeader from "./style/node-header";
+
+import { NodeInput, NodeInputs } from "./input/node-inputs";
+import { NodeOutput, NodeOutputs } from "./output/node-output";
 
 const NodeComponent = memo((props: NodeProps) => {
   const nodeData = props.data as DataNode;

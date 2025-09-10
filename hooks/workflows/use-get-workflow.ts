@@ -3,6 +3,8 @@
 import { getUserWorkflows, getWorkflow } from "@/actions/workflows/get";
 import { useServerActionQuery } from "../global/server-action-hooks";
 import { Workflow } from "@/db/schema";
+import { BaseErrReturnType } from "@/lib/types/errors/base.action.err";
+import { ERROR_SCHEMA } from "@/lib/types/errors/server.err";
 
 const formatWorkflowInp = <K extends keyof Workflow>(
   id?: string,
@@ -25,7 +27,7 @@ export function useGetWorkflowQuery<K extends keyof Workflow>(
   select: Record<K, true>
 ): {
   workflow: Pick<Workflow, K> | null;
-  error?: any;
+  error?: BaseErrReturnType<typeof ERROR_SCHEMA>;
   isPending: boolean;
 };
 
@@ -34,7 +36,7 @@ export function useGetWorkflowQuery<K extends keyof Workflow>(
   select?: undefined
 ): {
   workflow: Workflow | null;
-  error?: any;
+  error?: BaseErrReturnType<typeof ERROR_SCHEMA>;
   isPending: boolean;
 };
 
@@ -43,7 +45,7 @@ export function useGetWorkflowQuery<K extends keyof Workflow>(
   select?: Record<K, true>
 ): {
   workflow: Pick<Workflow, K>[] | null;
-  error?: any;
+  error?: BaseErrReturnType<typeof ERROR_SCHEMA>;
   isPending: boolean;
 };
 
@@ -52,7 +54,7 @@ export function useGetWorkflowQuery<K extends keyof Workflow>(
   select?: undefined
 ): {
   workflow: Workflow[] | null;
-  error?: any;
+  error?: BaseErrReturnType<typeof ERROR_SCHEMA>;
   isPending: boolean;
 };
 
@@ -85,6 +87,7 @@ export function useGetWorkflowQuery<K extends keyof Workflow>(
       // Handle case where workflows response is returned for single workflow
       workflowData = data.result.workflows[0] || null;
     // Handle case where single workflow might be returned directly
+    // @ts-ignore
     else workflowData = data.result as Workflow;
   } else {
     // Multiple workflows case

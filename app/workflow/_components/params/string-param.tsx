@@ -3,11 +3,15 @@
 import { Input } from "@/components/ui/input";
 import { ParamProps } from "@/lib/types/nodes";
 import { Label } from "@radix-ui/react-label";
-import { useId, useState } from "react";
+import { useEffect, useId, useState } from "react";
 
 const StringParam = ({ param, value, updateNodeParamProps }: ParamProps) => {
   const id = useId();
   const [internalVal, setInternalVal] = useState(value);
+
+  useEffect(() => {
+    setInternalVal(value);
+  }, [value]);
 
   return (
     <div className="space-y-1 p-1 w-full">

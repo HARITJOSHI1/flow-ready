@@ -9,14 +9,13 @@ export type PostgresError = PgError & {
 
 export type PgHandlerDetails = {
   field: string;
-  constraint: string;
-  column: string;
-  pgCode: string;
+  constraint?: string;
+  pgCode?: string;
 };
 
 export type PostgressErrHandler = {
   code: keyof typeof PgCodeEnum;
   message: string;
-  details?: Partial<PgHandlerDetails>;
-  statusCode?: number;
+  details: PgHandlerDetails;
+  statusCode: number;
 };

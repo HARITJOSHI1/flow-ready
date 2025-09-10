@@ -45,25 +45,29 @@ const extraDetailsSchema = z.discriminatedUnion("environment", [
   }),
 ]);
 
-const validationErrorSchema = z.union([
-  // Development mode: error.format() returns nested object structure
-  z.record(z.any()),
-
-  // Production mode: mapped array of { path, message }
-  z.array(
-    z.object({
-      path: z.array(z.union([z.string(), z.number()])),
-      message: z.string(),
-    })
-  ),
-]);
+const validationErrorSchema = z.array(
+  z.object({
+    field: z.string(),
+    error: z.string(),
+    path: z.array(z.union([z.string(), z.number()])),
+    environment: z.union([
+      z.literal(envSchema.shape.NODE_ENV.enum.development),
+      z.literal(envSchema.shape.NODE_ENV.enum.production),
+      z.literal(envSchema.shape.NODE_ENV.enum.test),
+    ]),
+  })
+);
 
 export const ERROR_SCHEMA = z.object({
-  type: z.nativeEnum(ERROR_TYPES),
+  type: z.union([
+    z.nativeEnum(ERROR_TYPES),
+    z.custom<keyof typeof ERROR_TYPES>(),
+    z.custom<keyof typeof PgCodeEnum>(),
+  ]),
   status: z.nativeEnum(RESPONSE_STATUS).optional(),
   code: z.number().optional(),
   message: z.string(),
   extraDetails: extraDetailsSchema.optional(),
-  validationErrror: validationErrorSchema.optional(),
+  validationError: validationErrorSchema.optional(),
   filePath: z.string().optional(),
 });

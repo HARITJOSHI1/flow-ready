@@ -1,9 +1,8 @@
 import { RESPONSE_STATUS } from "../../types/server";
 
-class ApiError<T> extends Error {
+class ApiError<T> extends Error{
   public status: RESPONSE_STATUS;
   public details: T;
-  public stack?: string;
   public shouldAddStack?: boolean;
   public shouldLog?: boolean;
   public name = "ApiError";

@@ -2,14 +2,27 @@ import { PgCodeEnum } from "@/db/postgres/constants";
 import { PgHandlerDetails, PostgresError } from "@/lib/types/errors/db.err";
 import { EnumValues } from "@/lib/types/nodes";
 import { ZSAError } from "zsa";
+import { IErrorClassProps } from "../interface/IErrorClass";
+import { ERROR_TYPES } from "@/lib/types/errors/server.err";
 
-class DatabaseError extends Error {
+type DbErrorCode = keyof typeof PgCodeEnum | keyof typeof ERROR_TYPES;
+type DbErrorDetails = PgHandlerDetails;
+type DbOriginalError = Omit<ZSAError, "stack">;
+
+class DatabaseError<
+    C extends DbErrorCode,
+    D = DbErrorDetails,
+    O = DbOriginalError
+  >
+  extends Error
+  implements IErrorClassProps<C, D, O>
+{
   constructor(
-    public code: keyof typeof PgCodeEnum,
+    public type: C,
     public statusCode: number = 500,
     public message: string,
-    public details?: Partial<PgHandlerDetails>,
-    public orginalError?: Omit<ZSAError, "stack">,
+    public details?: D,
+    public orginalError?: O,
     public shouldAddStack?: boolean,
     public name: string = "DatabaseError"
   ) {
@@ -25,7 +38,8 @@ class DatabaseError extends Error {
     return new DatabaseError(
       "INTERNAL_ERROR",
       500,
-      `An unexpected error occurred: ${error}`
+      `An unexpected error occurred: ${error}`,
+      { field: "", column: undefined, constraint: undefined, pgCode: undefined }
     );
   };
 
@@ -40,7 +54,7 @@ class DatabaseError extends Error {
     );
   }
 
-  private static handlePostgresError(err: ZSAError): DatabaseError {
+  private static handlePostgresError(err: ZSAError) {
     const error = err as PostgresError & ZSAError;
     const code = error.code as EnumValues<typeof PgCodeEnum>;
     error.stack = undefined; // Remove stack to avoid circular references
@@ -52,7 +66,11 @@ class DatabaseError extends Error {
           "UNIQUE_VIOLATION",
           400,
           `Duplicate value for field '${error.column}'`,
-          { field: error.column, constraint: error.constraint },
+          {
+            field: error.column,
+            constraint: error.constraint,
+            pgCode: undefined,
+          },
           { ...error }
         );
 
@@ -61,7 +79,11 @@ class DatabaseError extends Error {
           "FOREIGN_KEY_VIOLATION",
           400,
           `Foreign key constraint violation on field '${error.column}'`,
-          { field: error.column, constraint: error.constraint },
+          {
+            field: error.column,
+            constraint: error.constraint,
+            pgCode: undefined,
+          },
           { ...error }
         );
 
@@ -70,7 +92,11 @@ class DatabaseError extends Error {
           "NOT_NULL_VIOLATION",
           400,
           `Field '${error.column}' cannot be null`,
-          { field: error.column, constraint: error.constraint },
+          {
+            field: error.column,
+            constraint: error.constraint,
+            pgCode: undefined,
+          },
           { ...error }
         );
 
@@ -79,7 +105,11 @@ class DatabaseError extends Error {
           "CHECK_VIOLATION",
           400,
           `Check constraint violation on field '${error.column}'`,
-          { field: error.column, constraint: error.constraint },
+          {
+            field: error.column,
+            constraint: error.constraint,
+            pgCode: undefined,
+          },
           { ...error }
         );
 
@@ -88,7 +118,7 @@ class DatabaseError extends Error {
           "UNDEFINED_COLUMN",
           400,
           `Undefined column '${error.column}' in query`,
-          { field: error.column },
+          { field: error.column, constraint: undefined, pgCode: undefined },
           { ...error }
         );
 
@@ -108,5 +138,7 @@ class DatabaseError extends Error {
     }
   }
 }
+
+// export default DatabaseError;
 
 export default DatabaseError;
