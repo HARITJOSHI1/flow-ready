@@ -5,6 +5,7 @@ export type ParamProps = {
   param: TaskInputs;
   value: string;
   updateNodeParamProps: (newValue: string) => void;
+  disabled?: boolean;
 };
 
 export interface DataNode {

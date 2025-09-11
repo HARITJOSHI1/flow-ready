@@ -14,6 +14,7 @@ export const ExtractTextFrmElement: Task = {
       name: "Html",
       type: TaskParamType.STRING,
       required: true,
+      varaint: "textarea"
     },
 
     {

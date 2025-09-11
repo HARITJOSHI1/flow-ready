@@ -1,8 +1,8 @@
 import { TaskOutputs } from "@/lib/types/tasks";
 import { cn } from "@/lib/utils";
 import { Handle, Position } from "@xyflow/react";
-import React from "react";
 import { colorForHandle } from "../common/colorHandle";
+import React from "react";
 
 type Props = {
   children?: React.ReactNode;

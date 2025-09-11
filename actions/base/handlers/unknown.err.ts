@@ -16,7 +16,7 @@ export function handleUnknownError(
       message: "An unexpected error occurred",
       code: 500,
       extraDetails: {
-        environment: process.env.NODE_ENV,
+        environment: process.env.NODE_ENV, 
         functionName: "handleErrors()",
       },
     },
@@ -25,7 +25,8 @@ export function handleUnknownError(
     true
   );
 
-  console.info("An uncaught error occured:", error);
+  if(process.env.NODE_ENV === "development" || process.env.NODE_ENV === "test")
+    console.info("An uncaught error occured:", error);
 
   return {
     resolved: "error",
