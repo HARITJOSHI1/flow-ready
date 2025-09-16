@@ -28,6 +28,8 @@ export enum ERROR_TYPES {
   INSUFFICIENT_CREDITS = "INSUFFICIENT_CREDITS",
   PAYMENT_REQUIRED = "PAYMENT_REQUIRED",
   VALIDATION_ERROR = "ZOD_VALIDATION_FAILED",
+  NO_EXECUTION_PLAN = "NO_EXECUTION_PLAN_AVAILABLE",
+  INVALID_INPUTS = "INVALID_WORKFLOW:INPUT"
 }
 
 const extraDetailsSchema = z.discriminatedUnion("environment", [
@@ -70,4 +72,5 @@ export const ERROR_SCHEMA = z.object({
   extraDetails: extraDetailsSchema.optional(),
   validationError: validationErrorSchema.optional(),
   filePath: z.string().optional(),
+  data: z.unknown().optional()
 });

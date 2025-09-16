@@ -14,7 +14,7 @@ import { TaskRegistry } from "@/lib/workflow/task/registry";
 import { Edge } from "@xyflow/react";
 import { revalidateTag } from "next/cache";
 import { base } from "../../base";
-import { CREATE_WORKFLOW_ACTION_RESULT_SCHEMA } from "./types";
+import { CREATE_WORKFLOW_ACTION_RESULT_SCHEMA } from "../mutations/types";
 import { WORKFLOW_STATUS } from "@/lib/workflow/type";
 
 export const createWorkflow = base

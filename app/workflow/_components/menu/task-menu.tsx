@@ -57,7 +57,7 @@ const TaskMenuBtn = ({ taskType }: { taskType: TaskType }) => {
   return (
     <Button
       variant="secondary"
-      className="flex justify-between items-center w-full gap-2 border"
+      className="flex justify-between items-center w-full gap-2 border hover:bg-blend-difference"
       draggable
       onDragStart={(e) => onDragStart(e, taskType)}
     >

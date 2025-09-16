@@ -5,7 +5,7 @@ import { ERROR_SCHEMA, ERROR_TYPES } from "@/lib/types/errors/server.err";
 import { RESPONSE_STATUS } from "@/lib/types/server";
 import { auth } from "@clerk/nextjs/server";
 import { createServerActionProcedure } from "zsa";
-import { handleErrors } from "./error";
+import { handleErrors } from "./errors";
 import { BASE_RESULT_SCHEMA } from "./types";
 
 export const base = createServerActionProcedure()

@@ -1,6 +1,6 @@
 "use client";
 
-import { createWorkflow } from "@/actions/workflows/post";
+import { createWorkflow } from "@/actions/workflows/mutations/createWorkflow";
 import { isServerActionError } from "@/lib/types/react-query";
 import { useRouter } from "next/navigation";
 import {

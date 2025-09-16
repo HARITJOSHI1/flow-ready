@@ -1,6 +1,6 @@
 "use client";
 
-import { getUserWorkflows, getWorkflow } from "@/actions/workflows/get";
+import { getUserWorkflows, getWorkflow } from "@/actions/workflows/queries";
 import { useServerActionQuery } from "../global/server-action-hooks";
 import { Workflow } from "@/db/schema";
 import { BaseErrReturnType } from "@/lib/types/errors/base.action.err";

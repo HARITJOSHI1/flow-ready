@@ -3,12 +3,14 @@ import { Task, TaskParamType, TaskType } from "@/lib/types/tasks";
 import { GlobeIcon, LucideProps } from "lucide-react";
 
 
-export const PageToHTML: Task = {
+export const PageToHTML = {
   type: TaskType.PAGE_TO_HTML,
   label: "Extract Page data to HTML format",
   icon: (props: LucideProps) => (
-    <GlobeIcon {...props} className="stroke-rose-400" />
+    <GlobeIcon {...props} className="stroke-primary dark:stroke-primary-foreground" />
   ),
+
+  credits: 2,
 
   isEntryPoint: false,
   inputs: [
@@ -30,4 +32,4 @@ export const PageToHTML: Task = {
       type: TaskParamType.BROWSER_INSTANCE,
     },
   ],
-};
+} satisfies Task<TaskType.PAGE_TO_HTML>;

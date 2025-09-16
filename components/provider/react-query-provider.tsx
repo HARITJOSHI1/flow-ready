@@ -1,11 +1,11 @@
 "use client";
 
+import ErrorBoundary from "@/lib/errorBoundry";
 import { isServerActionError } from "@/lib/types/react-query";
 import { RESPONSE_STATUS } from "@/lib/types/server";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { useState } from "react";
-
 
 const createRetryFunction = () => (failureCount: number, error: unknown) => {
   const err = isServerActionError(error) ? error.error : undefined;
@@ -22,7 +22,6 @@ const createRetryFunction = () => (failureCount: number, error: unknown) => {
 
   return failureCount < 3;
 };
-
 
 // Optimized retry delay with jitter
 const createRetryDelay = () => (attemptIndex: number) => {
@@ -74,7 +73,9 @@ function ReactQueryProvider({ children }: React.PropsWithChildren) {
     <QueryClientProvider client={client}>
       {children}
       {process.env.NODE_ENV === "development" && (
-        <ReactQueryDevtools initialIsOpen={false} />
+        <ErrorBoundary>
+          <ReactQueryDevtools initialIsOpen={false} />
+        </ErrorBoundary>
       )}
     </QueryClientProvider>
   );

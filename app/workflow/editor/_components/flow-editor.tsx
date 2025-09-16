@@ -8,6 +8,7 @@ import {
   Controls,
   Edge,
   getOutgoers,
+  MarkerType,
   Node,
   ReactFlow,
   ReactFlowJsonObject,
@@ -88,7 +89,21 @@ const FlowEditor = ({ workflow }: Props) => {
 
   const onConnect = useCallback(
     (connection: Connection) => {
-      setEdges((eds) => addEdge({ ...connection, animated: true }, eds));
+      setEdges((eds) =>
+        addEdge(
+          {
+            ...connection,
+            animated: true,
+            markerEnd: {
+              color: "green",
+              type: MarkerType.Arrow,
+              width: 30,
+              height: 30,
+            },
+          },
+          eds
+        )
+      );
       if (!connection.targetHandle) return;
 
       // remove the node if input value present as we can have only one input either from another node or from the input value i.e. String Param
@@ -97,8 +112,8 @@ const FlowEditor = ({ workflow }: Props) => {
       if (!node) return;
 
       // Remove the node input value if an edge is connected
-      const newNodeInputs = { ...node.data.inputs as TaskInputs };
-      if (connection.targetHandle) 
+      const newNodeInputs = { ...(node.data.inputs as TaskInputs) };
+      if (connection.targetHandle)
         delete newNodeInputs[connection.targetHandle];
 
       updateNodeData(node.id, {
@@ -108,46 +123,50 @@ const FlowEditor = ({ workflow }: Props) => {
     [setEdges, updateNodeData, nodes]
   );
 
+  const isValidConnection = useCallback(
+    (connection: Connection | Edge) => {
+      // No self connection allowed
+      if (connection.source === connection.target) return false;
 
-  const isValidConnection = useCallback((connection: Connection | Edge) => {
-    console.log("@connection", connection);
-    
-    // No self connection allowed
-    if(connection.source === connection.target) return false;
+      // same type connection is allowed
+      const sourceNode = nodes.find((n) => n.id === connection.source);
+      const targetNode = nodes.find((n) => n.id === connection.target);
 
-    // same type connection is allowed
-    const sourceNode = nodes.find((n) => n.id === connection.source);
-    const targetNode = nodes.find((n) => n.id === connection.target);
+      if (!sourceNode || !targetNode) return false;
 
-    if(!sourceNode || !targetNode) return false;
+      const sourceTask = TaskRegistry.getTask(sourceNode.data.type as TaskType);
+      const targetTask = TaskRegistry.getTask(targetNode.data.type as TaskType);
 
-    const sourceTask = TaskRegistry.getTask(sourceNode.data.type as TaskType);
-    const targetTask = TaskRegistry.getTask(targetNode.data.type as TaskType);
+      if (isOk(sourceTask) && isOk(targetTask)) {
+        const input = targetTask.data.inputs?.find(
+          (i) => i.name === connection.targetHandle
+        );
+        const output = sourceTask.data.outputs?.find(
+          (o) => o.name === connection.sourceHandle
+        );
 
-    if(isOk(sourceTask) && isOk(targetTask)){
-      const input = targetTask.data.inputs?.find((i) => i.name === connection.targetHandle);
-      const output = sourceTask.data.outputs?.find((o) => o.name === connection.sourceHandle);
+        if (!output || !input) return false;
+        else if (input.type !== output.type) return false;
 
-      if(!output || !input) return false;
-      else if(input.type !== output.type) return false;
+        const hasCycle = (node: Node, visited = new Set()) => {
+          if (visited.has(node.id)) return false;
+          visited.add(node.id);
 
-      const hasCycle = (node: Node, visited = new Set()) => {
-        if (visited.has(node.id)) return false;
-        visited.add(node.id);
- 
-        for (const outgoer of getOutgoers(node, nodes, edges)) {
-          if (outgoer.id === connection.source) return true;
-          if (hasCycle(outgoer, visited)) return true;
-        }
-      };
+          for (const outgoer of getOutgoers(node, nodes, edges)) {
+            if (outgoer.id === connection.source) return true;
+            if (hasCycle(outgoer, visited)) return true;
+          }
+        };
 
-      const detectedCycle = hasCycle(targetNode);
-      return !detectedCycle;
-    }
+        const detectedCycle = hasCycle(targetNode);
+        return !detectedCycle;
+      }
 
-    // for anything else
-    else return false;
-  }, [nodes]);
+      // for anything else
+      else return false;
+    },
+    [nodes]
+  );
 
   return (
     <main className="h-full w-full">

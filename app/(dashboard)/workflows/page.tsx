@@ -1,4 +1,4 @@
-import { getUserWorkflows } from "@/actions/workflows/get";
+import { getUserWorkflows } from "@/actions/workflows/queries";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ERROR_TYPES } from "@/lib/types/errors/server.err";

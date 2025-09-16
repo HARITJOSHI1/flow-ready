@@ -1,6 +1,6 @@
 "use client";
 
-import { saveWorkflow } from "@/actions/workflows/update";
+import { saveWorkflow } from "@/actions/workflows/mutations/saveWorkflow";
 import { useQueryClient } from "@tanstack/react-query";
 import { QueryKeyFactory, useServerActionMutation } from "../global/server-action-hooks";
 import { toast } from "../global/use-toast";

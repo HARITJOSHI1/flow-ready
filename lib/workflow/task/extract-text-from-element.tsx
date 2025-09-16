@@ -1,12 +1,14 @@
 import { Task, TaskParamType, TaskType } from "@/lib/types/tasks";
 import { LucideProps, TextIcon } from "lucide-react";
 
-export const ExtractTextFrmElement: Task = {
+export const ExtractTextFrmElement = {
   type: TaskType.EXTRACT_TEXT_FROM_ELEMENT,
   label: "Extract Text From Element",
   icon: (props: LucideProps) => (
-    <TextIcon {...props} className="stroke-pink-400" />
+    <TextIcon {...props} className="stroke-primary dark:stroke-primary-foreground" />
   ),
+
+  credits: 2,
 
   isEntryPoint: false,
   inputs: [
@@ -30,4 +32,4 @@ export const ExtractTextFrmElement: Task = {
       type: TaskParamType.STRING,
     },
   ],
-};
+} satisfies Task<TaskType.EXTRACT_TEXT_FROM_ELEMENT>;

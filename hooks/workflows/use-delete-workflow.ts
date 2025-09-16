@@ -1,6 +1,6 @@
 "use client";
 
-import { deleteWorkflow } from "@/actions/workflows/delete";
+import { deleteWorkflow } from "@/actions/workflows/mutations/deleteWorkflow";
 import { useServerActionMutation } from "../global/server-action-hooks";
 import { toast } from "../global/use-toast";
 import { useRouter } from "next/navigation";

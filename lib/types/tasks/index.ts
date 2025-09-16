@@ -29,11 +29,12 @@ export type TaskOutputs = {
   [key: string]: any;
 };
 
-export type Task = {
-  type: TaskType;
+export type Task<T extends TaskType = TaskType> = {
+  type: T;
   label: string;
   icon: (props: LucideProps) => JSX.Element;
   isEntryPoint: boolean;
-  inputs?: TaskInputs[];
+  inputs: TaskInputs[];
   outputs?: TaskOutputs[];
+  credits: number;
 };
