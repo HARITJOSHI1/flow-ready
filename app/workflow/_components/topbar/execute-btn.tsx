@@ -1,17 +1,16 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { useSaveWorkflowMutation } from "@/hooks/workflows/use-save-workflow";
-import { useReactFlow } from "@xyflow/react";
-import { CheckIcon, Loader2Icon, PlayIcon } from "lucide-react";
+import useExecutionPlan from "@/hooks/exec/useExecutionPlan";
+import { Loader2Icon, PlayIcon } from "lucide-react";
 
 type Props = {
   workflowId: string;
 };
 
-const SaveBtn = ({ workflowId }: Props) => {
-  const { toObject } = useReactFlow();
-  const { mutate, isPending } = useSaveWorkflowMutation(workflowId);
+const ExecuteBtn = ({ workflowId }: Props) => {
+  const generate = useExecutionPlan();
+  let isPending = false;
 
   return (
     <Button
@@ -19,8 +18,9 @@ const SaveBtn = ({ workflowId }: Props) => {
       className="flex items-center gap-2"
       disabled={isPending}
       onClick={() => {
-        console.log("Executing workflow with ID:", workflowId);
-        console.log("Workflow definition to save:", toObject());
+        const plan = generate();
+        console.log("----- plan -----");
+        console.table(plan);
         // mutate({ workflowId, defination: JSON.stringify(toObject()) });
       }}
     >
@@ -34,4 +34,4 @@ const SaveBtn = ({ workflowId }: Props) => {
   );
 };
 
-export default SaveBtn;
+export default ExecuteBtn;

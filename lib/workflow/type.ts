@@ -11,3 +11,7 @@ export type WorkflowExecutionPlanPhase = {
 };
 
 export type WorkflowExecutionPlan = WorkflowExecutionPlanPhase[];
+export type InvalidInputsInWorkflow = {
+  nodeId: string;
+  inputs: string[];
+};

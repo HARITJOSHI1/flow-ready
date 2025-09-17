@@ -1,3 +1,5 @@
+'use client';
+
 import { Edge, getIncomers } from "@xyflow/react";
 import { AppNode } from "./types/nodes";
 import {
@@ -55,10 +57,11 @@ export const FlowToExecutionPlan = (
 
   // containes nodes which are yet to be resolved
   const planned = new Set<string>();
+  planned.add(entryPoint.id);
 
   for (
     let phase = 2;
-    phase <= nodes.length || planned.size <= nodes.length;
+    phase <= nodes.length && planned.size < nodes.length;
     phase++
   ) {
     const nextPhase: WorkflowExecutionPlanPhase = { phase, nodes: [] };
@@ -77,7 +80,7 @@ export const FlowToExecutionPlan = (
       const incomers = getIncomers(currentNode, nodes, edges);
       if (invalidInputs.data.length > 0) {
         if (incomers.every((inc) => planned.has(inc.id))) {
-          /* if there r incomers means thta current node dependencies r not resolved
+          /* if there r incomers means that current node dependencies r not resolved
             which is an invalid input to the current node means this particular node
             has invalid inputs means workflow is invalid with non resolved dependencies.
           */
@@ -94,8 +97,10 @@ export const FlowToExecutionPlan = (
 
       // at this point the node is valid, add it to the exec plan
       nextPhase.nodes.push(currentNode);
-      planned.add(currentNode.id);
     }
+
+    for(const node of nextPhase.nodes) planned.add(node.id);
+    plan.push(nextPhase);
   }
 
   return Ok({ executionPlan: plan });
@@ -120,7 +125,7 @@ const getInvalidInputs = (
 
     // finding user input to the node
     const inputValue = node.data.inputs[inp.name];
-    if (inputValue.length > 0) continue;
+    if (inputValue?.length > 0) continue;
 
     // PART 2:
 
@@ -140,11 +145,12 @@ const getInvalidInputs = (
       edgeConnectedToOutput &&
       planned.has(edgeConnectedToOutput.source);
 
-    // case 1: valid input is present which is provided to the task that is planned
-    if (requiredInputForValidWorkflow) {
-      continue;
-    }
 
+    // PART 3: Check for all valid cases first
+
+    // case 1: valid input is present which is provided to the task that is planned
+    if (requiredInputForValidWorkflow) continue;
+    
     // case 2: if input not required then no manual or no incoming edge as an input should be present
     else if (!inp.required) {
       if (!edgeConnectedToOutput) continue;
@@ -154,7 +160,9 @@ const getInvalidInputs = (
         continue;
     }
 
-    // invalid input
+
+
+    // PART 4: invalid input found
     invalidInputs.push(inp.name);
   }
 

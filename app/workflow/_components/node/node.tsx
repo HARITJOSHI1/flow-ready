@@ -8,6 +8,7 @@ import NodeHeader from "./style/node-header";
 
 import { NodeInput, NodeInputs } from "./input/node-inputs";
 import { NodeOutput, NodeOutputs } from "./output/node-output";
+import { Badge } from "@/components/ui/badge";
 
 const NodeComponent = memo((props: NodeProps) => {
   const nodeData = props.data as DataNode;
@@ -17,6 +18,7 @@ const NodeComponent = memo((props: NodeProps) => {
   return (
     <NodeCard nodeId={props.id} isSelected={props.selected}>
       <NodeHeader taskType={nodeData.type} nodeId={props.id} />
+      <Badge className="bg-primary text-white">{props.id}</Badge>
       <NodeInputs>
         {task.data.inputs?.map((input, idx) => (
           <NodeInput key={idx} input={input} nodeId={props.id} />
