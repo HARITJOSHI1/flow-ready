@@ -29,7 +29,9 @@ export enum ERROR_TYPES {
   PAYMENT_REQUIRED = "PAYMENT_REQUIRED",
   VALIDATION_ERROR = "ZOD_VALIDATION_FAILED",
   NO_EXECUTION_PLAN = "NO_EXECUTION_PLAN_AVAILABLE",
-  INVALID_INPUTS = "INVALID_WORKFLOW:INPUT"
+  REACT_CONTEXT_ERROR = "HOOK_USED_IN_WRONG_FILE",
+  NO_ENTRY_POINT = "ENTRY_POINT_MISSING",
+  INVALID_INPUTS = "INVALID_WORKFLOW:INPUT",
 }
 
 const extraDetailsSchema = z.discriminatedUnion("environment", [
@@ -74,3 +76,21 @@ export const ERROR_SCHEMA = z.object({
   filePath: z.string().optional(),
   data: z.unknown().optional()
 });
+
+
+// export const ERROR_SCHEMA = z.object({
+//   type: z.union([
+//     z.nativeEnum(SERVER_ERROR_TYPES),
+//     z.nativeEnum(API_ERROR_TYPES),
+//     z.nativeEnum(DB_ERROR_TYPES),
+//     z.nativeEnum(CLIENT_ERROR_TYPES),
+//     z.custom<keyof typeof PgCodeEnum>(),
+//   ]),
+//   status: z.nativeEnum(RESPONSE_STATUS).optional(),
+//   code: z.number().optional(),
+//   message: z.string(),
+//   extraDetails: extraDetailsSchema.optional(),
+//   validationError: validationErrorSchema.optional(),
+//   filePath: z.string().optional(),
+//   data: z.unknown().optional()
+// });

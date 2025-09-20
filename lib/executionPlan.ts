@@ -1,25 +1,36 @@
-'use client';
+"use client";
 
 import { Edge, getIncomers } from "@xyflow/react";
 import { AppNode } from "./types/nodes";
 import {
+  InvalidInputsInWorkflow,
   WorkflowExecutionPlan,
   WorkflowExecutionPlanPhase,
 } from "./workflow/type";
 import { TaskRegistry } from "./workflow/task/registry";
-import { Ok, err, isErr } from "./helpers";
+import { Ok, err, isErr, isOk } from "./helpers";
 import { Result } from "./types/errors";
 import { ActionError } from "./types/errors/base.action.err";
 import { ERROR_TYPES } from "./types/errors/server.err";
 
-type TFlowToExecutionPlan = {
+type PlanErr = {
+  invalidElements?: InvalidInputsInWorkflow[];
+};
+
+export type WorkflowExecutionPlanError = ActionError &
+  (Omit<ActionError, "data"> & { data?: ActionError["data"] & PlanErr });
+
+export type FlowToExecutionPlan = {
   executionPlan?: WorkflowExecutionPlan;
 };
 
 export const FlowToExecutionPlan = (
   nodes: AppNode[],
   edges: Edge[]
-): Result<TFlowToExecutionPlan, ActionError> => {
+): Result<FlowToExecutionPlan, ActionError & WorkflowExecutionPlanError> => {
+  const inputWithErrors: InvalidInputsInWorkflow[] = [];
+  const planned = new Set<string>();
+
   const entryPoint = nodes.find((nds) => {
     const task = TaskRegistry.getTask(nds.data.type);
     if (isErr(task)) return false;
@@ -28,9 +39,24 @@ export const FlowToExecutionPlan = (
 
   if (!entryPoint)
     return err({
-      message: "TODO:Handle this error later",
-      type: ERROR_TYPES.NO_EXECUTION_PLAN,
+      message: "No entry point found in the workflow",
+      type: "NO_ENTRY_POINT",
     });
+
+  const invalidInputsForEntryPoint = getInvalidInputs(
+    entryPoint,
+    edges,
+    planned
+  );
+  if (
+    isOk(invalidInputsForEntryPoint) &&
+    invalidInputsForEntryPoint.data.length > 0
+  ) {
+    inputWithErrors.push({
+      nodeId: entryPoint.id,
+      inputs: invalidInputsForEntryPoint.data,
+    });
+  }
 
   const plan: WorkflowExecutionPlan = [
     {
@@ -56,7 +82,6 @@ export const FlowToExecutionPlan = (
   */
 
   // containes nodes which are yet to be resolved
-  const planned = new Set<string>();
   planned.add(entryPoint.id);
 
   for (
@@ -71,10 +96,11 @@ export const FlowToExecutionPlan = (
       if (planned.has(currentNode.id)) continue;
 
       const invalidInputs = getInvalidInputs(currentNode, edges, planned);
-      if(isErr(invalidInputs)) return err({
-        message: "Something went wrong",
-        type: ERROR_TYPES.INTERNAL_SERVER_ERROR,
-      });
+      if (isErr(invalidInputs))
+        return err({
+          message: "Something went wrong",
+          type: ERROR_TYPES.INTERNAL_SERVER_ERROR,
+        });
 
       // Dependencies
       const incomers = getIncomers(currentNode, nodes, edges);
@@ -87,9 +113,9 @@ export const FlowToExecutionPlan = (
 
           if (process.env.NODE_ENV === "development") {
             console.error("Invalid inputs", currentNode.id, invalidInputs);
-            return err({
-              message: "TODO: ERROR 2",
-              type: ERROR_TYPES.INVALID_INPUTS,
+            inputWithErrors.push({
+              nodeId: currentNode.id,
+              inputs: invalidInputs.data,
             });
           }
         } else continue;
@@ -99,9 +125,19 @@ export const FlowToExecutionPlan = (
       nextPhase.nodes.push(currentNode);
     }
 
-    for(const node of nextPhase.nodes) planned.add(node.id);
+    for (const node of nextPhase.nodes) planned.add(node.id);
     plan.push(nextPhase);
   }
+
+  // if any invalid inputs found throughout all the phase return it at once
+  if (inputWithErrors.length > 0)
+    return err({
+      type: "INVALID_INPUTS",
+      message: "Not all input values are set",
+      data: {
+        invalidElements: inputWithErrors,
+      },
+    });
 
   return Ok({ executionPlan: plan });
 };
@@ -145,12 +181,10 @@ const getInvalidInputs = (
       edgeConnectedToOutput &&
       planned.has(edgeConnectedToOutput.source);
 
-
     // PART 3: Check for all valid cases first
 
     // case 1: valid input is present which is provided to the task that is planned
     if (requiredInputForValidWorkflow) continue;
-    
     // case 2: if input not required then no manual or no incoming edge as an input should be present
     else if (!inp.required) {
       if (!edgeConnectedToOutput) continue;
@@ -159,8 +193,6 @@ const getInvalidInputs = (
       if (edgeConnectedToOutput && planned.has(edgeConnectedToOutput.source))
         continue;
     }
-
-
 
     // PART 4: invalid input found
     invalidInputs.push(inp.name);

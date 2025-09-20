@@ -2,14 +2,25 @@
 
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { useFlowValidation } from "@/hooks/validation/useFlowValidation";
+import { isErr } from "@/lib/helpers";
 import { ParamProps } from "@/lib/types/nodes";
 import { Label } from "@radix-ui/react-label";
 import { useEffect, useId, useState } from "react";
 
-const StringParam = ({ param, value, updateNodeParamProps, disabled }: ParamProps) => {
+const StringParam = ({
+  param,
+  value,
+  updateNodeParamProps,
+  disabled,
+}: ParamProps) => {
   const id = useId();
   const [internalVal, setInternalVal] = useState(value);
-  
+  const result = useFlowValidation();
+  if (isErr(result)) return null;
+
+  const { clearErrors } = result.data;
+
   useEffect(() => {
     setInternalVal(value);
   }, [value]);
@@ -26,9 +37,12 @@ const StringParam = ({ param, value, updateNodeParamProps, disabled }: ParamProp
         value={internalVal}
         onBlur={(e) => updateNodeParamProps(e.target.value)}
         id={id}
-        className="w-full text-xs"  // Changed from "text-xs" to "text-xs"
+        className="w-full text-xs" // Changed from "text-xs" to "text-xs"
         placeholder="Enter a string value"
-        onChange={(e) => setInternalVal(e.target.value)}
+        onChange={(e) => {
+          clearErrors();
+          setInternalVal(e.target.value);
+        }}
         rows={param.varaint === "textarea" ? 5 : undefined}
         disabled={disabled}
       />

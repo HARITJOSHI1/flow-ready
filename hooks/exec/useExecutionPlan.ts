@@ -1,22 +1,71 @@
-'use client';
+"use client";
 
-import { FlowToExecutionPlan } from "@/lib/executionPlan";
+import {
+  FlowToExecutionPlan,
+  WorkflowExecutionPlanError,
+} from "@/lib/executionPlan";
 import { isErr } from "@/lib/helpers";
 import { AppNode } from "@/lib/types/nodes";
 import { useReactFlow } from "@xyflow/react";
 import { useCallback } from "react";
+import { useFlowValidation } from "../validation/useFlowValidation";
+import { toast } from "../global/use-toast";
 
 const useExecutionPlan = () => {
   const { toObject } = useReactFlow();
+  const result = useFlowValidation();
+  if (isErr(result)) return result.error;
+
+  const { clearErrors, setInvalidInputs } = result.data;
+
+  const handleErrors = useCallback((err: WorkflowExecutionPlanError) => {
+    switch (err.type) {
+      case "NO_ENTRY_POINT":
+        toast({
+          title: "Workflow error",
+          variant: "destructive",
+          description: err.message,
+          duration: 3000,
+        });
+
+        break;
+
+      case "INVALID_INPUTS":
+        toast({
+          title: "Workflow error",
+          variant: "destructive",
+          description: err.message,
+          duration: 3000,
+        });
+        
+        setInvalidInputs(err?.data?.invalidElements!);
+        break;
+
+      default:
+        toast({
+          title: "Workflow error",
+          variant: "destructive",
+          description: "Something went wrong",
+          duration: 3000,
+        });
+
+        break;
+    }
+  }, [setInvalidInputs]);
+
 
   const generateExecutionPlan = useCallback(() => {
     const { nodes, edges } = toObject();
     const result = FlowToExecutionPlan(nodes as AppNode[], edges);
-    if (isErr(result)) return;
-
+    if (isErr(result)) {
+      handleErrors(result.error);
+      return null;
+    }
     const { executionPlan } = result.data;
+
+    clearErrors();
     return executionPlan;
-  }, [toObject]);
+  }, [toObject, handleErrors, clearErrors]);
 
   return generateExecutionPlan;
 };
