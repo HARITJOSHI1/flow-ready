@@ -18,7 +18,7 @@ const NodeComponent = memo((props: NodeProps) => {
   return (
     <NodeCard nodeId={props.id} isSelected={props.selected}>
       <NodeHeader taskType={nodeData.type} nodeId={props.id} />
-      <Badge className="bg-primary text-white">{props.id}</Badge>
+
       <NodeInputs>
         {task.data.inputs?.map((input, idx) => (
           <NodeInput key={idx} input={input} nodeId={props.id} />

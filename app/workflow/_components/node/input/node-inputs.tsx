@@ -7,6 +7,8 @@ import React from "react";
 import { TaskInputs } from "@/lib/types/tasks";
 import NodeParamField from "../params/node-param-field";
 import { colorForHandle } from "../common/colorHandle";
+import { useFlowValidation } from "@/hooks/validation/useFlowValidation";
+import { isErr } from "@/lib/helpers";
 
 type Props = {
   children?: React.ReactNode;
@@ -23,13 +25,26 @@ const NodeInput = ({
   input: TaskInputs;
   nodeId: string;
 }) => {
+  const result = useFlowValidation();
+  if (isErr(result)) return null;
 
+  const { invalidInputs, clearErrors } = result.data;
   const edges = useEdges();
-  const isConnected  = edges.some((edge) => edge.target === nodeId && edge.targetHandle === input.name);
+  const isConnected = edges.some(
+    (edge) => edge.target === nodeId && edge.targetHandle === input.name
+  );
+  const hasErrors = invalidInputs
+    .find((inv) => inv.nodeId === nodeId)
+    ?.inputs.find((inp) => inp === input.name);
 
   return (
-    <div className="flex justify-start relative p-3 bg-secondary w-full">
-      <NodeParamField param={input} nodeId={nodeId} disabled={isConnected}/>
+    <div
+      className={cn(
+        "flex justify-start relative p-3 bg-secondary w-full",
+        hasErrors && "bg-destructive/30"
+      )}
+    >
+      <NodeParamField param={input} nodeId={nodeId} disabled={isConnected} />
       {!input.hideHandle && (
         <Handle
           id={input.name}
@@ -47,4 +62,3 @@ const NodeInput = ({
 };
 
 export { NodeInput, NodeInputs };
-

@@ -21,8 +21,9 @@ import NodeComponent from "../../_components/node/node";
 import { TaskRegistry } from "@/lib/workflow/task/registry";
 import { TaskInputs, TaskType } from "@/lib/types/tasks";
 import DeletableEdge from "../../_components/edges/deletable-edge";
-import { isOk } from "@/lib/helpers";
+import { isErr, isOk } from "@/lib/helpers";
 import { AppNode } from "@/lib/types/nodes";
+import { useFlowValidation } from "@/hooks/validation/useFlowValidation";
 
 // This file is part of the workflow editor, which uses React Flow to visualize and manage workflows.
 const nodeTypes = {
@@ -42,6 +43,10 @@ const FlowEditor = ({ workflow }: Props) => {
   const [nodes, setNodes, onNodesChange] = useNodesState([] as Node[]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([] as Edge[]);
   const { setViewport, screenToFlowPosition, updateNodeData } = useReactFlow();
+  const result = useFlowValidation();
+
+  if (isErr(result)) return null;
+  const { invalidInputs, clearErrors } = result.data;
 
   const flow = JSON.parse(workflow.defination) as ReactFlowJsonObject<
     Node,
@@ -115,6 +120,9 @@ const FlowEditor = ({ workflow }: Props) => {
       const newNodeInputs = { ...(node.data.inputs as TaskInputs) };
       if (connection.targetHandle)
         delete newNodeInputs[connection.targetHandle];
+
+      const hasErrors = invalidInputs.some((inv) => inv.nodeId === node.id);
+      if (hasErrors) clearErrors();
 
       updateNodeData(node.id, {
         inputs: newNodeInputs,

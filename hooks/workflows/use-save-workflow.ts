@@ -16,6 +16,7 @@ export const useSaveWorkflowMutation = (workflowId: string) => {
             title: "Error saving workflow",
             description: data.error.message,
             variant: "destructive",
+            duration: 3000
           });
         }
 
@@ -25,6 +26,7 @@ export const useSaveWorkflowMutation = (workflowId: string) => {
 
         toast({
           title: "Workflow saved successfully",
+          duration: 3000
         });
 
       },
@@ -34,6 +36,7 @@ export const useSaveWorkflowMutation = (workflowId: string) => {
           title: "Error creating workflow",
           description: "Something went wrong",
           variant: "destructive",
+          duration: 3000
         });
       },
     });
