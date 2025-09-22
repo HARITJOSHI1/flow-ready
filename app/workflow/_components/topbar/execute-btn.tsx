@@ -18,6 +18,10 @@ const ExecuteBtn = ({ workflowId }: Props) => {
       className="flex items-center gap-2"
       disabled={isPending}
       onClick={() => {
+        if (typeof generate !== "function") {
+          console.error("Workflow execution plan generation failed:", generate);
+          return;
+        }
         const plan = generate();
         console.log("----- plan -----");
         console.table(plan);

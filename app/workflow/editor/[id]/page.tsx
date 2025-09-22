@@ -56,7 +56,7 @@ const Page = ({ params }: Props) => {
             </h1>
             <h2 className="text-2xl font-semibold mb-2">Sorry</h2>
             <p className="text-muted-foreground mb-8 max-w-md">
-              Oops! You don't have any workflows.
+              Oops! You don `&apos; t have any workflows.
             </p>
 
             <div className="flex flex-col sm:flex-row justify-center gap-4">

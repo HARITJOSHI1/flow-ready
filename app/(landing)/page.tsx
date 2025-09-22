@@ -15,7 +15,7 @@ import { cn } from "@/lib/utils";
 // TODO: DIDVIDE INTO COMPONENTS AND MAKE THEM REUSABLE.
 type Props = {};
 
-const landing = (props: Props) => {
+const page = (props: Props) => {
   const theme = useTheme();
 
   const people = [
@@ -187,4 +187,4 @@ const landing = (props: Props) => {
   );
 };
 
-export default landing;
+export default page;

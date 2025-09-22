@@ -17,13 +17,14 @@ const StringParam = ({
   const id = useId();
   const [internalVal, setInternalVal] = useState(value);
   const result = useFlowValidation();
+  useEffect(() => {
+    setInternalVal(value);
+  }, [value]);
+  
   if (isErr(result)) return null;
 
   const { clearErrors } = result.data;
 
-  useEffect(() => {
-    setInternalVal(value);
-  }, [value]);
 
   const Component = param.varaint === "textarea" ? Textarea : Input;
 
