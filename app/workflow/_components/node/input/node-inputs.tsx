@@ -26,10 +26,10 @@ const NodeInput = ({
   nodeId: string;
 }) => {
   const result = useFlowValidation();
+  const edges = useEdges();
   if (isErr(result)) return null;
 
   const { invalidInputs, clearErrors } = result.data;
-  const edges = useEdges();
   const isConnected = edges.some(
     (edge) => edge.target === nodeId && edge.targetHandle === input.name
   );

@@ -44,15 +44,6 @@ const FlowEditor = ({ workflow }: Props) => {
   const [edges, setEdges, onEdgesChange] = useEdgesState([] as Edge[]);
   const { setViewport, screenToFlowPosition, updateNodeData } = useReactFlow();
   const result = useFlowValidation();
-
-  if (isErr(result)) return null;
-  const { invalidInputs, clearErrors } = result.data;
-
-  const flow = JSON.parse(workflow.defination) as ReactFlowJsonObject<
-    Node,
-    Edge
-  >;
-
   // restore nodes and edges from the workflow definition
   // and set the viewport if it exists
   useEffect(() => {
@@ -66,6 +57,15 @@ const FlowEditor = ({ workflow }: Props) => {
     const { x = 0, y = 0, zoom = 1 } = flow.viewport;
     setViewport({ x, y, zoom });
   }, [workflow.defination, setEdges, setNodes, setViewport]);
+
+  if (isErr(result)) return null;
+  const { invalidInputs, clearErrors } = result.data;
+
+  const flow = JSON.parse(workflow.defination) as ReactFlowJsonObject<
+    Node,
+    Edge
+  >;
+
 
   const ondragover = useCallback((e: React.DragEvent) => {
     e.preventDefault();
