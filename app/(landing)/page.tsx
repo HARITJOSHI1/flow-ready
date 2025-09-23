@@ -67,7 +67,7 @@ const page = (props: Props) => {
     <>
       <section className="flex flex-col h-screen">
         <div className="flex justify-center w-full">
-          <nav className="flex w-[80%] items-center justify-between my-5 px-6 h-[60px] rounded-full border border-primary/20 dark:border-white/20 fixed z-10 dark:bg-neutral-500/15 backdrop-blur-2xl backdrop-saturate-150 shadow-lg">
+          <nav className="flex w-[80%] items-center justify-between my-5 px-6 h-[60px] rounded-full border border-primary/20 dark:border-white/20 fixed z-40 dark:bg-neutral-500/15 backdrop-blur-2xl backdrop-saturate-150 shadow-lg">
             <div className="flex items-center gap-1">
               <Logo />
             </div>
