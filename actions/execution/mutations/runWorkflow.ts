@@ -4,13 +4,14 @@ import { base } from "../../base";
 import { createServerActionOutputSchema, isErr } from "@/lib/helpers";
 import { ERROR_SCHEMA, ERROR_TYPES } from "@/lib/types/errors/server.err";
 import { z } from "zod";
-import { RUN_WORKFLOW_ACTION_RESULT_SCHEMA } from "./types";
+import { RUN_WORKFLOW_ACTION_RESULT_SCHEMA } from "../../workflows/mutations/types";
 import { ActionError } from "@/lib/types/errors/base.action.err";
 import ApiError from "@/lib/classes/Error/ApiError";
 import { RESPONSE_STATUS } from "@/lib/types/server";
-import { getWorkflowsFromDB } from "../queries/helpers";
+import { getWorkflowsFromDB } from "../../workflows/queries/helpers";
 import { WorkflowExecutionPlan } from "@/lib/workflow/type";
 import { FlowToExecutionPlan } from "@/lib/executionPlan";
+import { createExecutionPlanInDB } from "./helpers";
 
 export const runWorkflow = base
   .createServerAction()
@@ -112,12 +113,16 @@ export const runWorkflow = base
 
     executionPlan = result.data.executionPlan;
 
-    // TODO: ADD THE PLAN TO DB
+    const execution = await createExecutionPlanInDB({
+      workflowId,
+      userId: ctx.result.userId,
+      executionPlan,
+    });
 
     return {
       resolved: "success",
       result: {
-        status: RESPONSE_STATUS.BAD_REQUEST,
+        redirect_url: `/workflows/runs/${workflowId}/${execution.id}`,
       },
     };
   });

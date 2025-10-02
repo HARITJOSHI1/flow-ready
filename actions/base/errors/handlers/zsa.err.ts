@@ -1,16 +1,39 @@
 import DatabaseError from "@/lib/classes/Error/DbError";
 import { ErrorNames } from "@/lib/classes/interface/IErrorClass";
-import { BaseErrReturnType } from "@/lib/types/errors/base.action.err";
+import { ActionError, BaseErrReturnType } from "@/lib/types/errors/base.action.err";
 import { ERROR_SCHEMA, ERROR_TYPES } from "@/lib/types/errors/server.err";
 import { RESPONSE_STATUS } from "@/lib/types/server";
 import { ZodError } from "zod";
 import { ZSAError } from "zsa";
 import { ZodValidationError } from "./zod.err";
+import ApiError from "@/lib/classes/Error/ApiError";
 
 export function handleZSAError(
   error: ZSAError
 ): BaseErrReturnType<typeof ERROR_SCHEMA> {
   switch (error.name as ErrorNames) {
+    case "ApiError":
+      if (
+        process.env.NODE_ENV === "development" ||
+        process.env.NODE_ENV === "test"
+      )
+        console.info("API ERROR: ", error);
+
+      const apiError = error.data as ApiError<ActionError>;  
+      return {
+        resolved: "error",
+        error: {
+          status: apiError.status,
+          type: ERROR_TYPES.INTERNAL_SERVER_ERROR,
+          message: apiError.message || error.message,
+          code: apiError.code,
+          extraDetails: {
+            environment: process.env.NODE_ENV,
+            functionName: "handleErrors()",
+          },
+        },
+      };
+
     case "ZodError":
       const data = error.data as ZodError;
       const zodError = ZodValidationError.handle(data);

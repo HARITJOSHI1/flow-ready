@@ -16,5 +16,5 @@ export const SAVE_WORKFLOW_ACTION_SCHEMA = z.object({
 });
 
 export const RUN_WORKFLOW_ACTION_RESULT_SCHEMA = z.object({
-  status: z.nativeEnum(RESPONSE_STATUS),
+  redirect_url: z.string(),
 });

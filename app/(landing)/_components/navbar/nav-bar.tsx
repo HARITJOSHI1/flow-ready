@@ -79,12 +79,6 @@ const NavBar = ({ userId }: Props) => {
           <div />
 
           <aside className="flex gap-2 items-center ml-8">
-            <Link
-              href={"/dashboard"}
-              className="bg-primary text-white p-2 px-4 rounded-md hover:bg-primary/80 transition"
-            >
-              {userId ? "Dashboard" : "Join"}
-            </Link>
             <UserButton
               appearance={{
                 baseTheme:
