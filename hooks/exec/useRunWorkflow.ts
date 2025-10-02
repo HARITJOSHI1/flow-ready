@@ -1,0 +1,37 @@
+"use client";
+
+import { useServerActionMutation } from "../global/server-action-hooks";
+import { toast } from "../global/use-toast";
+import { runWorkflow } from "@/actions/workflows/mutations/runWorkflow";
+
+export const useRunWorkflowMutation = () => {
+  const { mutate, isPending, isError, error, data, isSuccess } =
+    useServerActionMutation(runWorkflow, {
+      onSuccess: async (data) => {
+        toast({
+          title: "Workflow executed successfully",
+          description: "You can now publish the workflow if you want.",
+        });
+      },
+
+      onError: (error) => {
+        if (
+          process.env.NODE_ENV === "development" ||
+          process.env.NODE_ENV === "test"
+        )
+          return toast({
+            title: "Error executing workflow",
+            description: error.message,
+            variant: "destructive",
+          });
+
+        return toast({
+          title: "Error executing workflow",
+          description: "Something went wrong",
+          variant: "destructive",
+        });
+      },
+    });
+
+  return { mutate, isPending, isError, error, data, isSuccess };
+};

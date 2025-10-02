@@ -13,7 +13,7 @@ const Logo = ({ fontSize = "2xl", iconSize = 20 }: Props) => {
     <Link
       href="/"
       className={cn(
-        "text-2xl font-extrabold flex items-center gap-2",
+        "text-xl font-extrabold flex items-center gap-2 md:text-2xl",
         fontSize
       )}
     >

@@ -77,7 +77,6 @@ export const ERROR_SCHEMA = z.object({
   data: z.unknown().optional()
 });
 
-
 // export const ERROR_SCHEMA = z.object({
 //   type: z.union([
 //     z.nativeEnum(SERVER_ERROR_TYPES),

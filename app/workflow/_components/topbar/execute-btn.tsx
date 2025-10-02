@@ -2,6 +2,8 @@
 
 import { Button } from "@/components/ui/button";
 import useExecutionPlan from "@/hooks/exec/useExecutionPlan";
+import { useRunWorkflowMutation } from "@/hooks/exec/useRunWorkflow";
+import { useReactFlow } from "@xyflow/react";
 import { Loader2Icon, PlayIcon } from "lucide-react";
 
 type Props = {
@@ -10,7 +12,9 @@ type Props = {
 
 const ExecuteBtn = ({ workflowId }: Props) => {
   const generate = useExecutionPlan();
-  let isPending = false;
+  const { mutate, isPending } = useRunWorkflowMutation();
+  const { toObject } = useReactFlow();
+  // let isPending = false;
 
   return (
     <Button
@@ -23,9 +27,10 @@ const ExecuteBtn = ({ workflowId }: Props) => {
           return;
         }
         const plan = generate();
+        if (!plan) return;
+        mutate({ workflowId, flowDefination: JSON.stringify(toObject()) });
         console.log("----- plan -----");
         console.table(plan);
-        // mutate({ workflowId, defination: JSON.stringify(toObject()) });
       }}
     >
       {isPending ? (

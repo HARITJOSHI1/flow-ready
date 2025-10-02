@@ -1,6 +1,4 @@
-"use client";
-
-import { Edge, getIncomers } from "@xyflow/react";
+import { Edge } from "@xyflow/react";
 import { AppNode } from "./types/nodes";
 import {
   InvalidInputsInWorkflow,
@@ -12,6 +10,17 @@ import { Ok, err, isErr, isOk } from "./helpers";
 import { Result } from "./types/errors";
 import { ActionError } from "./types/errors/base.action.err";
 import { ERROR_TYPES } from "./types/errors/server.err";
+
+const getIncomers = (node: AppNode, nodes: AppNode[], edges: Edge[]) => {
+  if (!node.id) return;
+
+  const incomingEdges = new Set();
+  edges.forEach((edg) => {
+    if (edg.target === node.id) incomingEdges.add(edg.source);
+  });
+
+  return nodes.filter((n) => incomingEdges.has(n.id));
+};
 
 type PlanErr = {
   invalidElements?: InvalidInputsInWorkflow[];
@@ -105,7 +114,7 @@ export const FlowToExecutionPlan = (
       // Dependencies
       const incomers = getIncomers(currentNode, nodes, edges);
       if (invalidInputs.data.length > 0) {
-        if (incomers.every((inc) => planned.has(inc.id))) {
+        if (incomers?.every((inc) => planned.has(inc.id))) {
           /* if there r incomers means that current node dependencies r not resolved
             which is an invalid input to the current node means this particular node
             has invalid inputs means workflow is invalid with non resolved dependencies.

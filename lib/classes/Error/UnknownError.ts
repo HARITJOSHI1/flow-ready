@@ -1,10 +1,28 @@
 import { ERROR_TYPES } from "@/lib/types/errors/server.err";
 import { IErrorClassProps } from "../interface/IErrorClass";
+import { randomUUID } from "crypto";
+
+// GOOD TO HAVE: Add a log drain to stream logs to third party for error handling on a big
+// team level
+
 
 type UnknownErrorDetails = {
   info?: string;
   [key: string]: any;
 };
+
+type RejectionType = "unhandledRejection" | "uncaughtException";
+type UnknownErrContext = {
+  id: string;
+  originalError?: unknown;
+  timestamp: string;
+  stack?: string;
+  name?: string;
+  details?: unknown;
+  type: RejectionType;
+};
+
+type UnknownErrorCallbackFn = (context?: UnknownErrContext) => void;
 
 class UnknownError<
     C = keyof typeof ERROR_TYPES,
@@ -14,8 +32,8 @@ class UnknownError<
   extends Error
   implements IErrorClassProps<C, D, O>
 {
-  private errorCallbacks: ((error: any) => void)[] = [];
   private static instance: UnknownError;
+  private ErrorMapper: Map<string, UnknownErrorCallbackFn[]>;
 
   constructor(
     public type: C,
@@ -27,6 +45,7 @@ class UnknownError<
     public name: string = "UnknownError"
   ) {
     super(message);
+    this.ErrorMapper = new Map();
     if (shouldAddStack) this.stack = new Error().stack;
     else this.stack = undefined;
   }
@@ -52,35 +71,82 @@ class UnknownError<
     if (typeof process !== "undefined") {
       process.on("unhandledRejection", (reason, promise) => {
         console.error("Unhandled Promise Rejection:", reason);
-        handler.handleUncaughtError(reason, "unhandledRejection");
+
+        const id = randomUUID();
+        handler.handleUncaughtError(reason, "unhandledRejection", id);
       });
 
       // Handle uncaught exceptions
       process.on("uncaughtException", (error) => {
         console.error("Uncaught Exception:", error);
-        handler.handleUncaughtError(error, "uncaughtException");
+
+        const id = randomUUID();
+        handler.handleUncaughtError(error, "uncaughtException", id);
 
         if (process.env.NODE_ENV === "production") process.exit(1);
       });
     }
   }
 
-  private handleUncaughtError(error: any, type: string) {
-    // Log with context
-    console.error(`[${type.toUpperCase()}]`, {
-      originalError: error,
-      timestamp: new Date().toISOString(),
-      stack: error?.stack,
-    });
+  private handleUncaughtError(error: any, type: RejectionType, errId: string) {
+    // Get Context
+    const { context } = this.createContext(error, type, errId);
+    console.info(`[${type.toUpperCase()}]`, context);
+
+    // Add error to cb multiple error can be generated during "unhandledRejection"
+    if (!this.ErrorMapper.has(errId) && type === "unhandledRejection")
+      this.ErrorMapper.set(errId, [this.errorCallbackHandler(context)]);
+    else {
+      const cbArr = this.ErrorMapper.get(errId)!;
+      cbArr.push(this.errorCallbackHandler(context));
+    }
 
     // Execute custom callbacks
-    this.errorCallbacks.forEach((callback) => {
-      try {
-        callback({ type, originalError: error });
-      } catch (err) {
-        console.error("Error in error callback:", err);
-      }
+    this.executeCb();
+  }
+
+  private async executeCb() {
+    const allCbArr = Object.values(this.ErrorMapper).map(
+      (val) => val as UnknownErrorCallbackFn[]
+    );
+    const cbArr = allCbArr.flat();
+
+    const tasks = cbArr.map((cb: UnknownErrorCallbackFn) => {
+      return Promise.resolve().then(
+        () => cb() as unknown as UnknownErrorCallbackFn
+      );
     });
+
+    try {
+      const executedPromises = await Promise.all(tasks);
+      if (executedPromises.length)
+        console.info("All errors are being executed from their queue");
+    } catch (err) {
+      console.error("Error in error callback:", err);
+    }
+  }
+
+  private errorCallbackHandler(
+    context: UnknownErrContext
+  ): UnknownErrorCallbackFn {
+    return (_context = context) => {
+      
+      // STREAM IT IN A LOG DRAIN......
+    };
+  }
+
+  private createContext(error: any, type: RejectionType, errId: string) {
+    const context = {
+      id: errId,
+      originalError: error || this.orginalError,
+      timestamp: new Date().toISOString(),
+      stack: this?.stack,
+      name: error?.name || this.name,
+      details: this.details,
+      type,
+    };
+
+    return { context };
   }
 }
 
