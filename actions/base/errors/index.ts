@@ -14,7 +14,6 @@ export const handleErrors = ( 
   error: unknown
 ): BaseErrReturnType<typeof ERROR_SCHEMA> => {
   
-  // TODO: initialise handles errors and logs no env dependent logs
   UnknownError.initialize();
 
   if (error instanceof ApiError) {

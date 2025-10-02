@@ -20,8 +20,6 @@ import { useCreateWorkflowMutation } from "@/hooks/workflows/use-create-workflow
 import { Loader2 } from "lucide-react";
 
 const CreateWorkflowForm = () => {
-
-  // TODO: add optimistic updates to the form state
   
   const { mutate, isPending, isSuccess } = useCreateWorkflowMutation();
 

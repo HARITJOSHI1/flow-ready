@@ -12,14 +12,6 @@ export const useDeleteWorkflowMutation = () => {
   const { mutate, isPending, isError, error, data, isSuccess } =
     useServerActionMutation(deleteWorkflow, {
       onSuccess: async (data) => {
-        if (data.resolved === "error") {
-          return toast({
-            title: "Error deleting workflow",
-            description: data.error.message,
-            variant: "destructive",
-          });
-        }
-
         toast({
           title: "Workflow deleted successfully",
         });

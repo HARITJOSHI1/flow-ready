@@ -15,6 +15,12 @@ export function handleZSAError(
       const data = error.data as ZodError;
       const zodError = ZodValidationError.handle(data);
 
+      if (
+        process.env.NODE_ENV === "development" ||
+        process.env.NODE_ENV === "test"
+      )
+        console.info("Zod Error:", zodError);
+
       return {
         resolved: "error",
         error: {
@@ -54,8 +60,14 @@ export function handleZSAError(
       };
 
     default:
+      // handle unknown errors rn a temp fix not detailed enough
 
-    // handle unknown errors rn a temp fix not detailed enough
+      if (
+        process.env.NODE_ENV === "development" ||
+        process.env.NODE_ENV === "test"
+      )
+        console.info("UNKNOWN ERROR: ", error);
+
       return {
         resolved: "error",
         error: {

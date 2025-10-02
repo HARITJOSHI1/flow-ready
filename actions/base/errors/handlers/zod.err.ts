@@ -30,9 +30,6 @@ export function handleZodError(
   const env = process.env.NODE_ENV;
   const formattedError = parseZodErrors(error.errors, env);
 
-  if (env === "development" || env === "test")
-    console.info("ZodError handled:", formattedError);
-
   return {
     resolved: "error",
     error: {
@@ -91,9 +88,6 @@ export class ZodValidationError<
   ) {
     const env = process.env.NODE_ENV;
     const formattedError = this.parseZodErrors(error.errors, env);
-
-    if (env === "development" || env === "test")
-      console.info("ZodError handled:", formattedError);
 
     return new ZodValidationError(
       "VALIDATION_ERROR",

@@ -32,7 +32,6 @@ export const useCreateWorkflowMutation = () => {
       },
 
       onError: (error) => {
-        const err = isServerActionError(error) ? error.error : undefined;
         return toast({
           title: "Error creating workflow",
           description: "Something went wrong",

@@ -12,6 +12,9 @@ export const CREATE_WORKFLOW_ACTION_RESULT_SCHEMA = z.object({
 });
 
 export const SAVE_WORKFLOW_ACTION_SCHEMA = z.object({
-    message: z.string(),
-  });
-  
+  message: z.string(),
+});
+
+export const RUN_WORKFLOW_ACTION_RESULT_SCHEMA = z.object({
+  status: z.nativeEnum(RESPONSE_STATUS),
+});

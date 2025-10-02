@@ -11,15 +11,6 @@ export const useSaveWorkflowMutation = (workflowId: string) => {
   const { mutate, isPending, isError, error, data, isSuccess } =
     useServerActionMutation(saveWorkflow, {
       onSuccess: async (data) => {
-        if (data.resolved === "error") {
-          return toast({
-            title: "Error saving workflow",
-            description: data.error.message,
-            variant: "destructive",
-            duration: 3000
-          });
-        }
-
         queryClient.invalidateQueries({
           queryKey: QueryKeyFactory.getWorkflow(workflowId),
         });
@@ -32,6 +23,7 @@ export const useSaveWorkflowMutation = (workflowId: string) => {
       },
 
       onError: (error) => {
+        // TODO: Handle error at client side for dev and test env 's
         return toast({
           title: "Error creating workflow",
           description: "Something went wrong",
