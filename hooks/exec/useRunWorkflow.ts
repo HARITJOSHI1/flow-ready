@@ -21,12 +21,14 @@ export const useRunWorkflowMutation = () => {
         if (
           process.env.NODE_ENV === "development" ||
           process.env.NODE_ENV === "test"
-        )
+        ) {
+          console.error("@ERROR", error);
           return toast({
             title: "Error executing workflow",
             description: error.message,
             variant: "destructive",
           });
+        }
 
         return toast({
           title: "Error executing workflow",

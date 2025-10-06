@@ -1,13 +1,10 @@
 import db from "@/db";
 import { executionPhase, workflowExecution } from "@/db/schema";
 import ApiError from "@/lib/classes/Error/ApiError";
-import { ActionError } from "@/lib/types/errors/base.action.err";
-import { RESPONSE_STATUS } from "@/lib/types/server";
-import { ERROR_TYPES } from "@/lib/types/errors/server.err";
-import { WorkflowExecutionPlan } from "@/lib/workflow/type";
-import { TaskRegistry } from "@/lib/workflow/task/registry";
-import { TaskType } from "@/lib/types/tasks";
 import { isErr } from "@/lib/helpers";
+import { TaskType } from "@/lib/types/tasks";
+import { TaskRegistry } from "@/lib/workflow/task/registry";
+import { WorkflowExecutionPlan } from "@/lib/workflow/type";
 
 type CreateExecutionPlanInDBProps = {
   workflowId: string;
@@ -32,15 +29,15 @@ export const createExecutionPlanInDB = async ({
     .returning();
 
   if (result.length === 0)
-    throw ApiError.internal<ActionError>(
-      {
-        status: RESPONSE_STATUS.INTERNAL_SERVER_ERROR,
-        type: ERROR_TYPES.INTERNAL_SERVER_ERROR,
-        message: "Failed to create execution plan in db",
-      },
-      undefined,
+    throw ApiError.notFound(
+      "INTERNAL_SERVER_ERROR",
+      404,
+      "No id provided",
       false,
-      false
+      {
+        environment: process.env.NODE_ENV,
+        functionName: "runWorkflow()",
+      }
     );
 
   const phases = await db
@@ -68,15 +65,15 @@ export const createExecutionPlanInDB = async ({
     .returning();
 
   if (phases.length === 0)
-    throw ApiError.internal<ActionError>(
-      {
-        status: RESPONSE_STATUS.INTERNAL_SERVER_ERROR,
-        type: ERROR_TYPES.INTERNAL_SERVER_ERROR,
-        message: "Failed to create execution phases in db",
-      },
-      undefined,
+    throw ApiError.notFound(
+      "NO_WORKFLOWS",
+      404,
+      "Failed to create execution phase in db",
       false,
-      false
+      {
+        environment: process.env.NODE_ENV,
+        functionName: "runWorkflow()",
+      }
     );
 
   return {

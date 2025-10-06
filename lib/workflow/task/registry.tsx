@@ -1,12 +1,11 @@
 import { err, Ok } from "@/lib/helpers";
-import { ERROR_TYPES, } from "@/lib/types/errors/server.err";
 import { AppNode } from "@/lib/types/nodes";
 import exportTaskConfig from "./config";
 import { LaunchBrowserTask } from "./launch-browser";
 import { PageToHTML } from "./page-to-html";
 import { Task, TaskType } from "@/lib/types/tasks";
-import { Result } from "@/lib/types/errors";
-import { ActionError } from "@/lib/types/errors/base.action.err";
+import { Result } from "@/lib/types/errors/client/error";
+import { ActionError } from "@/lib/types/errors/server/base";
 import { ExtractTextFrmElement } from "./extract-text-from-element";
 
 class TaskRegistryClass {
@@ -30,7 +29,7 @@ class TaskRegistryClass {
       if (this.tasks.has(t.type))
         return err({
           message: `Task with type ${t.type} already exists`,
-          type: ERROR_TYPES.TASK_NOT_FOUND_ERROR,
+          type: "TASK_NOT_FOUND_ERROR",
         });
 
     for (const t of task) this.tasks.set(t.type, t);
@@ -43,7 +42,7 @@ class TaskRegistryClass {
     if (!task)
       return err({
         message: "Task already exists",
-        type: ERROR_TYPES.TASK_NOT_FOUND_ERROR,
+        type: "TASK_NOT_FOUND_ERROR",
       });
     return Ok(task);
   }

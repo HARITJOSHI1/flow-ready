@@ -2,12 +2,9 @@
 
 import db from "@/db";
 import { workflow } from "@/db/schema";
-import { createServerActionOutputSchema } from "@/lib/helpers";
 import ApiError from "@/lib/classes/Error/ApiError";
-import { ActionError } from "@/lib/types/errors/base.action.err";
-import { ERROR_SCHEMA } from "@/lib/types/errors/server.err";
-import { ERROR_TYPES } from "@/lib/types/errors/server.err";
-import { RESPONSE_STATUS } from "@/lib/types/server";
+import { createServerActionOutputSchema } from "@/lib/helpers";
+import { ERROR_SCHEMA_v2 } from "@/schemas/errors";
 import { and, eq } from "drizzle-orm";
 import { revalidateTag } from "next/cache";
 import { z } from "zod";
@@ -22,7 +19,7 @@ export const deleteWorkflow = base
     })
   )
   .output(
-    createServerActionOutputSchema(DELETE_WORKFLOW_ACTION_SCHEMA, ERROR_SCHEMA)
+    createServerActionOutputSchema(DELETE_WORKFLOW_ACTION_SCHEMA, ERROR_SCHEMA_v2)
   )
   .handler(async ({ ctx, input }) => {
     if (ctx.resolved === "error")
@@ -36,15 +33,15 @@ export const deleteWorkflow = base
       .returning();
 
     if (!result.length) {
-      throw ApiError.notFound<ActionError>(
+      throw ApiError.notFound(
+        "NO_WORKFLOWS",
+        404,
+        "Workflow not found",
+        false,
         {
-          status: RESPONSE_STATUS.NOT_FOUND,
-          type: ERROR_TYPES.NOT_FOUND,
-          message: "Workflow not found",
-          code: 404,
-        },
-        undefined,
-        false
+          environment: process.env.NODE_ENV,
+          functionName: "deleteWorkflow()",
+        }
       );
     }
 

@@ -7,10 +7,8 @@ import {
 } from "./workflow/type";
 import { TaskRegistry } from "./workflow/task/registry";
 import { Ok, err, isErr, isOk } from "./helpers";
-import { Result } from "./types/errors";
-import { ActionError } from "./types/errors/base.action.err";
-import { ERROR_TYPES } from "./types/errors/server.err";
-
+import { Result } from "./types/errors/client/error";
+import { ActionError } from "./types/errors/server/base";
 const getIncomers = (node: AppNode, nodes: AppNode[], edges: Edge[]) => {
   if (!node.id) return;
 
@@ -108,7 +106,7 @@ export const FlowToExecutionPlan = (
       if (isErr(invalidInputs))
         return err({
           message: "Something went wrong",
-          type: ERROR_TYPES.INTERNAL_SERVER_ERROR,
+          type: "INTERNAL_SERVER_ERROR",
         });
 
       // Dependencies
@@ -161,7 +159,7 @@ const getInvalidInputs = (
     return err({
       message:
         "No such task is added to registry. Please add it for to be an asset for developing workflows",
-      type: ERROR_TYPES.TASK_NOT_FOUND_ERROR,
+      type: "TASK_NOT_FOUND_ERROR",
     });
 
   const invalidInputs = [];

@@ -1,7 +1,6 @@
 import { ZodType, z } from "zod";
-import {  } from "./types/errors/server.err";
-import { ActionError } from "./types/errors/base.action.err";
-import { Result } from "./types/errors";
+import { ActionError } from "./types/errors/server/base";
+import { Result } from "./types/errors/client/error";
 
 export const wait = (ms: number) =>
   new Promise((resolve) => setTimeout(resolve, ms));

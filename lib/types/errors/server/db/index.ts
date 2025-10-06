@@ -8,7 +8,7 @@ export type PostgresError = PgError & {
 };
 
 export type PgHandlerDetails = {
-  field: string;
+  field: string | undefined;
   constraint?: string;
   pgCode?: string;
 };
@@ -19,3 +19,7 @@ export type PostgressErrHandler = {
   details: PgHandlerDetails;
   statusCode: number;
 };
+
+export enum DB_ERROR_TYPES {
+  DB_QUERY_ERROR = "DB_QUERY_ERROR",
+}
