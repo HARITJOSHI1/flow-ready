@@ -1,4 +1,4 @@
-export type ErrorNames = "ZodError" | "ApiError" | "PostgresError"; 
+export type ErrorNames = "ZodError" | "ApiError" | "PostgresError" | "UnknownError"; 
 
 
 export interface IErrorClassProps<C = any, D = any, O = any> {
@@ -8,6 +8,5 @@ export interface IErrorClassProps<C = any, D = any, O = any> {
   details?: D;
   orginalError?: O;
   shouldAddStack?: boolean;
-  shouldLog?: boolean;
   name: string;
 }

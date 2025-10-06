@@ -14,7 +14,3 @@ export const CREATE_WORKFLOW_ACTION_RESULT_SCHEMA = z.object({
 export const SAVE_WORKFLOW_ACTION_SCHEMA = z.object({
   message: z.string(),
 });
-
-export const RUN_WORKFLOW_ACTION_RESULT_SCHEMA = z.object({
-  redirect_url: z.string(),
-});

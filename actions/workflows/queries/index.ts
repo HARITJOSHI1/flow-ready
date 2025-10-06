@@ -1,9 +1,10 @@
 "use server";
 
 import { Workflow } from "@/db/schema";
+import ApiError from "@/lib/classes/Error/ApiError";
 import { createServerActionOutputSchema } from "@/lib/helpers";
-import { ERROR_SCHEMA, ERROR_TYPES } from "@/lib/types/errors/server.err";
 import { RESPONSE_STATUS } from "@/lib/types/server";
+import { ERROR_SCHEMA_v2 } from "@/schemas/errors";
 import { unstable_cache } from "next/cache";
 import { z } from "zod";
 import { base } from "../../base";
@@ -12,8 +13,6 @@ import {
   GET_WORKFLOW_ACTION_RESULT_SCHEMA,
   GET_WORKFLOWS_ACTION_RESULT_SCHEMA,
 } from "./types";
-import ApiError from "@/lib/classes/Error/ApiError";
-import { ActionError } from "@/lib/types/errors/base.action.err";
 
 export const getUserWorkflows = base
   .createServerAction()
@@ -35,7 +34,7 @@ export const getUserWorkflows = base
   .output(
     createServerActionOutputSchema(
       GET_WORKFLOWS_ACTION_RESULT_SCHEMA,
-      ERROR_SCHEMA
+      ERROR_SCHEMA_v2
     )
   )
   .handler(async ({ ctx, input }) => {
@@ -54,16 +53,15 @@ export const getUserWorkflows = base
     )(userId, selectable as Record<keyof Workflow, boolean>);
 
     if (!workflows)
-      throw ApiError.notFound<ActionError>(
-        {
-          status: RESPONSE_STATUS.NOT_FOUND,
-          type: ERROR_TYPES.NO_WORKFLOWS,
-          code: 404,
-          message: "No workflows found. Please create a new workflow",
-        },
-        undefined,
+      throw ApiError.notFound(
+        "NO_WORKFLOWS",
+        404,
+        "No workflows found. Please create a new workflow",
         false,
-        false
+        {
+          environment: process.env.NODE_ENV,
+          functionName: "getUserWorkflows()",
+        }
       );
 
     return {
@@ -100,7 +98,7 @@ export const getWorkflow = base
   .output(
     createServerActionOutputSchema(
       GET_WORKFLOW_ACTION_RESULT_SCHEMA,
-      ERROR_SCHEMA
+      ERROR_SCHEMA_v2
     )
   )
   .handler(async ({ ctx, input }) => {
@@ -117,16 +115,15 @@ export const getWorkflow = base
     );
 
     if (!workflows.length)
-      throw ApiError.notFound<ActionError>(
-        {
-          status: RESPONSE_STATUS.NOT_FOUND,
-          type: ERROR_TYPES.NO_WORKFLOWS,
-          code: 404,
-          message: "No workflows found. Please create a new workflow",
-        },
-        undefined,
+      throw ApiError.notFound(
+        "NO_WORKFLOWS",
+        404,
+        "No workflows found. Please create a new workflow",
         false,
-        false
+        {
+          environment: process.env.NODE_ENV,
+          functionName: "getWorkflow()",
+        }
       );
 
     return {

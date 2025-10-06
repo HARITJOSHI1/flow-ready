@@ -1,6 +1,6 @@
 import postgres from "postgres";
-import { drizzle } from "drizzle-orm/node-postgres"
-
+// import { drizzle } from "drizzle-orm/node-postgres"
+import { drizzle } from "drizzle-orm/postgres-js";
 
 // avoid creating multiple db connections so using singleton pattern
 

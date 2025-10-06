@@ -2,7 +2,10 @@
 
 import { saveWorkflow } from "@/actions/workflows/mutations/saveWorkflow";
 import { useQueryClient } from "@tanstack/react-query";
-import { QueryKeyFactory, useServerActionMutation } from "../global/server-action-hooks";
+import {
+  QueryKeyFactory,
+  useServerActionMutation,
+} from "../global/server-action-hooks";
 import { toast } from "../global/use-toast";
 
 export const useSaveWorkflowMutation = (workflowId: string) => {
@@ -17,18 +20,27 @@ export const useSaveWorkflowMutation = (workflowId: string) => {
 
         toast({
           title: "Workflow saved successfully",
-          duration: 3000
+          duration: 3000,
         });
-
       },
 
       onError: (error) => {
-        // TODO: Handle error at client side for dev and test env 's
+        if (
+          process.env.NODE_ENV === "development" ||
+          process.env.NODE_ENV === "test"
+        ) {
+          console.error("@ERROR", error);
+          return toast({
+            title: "Error executing workflow",
+            description: error.message,
+            variant: "destructive",
+          });
+        }
+
         return toast({
-          title: "Error creating workflow",
+          title: "Error executing workflow",
           description: "Something went wrong",
           variant: "destructive",
-          duration: 3000
         });
       },
     });

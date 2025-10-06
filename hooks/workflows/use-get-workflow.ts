@@ -1,10 +1,10 @@
 "use client";
 
 import { getUserWorkflows, getWorkflow } from "@/actions/workflows/queries";
-import { useServerActionQuery } from "../global/server-action-hooks";
 import { Workflow } from "@/db/schema";
-import { BaseErrReturnType } from "@/lib/types/errors/base.action.err";
-import { ERROR_SCHEMA } from "@/lib/types/errors/server.err";
+import { BaseErrReturnType } from "@/lib/types/errors/server/base";
+import { ERROR_SCHEMA_v2 } from "@/schemas/errors";
+import { useServerActionQuery } from "../global/server-action-hooks";
 
 const formatWorkflowInp = <K extends keyof Workflow>(
   id?: string,
@@ -27,7 +27,7 @@ export function useGetWorkflowQuery<K extends keyof Workflow>(
   select: Record<K, true>
 ): {
   workflow: Pick<Workflow, K> | null;
-  error?: BaseErrReturnType<typeof ERROR_SCHEMA>;
+  error?: BaseErrReturnType<typeof ERROR_SCHEMA_v2>;
   isPending: boolean;
 };
 
@@ -36,7 +36,7 @@ export function useGetWorkflowQuery<K extends keyof Workflow>(
   select?: undefined
 ): {
   workflow: Workflow | null;
-  error?: BaseErrReturnType<typeof ERROR_SCHEMA>;
+  error?: BaseErrReturnType<typeof ERROR_SCHEMA_v2>;
   isPending: boolean;
 };
 
@@ -45,7 +45,7 @@ export function useGetWorkflowQuery<K extends keyof Workflow>(
   select?: Record<K, true>
 ): {
   workflow: Pick<Workflow, K>[] | null;
-  error?: BaseErrReturnType<typeof ERROR_SCHEMA>;
+  error?: BaseErrReturnType<typeof ERROR_SCHEMA_v2>;
   isPending: boolean;
 };
 
@@ -54,7 +54,7 @@ export function useGetWorkflowQuery<K extends keyof Workflow>(
   select?: undefined
 ): {
   workflow: Workflow[] | null;
-  error?: BaseErrReturnType<typeof ERROR_SCHEMA>;
+  error?: BaseErrReturnType<typeof ERROR_SCHEMA_v2>;
   isPending: boolean;
 };
 

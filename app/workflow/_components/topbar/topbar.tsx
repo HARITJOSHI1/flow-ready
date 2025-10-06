@@ -11,9 +11,10 @@ type Props = {
   title: string;
   subtitle?: string;
   workflowId: string;
+  hideBtn?: boolean;
 };
 
-const Topbar = ({ title, subtitle, workflowId }: Props) => {
+const Topbar = ({ title, subtitle, workflowId, hideBtn }: Props) => {
   const router = useRouter();
 
   return (
@@ -27,13 +28,21 @@ const Topbar = ({ title, subtitle, workflowId }: Props) => {
 
         <div>
           <p className="font-bold text-ellipsis truncate">{title}</p>
-          {subtitle && <p className="text-muted-foreground text-xs truncate text-ellipsis">{subtitle}</p>}
+          {subtitle && (
+            <p className="text-muted-foreground text-xs truncate text-ellipsis">
+              {subtitle}
+            </p>
+          )}
         </div>
       </div>
 
       <div className="flex flex-1 gap-1 justify-end">
-        <ExecuteBtn workflowId = {workflowId}/>
-        <SaveBtn workflowId={workflowId} />
+        {!hideBtn && (
+          <>
+            <ExecuteBtn workflowId={workflowId} />
+            <SaveBtn workflowId={workflowId} />
+          </>
+        )}
       </div>
     </header>
   );

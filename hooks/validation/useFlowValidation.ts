@@ -3,8 +3,8 @@ import {
   FlowValidationContextType,
 } from "@/components/contexts/flow-validation-context";
 import { Ok, err } from "@/lib/helpers";
-import { Result } from "@/lib/types/errors";
-import { ActionError } from "@/lib/types/errors/base.action.err";
+import { Result } from "@/lib/types/errors/client/error";
+import { ActionError } from "@/lib/types/errors/server/base";
 import { useContext } from "react";
 
 export const useFlowValidation = (): Result<

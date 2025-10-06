@@ -1,7 +1,6 @@
 import { getUserWorkflows } from "@/actions/workflows/queries";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ERROR_TYPES } from "@/lib/types/errors/server.err";
 import { AlertCircle, InboxIcon, PlusIcon } from "lucide-react";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
@@ -54,9 +53,9 @@ const UserWorkflows = async () => {
   switch (data.resolved) {
     case "error":
       switch (data.error.type) {
-        case ERROR_TYPES.AUTH_CHECK_ERROR:
+        case "AUTH_CHECK_ERROR":
           redirect("/sign-in");
-        case ERROR_TYPES.NO_WORKFLOWS:
+        case "NO_WORKFLOWS":
           return (
             <div className="flex flex-col gap-4 h-full items-center justify-center">
               <div className="rounded-full bg-accent w-20 h-20 flex items-center justify-center">

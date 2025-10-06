@@ -1,113 +1,114 @@
-import { RESPONSE_STATUS } from "../../types/server";
+import { ErrorKeys } from "@/lib/types/errors/server/base";
+import { ERROR_SCHEMA_v2 } from "@/schemas/errors";
+import { z } from "zod";
+import { IErrorClassProps } from "./interface/IErrorClass";
 
-class ApiError<T> extends Error{
-  public status: RESPONSE_STATUS;
-  public details: T;
+
+type InferredSchema = z.infer<typeof ERROR_SCHEMA_v2>;
+type ExtractedDetails = Pick<InferredSchema, "extraDetails">["extraDetails"];
+
+class ApiError<C extends ErrorKeys, D = ExtractedDetails, O = any>
+  extends Error
+  implements IErrorClassProps<C, D, O>
+{
+  public type: C;
+  public statusCode: number;
+  public message: string;
+  public details?: D;
+  public orginalError?: O;
   public shouldAddStack?: boolean;
-  public shouldLog?: boolean;
-  public name = "ApiError";
-  public code = 500;
+  public name: string;
 
   constructor(
-    status: RESPONSE_STATUS,
-    details: T,
-    code: number,
-    stack?: string,
+    type: C,
+    statusCode: number,
+    message: string,
     shouldAddStack?: boolean,
-    shouldLog?: boolean,
+    name: string = "ApiError",
+    details?: D,
+    orginalError?: O
   ) {
-    super();
-    this.status = status;
+    super(message);
+    this.type = type;
+    this.statusCode = statusCode;
+    this.message = message;
     this.details = details;
-    this.shouldLog = shouldLog;
-    this.code = code;
+    this.orginalError = orginalError;
+    this.shouldAddStack = shouldAddStack;
+    this.name = name;
 
-    if (shouldAddStack) this.stack = new Error().stack;
+    if (shouldAddStack) {
+      this.stack = new Error().stack;
+    }
+
     this.stack = undefined;
   }
 
-  static auth<T>(
-    details: T,
-    stack?: string,
+  static auth<T extends ExtractedDetails>(
+    type: ErrorKeys,
+    statusCode: number = 500,
+    message: string,
     shouldAddStack?: boolean,
-    shouldLog?: boolean,
-    code: number = 401
+    details?: T
   ) {
     return new ApiError(
-      RESPONSE_STATUS.UNAUTHORIZED,
-      details,
-      code,
-      stack,
+      type,
+      statusCode,
+      message,
       shouldAddStack,
-      shouldLog
+      "ApiError",
+      details
     );
   }
 
-  static validation<T>(
-    details: T,
-    stack?: string,
+  static notFound<T extends ExtractedDetails>(
+    type: ErrorKeys,
+    statusCode: number = 500,
+    message: string,
     shouldAddStack?: boolean,
-    shouldLog?: boolean,
-    code: number = 400
+    details?: T
   ) {
     return new ApiError(
-      RESPONSE_STATUS.BAD_REQUEST,
-      details,
-      code,
-      stack,
+      type,
+      statusCode,
+      message,
       shouldAddStack,
-      shouldLog
+      "ApiError",
+      details
     );
   }
 
-  static notFound<T>(
-    details: T,
-    stack?: string,
+  static internal<T extends ExtractedDetails>(
+    type: ErrorKeys,
+    statusCode: number = 500,
+    message: string,
     shouldAddStack?: boolean,
-    shouldLog?: boolean,
-    code: number = 404
+    details?: T
   ) {
     return new ApiError(
-      RESPONSE_STATUS.NOT_FOUND,
-      details,
-      code,
-      stack,
+      type,
+      statusCode,
+      message,
       shouldAddStack,
-      shouldLog
+      "ApiError",
+      details
     );
   }
 
-  static internal<T>(
-    details: T,
-    stack?: string,
+  static uncaught<T extends ExtractedDetails>(
+    type: ErrorKeys,
+    statusCode: number = 500,
+    message: string,
     shouldAddStack?: boolean,
-    shouldLog?: boolean,
-    code: number = 500
+    details?: T
   ) {
     return new ApiError(
-      RESPONSE_STATUS.INTERNAL_SERVER_ERROR,
-      details,
-      code,
-      stack,
+      type,
+      statusCode,
+      message,
       shouldAddStack,
-      shouldLog
-    );
-  }
-
-  static uncaught<T>(
-    details: T,
-    stack?: string,
-    shouldAddStack?: boolean,
-    shouldLog?: boolean,
-    code: number = 500
-  ) {
-    return new ApiError(
-      RESPONSE_STATUS.INTERNAL_SERVER_ERROR,
-      details,
-      code,
-      stack,
-      shouldAddStack,
-      shouldLog
+      "ApiError",
+      details
     );
   }
 }

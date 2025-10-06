@@ -1,10 +1,10 @@
 "use client";
 
+import ErrorWrapper from "@/components/error";
 import { useGetWorkflowQuery } from "@/hooks/workflows/use-get-workflow";
+import { Loader2Icon } from "lucide-react";
 import Editor from "../_components/editor";
-import { ArrowLeftIcon, Loader2Icon } from "lucide-react";
-import { ERROR_TYPES } from "@/lib/types/errors/server.err";
-import Link from "next/link";
+import { parseError } from "@/lib/utils";
 
 type Props = {
   params: {
@@ -14,62 +14,37 @@ type Props = {
 
 const Page = ({ params }: Props) => {
   const { id } = params;
-  const { workflow, isPending, error } = useGetWorkflowQuery(id);
+  const { workflow, isPending, error: failed } = useGetWorkflowQuery(id);
 
-  console.log("error", error);
-
-  if (error) {
+  if (failed) {
     // @ts-ignore
-    if ((error as Error)?.message.includes("devtools"))
+    if ((failed as Error)?.message.includes("devtools"))
       return (
-        <div className="flex flex-col items-center justify-center min-h-screen p-4">
-          <div className="text-center">
-            <h1 className="text-6xl font-bold text-primary mb-4 animate-bounce">
-              400
-            </h1>
-            <h2 className="text-2xl font-semibold mb-2">
-              Tanstack Devtools Error
-            </h2>
-            <p className="text-muted-foreground mb-8 max-w-md">
-              Error happend in development.
-            </p>
-
-            <div className="flex flex-col sm:flex-row justify-center gap-4">
-              <Link
-                href="/"
-                className="flex items-center justify-center px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/80 transition-colors group"
-              >
-                <ArrowLeftIcon className="w-4 h-4 mr-2 transition-transform duration-200 group-hover:-translate-x-1" />
-                Go back to home
-              </Link>
-            </div>
-          </div>
-        </div>
+        <ErrorWrapper
+          title="Tanstack Devtools Error"
+          subtitle="Error happened in development."
+          statusCode={400}
+          btnProps={{
+            link: "/",
+            text: "Go back to home",
+          }}
+        />
       );
-
-    else if (error.error.type === ERROR_TYPES.NOT_FOUND) {
+    else if (failed.error.type === "NOT_FOUND") {
+      const { parsed } = parseError(
+        failed.error.extraDetails!,
+        failed.error.message
+      );
       return (
-        <div className="flex flex-col items-center justify-center min-h-screen p-4">
-          <div className="text-center">
-            <h1 className="text-6xl font-bold text-primary mb-4 animate-bounce">
-              400
-            </h1>
-            <h2 className="text-2xl font-semibold mb-2">Sorry</h2>
-            <p className="text-muted-foreground mb-8 max-w-md">
-              Oops! You don `&apos; t have any workflows.
-            </p>
-
-            <div className="flex flex-col sm:flex-row justify-center gap-4">
-              <Link
-                href="/workflows"
-                className="flex items-center justify-center px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/80 transition-colors group"
-              >
-                <ArrowLeftIcon className="w-4 h-4 mr-2 transition-transform duration-200 group-hover:-translate-x-1" />
-                Dashboard
-              </Link>
-            </div>
-          </div>
-        </div>
+        <ErrorWrapper
+          title="Sorry"
+          statusCode={failed.error.code || 400}
+          subtitle={parsed}
+          btnProps={{
+            link: "/dashboard",
+            text: "Dashboard",
+          }}
+        />
       );
     }
   }

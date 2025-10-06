@@ -1,0 +1,24 @@
+import { PgCodeEnum } from "@/db/postgres/constants";
+import { CLIENT_ERROR_TYPES } from "../client/error";
+import { API_ERROR_TYPES } from "./api";
+import { DB_ERROR_TYPES } from "./db";
+
+export enum SERVER_ERROR_TYPES {
+  UNKNOWN_ERROR = "UNKNOWN_ERROR",
+  INTERNAL_SERVER_ERROR = "INTERNAL_SERVER_ERROR",
+  PAYLOAD_TOO_LARGE = "PAYLOAD_TOO_LARGE",
+  METHOD_NOT_SUPPORTED = "METHOD_NOT_SUPPORTED",
+  UNPROCESSABLE_CONTENT = "UNPROCESSABLE_CONTENT",
+  TOO_MANY_REQUESTS = "TOO_MANY_REQUESTS",
+  CLIENT_CLOSED_REQUEST = "CLIENT_CLOSED_REQUEST",
+  TIMEOUT = "TIMEOUT",
+  VALIDATION_ERROR = "ZOD_VALIDATION_FAILED",
+}
+
+// Union type of all error enums
+export type AllErrorTypes =
+  | keyof typeof SERVER_ERROR_TYPES
+  | keyof typeof API_ERROR_TYPES
+  | keyof typeof DB_ERROR_TYPES
+  | keyof typeof CLIENT_ERROR_TYPES
+  | keyof typeof PgCodeEnum;

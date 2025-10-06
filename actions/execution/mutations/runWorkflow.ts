@@ -1,17 +1,15 @@
 "use server";
 
-import { base } from "../../base";
-import { createServerActionOutputSchema, isErr } from "@/lib/helpers";
-import { ERROR_SCHEMA, ERROR_TYPES } from "@/lib/types/errors/server.err";
-import { z } from "zod";
-import { RUN_WORKFLOW_ACTION_RESULT_SCHEMA } from "../../workflows/mutations/types";
-import { ActionError } from "@/lib/types/errors/base.action.err";
 import ApiError from "@/lib/classes/Error/ApiError";
-import { RESPONSE_STATUS } from "@/lib/types/server";
-import { getWorkflowsFromDB } from "../../workflows/queries/helpers";
-import { WorkflowExecutionPlan } from "@/lib/workflow/type";
 import { FlowToExecutionPlan } from "@/lib/executionPlan";
+import { createServerActionOutputSchema, isErr } from "@/lib/helpers";
+import { WorkflowExecutionPlan } from "@/lib/workflow/type";
+import { ERROR_SCHEMA_v2 } from "@/schemas/errors";
+import { z } from "zod";
+import { base } from "../../base";
+import { getWorkflowsFromDB } from "../../workflows/queries/helpers";
 import { createExecutionPlanInDB } from "./helpers";
+import { RUN_WORKFLOW_ACTION_RESULT_SCHEMA } from "./types";
 
 export const runWorkflow = base
   .createServerAction()
@@ -24,7 +22,7 @@ export const runWorkflow = base
   .output(
     createServerActionOutputSchema(
       RUN_WORKFLOW_ACTION_RESULT_SCHEMA,
-      ERROR_SCHEMA
+      ERROR_SCHEMA_v2
     )
   )
   .handler(async ({ input, ctx }) => {
@@ -34,16 +32,15 @@ export const runWorkflow = base
     const { workflowId, flowDefination } = input;
 
     if (!workflowId)
-      throw ApiError.internal<ActionError>(
-        {
-          status: RESPONSE_STATUS.NOT_FOUND,
-          type: ERROR_TYPES.NO_WORKFLOWS,
-          code: 404,
-          message: "Cannot use a non-workflow Id to retrieve workflow",
-        },
-        undefined,
+      throw ApiError.notFound(
+        "NO_WORKFLOWS",
+        404,
+        "Cannot use a non-workflow Id to retrieve workflow",
         false,
-        false
+        {
+          environment: process.env.NODE_ENV,
+          functionName: "runWorkflow()",
+        }
       );
 
     const workflow = await getWorkflowsFromDB(
@@ -53,30 +50,28 @@ export const runWorkflow = base
     );
 
     if (!workflow)
-      throw ApiError.notFound<ActionError>(
-        {
-          status: RESPONSE_STATUS.NOT_FOUND,
-          type: ERROR_TYPES.NO_WORKFLOWS,
-          code: 404,
-          message: "No workflow found. Please create a new workflow",
-        },
-        undefined,
+      throw ApiError.notFound(
+        "NO_WORKFLOWS",
+        404,
+        "No workflow found. Please create a new workflow",
         false,
-        false
+        {
+          environment: process.env.NODE_ENV,
+          functionName: "runWorkflow()",
+        }
       );
 
     let executionPlan: WorkflowExecutionPlan;
     if (!flowDefination)
-      throw ApiError.notFound<ActionError>(
-        {
-          type: ERROR_TYPES.ERROR,
-          code: 400,
-          message:
-            "Flow defination must be provided either at execution or after publish",
-        },
-        undefined,
+      throw ApiError.notFound(
+        "INTERNAL_ERROR",
+        400,
+        "Flow defination must be provided either at execution or after publish",
         false,
-        false
+        {
+          environment: process.env.NODE_ENV,
+          functionName: "runWorkflow()",
+        }
       );
 
     const flow = JSON.parse(flowDefination);
@@ -85,30 +80,28 @@ export const runWorkflow = base
     if (isErr(result)) {
       console.error(result.error);
 
-      throw ApiError.internal<ActionError>(
-        {
-          status: RESPONSE_STATUS.BAD_REQUEST,
-          type: result.error.type,
-          code: 400,
-          message: result.error.message,
-        },
-        undefined,
+      throw ApiError.internal(
+        result.error.type as any,
+        400,
+        result.error.message,
         false,
-        false
+        {
+          environment: process.env.NODE_ENV,
+          functionName: "runWorkflow()",
+        }
       );
     }
 
     if (!result.data.executionPlan)
-      throw ApiError.internal<ActionError>(
-        {
-          status: RESPONSE_STATUS.NOT_FOUND,
-          type: ERROR_TYPES.NO_EXECUTION_PLAN,
-          code: 404,
-          message: "No execution plan is found",
-        },
-        undefined,
+      throw ApiError.notFound(
+        "NO_EXECUTION_PLAN",
+        404,
+        "No execution plan is found",
         false,
-        false
+        {
+          environment: process.env.NODE_ENV,
+          functionName: "runWorkflow()",
+        }
       );
 
     executionPlan = result.data.executionPlan;
@@ -122,7 +115,7 @@ export const runWorkflow = base
     return {
       resolved: "success",
       result: {
-        redirect_url: `/workflows/runs/${workflowId}/${execution.id}`,
+        redirect_url: `/workflow/runs/${workflowId}/${execution.id}`,
       },
     };
   });

@@ -5,17 +5,16 @@ import db from "@/db";
 import { workflow } from "@/db/schema";
 import ApiError from "@/lib/classes/Error/ApiError";
 import { createServerActionOutputSchema } from "@/lib/helpers";
-import { ActionError } from "@/lib/types/errors/base.action.err";
-import { ERROR_SCHEMA, ERROR_TYPES } from "@/lib/types/errors/server.err";
 import { AppNode } from "@/lib/types/nodes";
 import { RESPONSE_STATUS } from "@/lib/types/server";
 import { TaskType } from "@/lib/types/tasks";
 import { TaskRegistry } from "@/lib/workflow/task/registry";
+import { WORKFLOW_STATUS } from "@/lib/workflow/type";
+import { ERROR_SCHEMA_v2 } from "@/schemas/errors";
 import { Edge } from "@xyflow/react";
 import { revalidateTag } from "next/cache";
 import { base } from "../../base";
-import { CREATE_WORKFLOW_ACTION_RESULT_SCHEMA } from "../mutations/types";
-import { WORKFLOW_STATUS } from "@/lib/workflow/type";
+import { CREATE_WORKFLOW_ACTION_RESULT_SCHEMA } from "./types";
 
 export const createWorkflow = base
   .createServerAction()
@@ -23,7 +22,7 @@ export const createWorkflow = base
   .output(
     createServerActionOutputSchema(
       CREATE_WORKFLOW_ACTION_RESULT_SCHEMA,
-      ERROR_SCHEMA
+      ERROR_SCHEMA_v2
     )
   )
   .handler(async ({ ctx, input }) => {
@@ -53,15 +52,15 @@ export const createWorkflow = base
       .returning();
 
     if (!result.length) {
-      throw ApiError.notFound<ActionError>(
+      throw ApiError.notFound(
+        "CREATE_WORKFLOW_ERROR",
+        500,
+        "Failed to create workflow",
+        false,
         {
-          status: RESPONSE_STATUS.NOT_FOUND,
-          type: ERROR_TYPES.CREATE_WORKFLOW_ERROR,
-          message: "Failed to create workflow",
-          code: 500,
-        },
-        undefined,
-        false
+          environment: process.env.NODE_ENV,
+          functionName: "createWorkflow()",
+        }
       );
     }
 

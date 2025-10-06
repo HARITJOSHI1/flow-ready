@@ -1,11 +1,14 @@
 import { PgCodeEnum } from "@/db/postgres/constants";
-import { PgHandlerDetails, PostgresError } from "@/lib/types/errors/db.err";
+import {
+  PgHandlerDetails,
+  PostgresError,
+} from "@/lib/types/errors/server/db";
 import { EnumValues } from "@/lib/types/nodes";
 import { ZSAError } from "zsa";
-import { IErrorClassProps } from "../interface/IErrorClass";
-import { ERROR_TYPES } from "@/lib/types/errors/server.err";
+import { IErrorClassProps } from "./interface/IErrorClass";
+import { ErrorKeys } from "@/lib/types/errors/server/base";
 
-type DbErrorCode = keyof typeof PgCodeEnum | keyof typeof ERROR_TYPES;
+export type DbErrorCode = keyof typeof PgCodeEnum | ErrorKeys;
 type DbErrorDetails = PgHandlerDetails;
 type DbOriginalError = Omit<ZSAError, "stack">;
 
@@ -138,7 +141,5 @@ class DatabaseError<
     }
   }
 }
-
-// export default DatabaseError;
 
 export default DatabaseError;

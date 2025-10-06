@@ -1,4 +1,4 @@
-import { ActionError, BaseErrReturnType } from "../errors/base.action.err";
+import { ActionError, BaseErrReturnType } from "../errors/server/base";
 
 
 export type ServerActionError<TErrorData> = BaseErrReturnType & {
@@ -20,7 +20,6 @@ export function isServerActionError<
   TError extends ActionError = ActionError
 >(value: unknown): value is ServerActionError<TError> {
   return (
-    !!value &&
     typeof value === "object" &&
     (value as any).resolved === "error" &&
     "error" in (value as any)
