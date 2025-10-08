@@ -14,7 +14,7 @@ import { ERROR_SCHEMA_v2 } from "@/schemas/errors";
 import { Edge } from "@xyflow/react";
 import { revalidateTag } from "next/cache";
 import { base } from "../../base";
-import { CREATE_WORKFLOW_ACTION_RESULT_SCHEMA } from "./types";
+import { CREATE_WORKFLOW_ACTION_RESULT_SCHEMA } from "./schema";
 
 export const createWorkflow = base
   .createServerAction()

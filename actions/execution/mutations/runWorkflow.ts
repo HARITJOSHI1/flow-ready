@@ -9,7 +9,7 @@ import { z } from "zod";
 import { base } from "../../base";
 import { getWorkflowsFromDB } from "../../workflows/queries/helpers";
 import { createExecutionPlanInDB } from "./helpers";
-import { RUN_WORKFLOW_ACTION_RESULT_SCHEMA } from "./types";
+import { RUN_WORKFLOW_ACTION_RESULT_SCHEMA } from "./schema";
 
 export const runWorkflow = base
   .createServerAction()

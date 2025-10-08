@@ -12,7 +12,7 @@ import { getWorkflowsFromDB } from "./helpers";
 import {
   GET_WORKFLOW_ACTION_RESULT_SCHEMA,
   GET_WORKFLOWS_ACTION_RESULT_SCHEMA,
-} from "./types";
+} from "./schema";
 
 export const getUserWorkflows = base
   .createServerAction()

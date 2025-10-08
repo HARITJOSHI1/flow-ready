@@ -8,7 +8,7 @@ import { createServerActionOutputSchema } from "@/lib/helpers";
 import { ERROR_SCHEMA_v2 } from "@/schemas/errors";
 import { asc, eq } from "drizzle-orm";
 import { z } from "zod";
-import { WORKFLOW_EXEC_PHASES_ACTION_RESULT_SCHEMA } from "./types";
+import { WORKFLOW_EXEC_PHASES_ACTION_RESULT_SCHEMA } from "./schema";
 
 export const getWorkflowWithExecutionPhases = base
   .createServerAction()

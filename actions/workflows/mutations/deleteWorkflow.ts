@@ -9,7 +9,7 @@ import { and, eq } from "drizzle-orm";
 import { revalidateTag } from "next/cache";
 import { z } from "zod";
 import { base } from "../../base";
-import { DELETE_WORKFLOW_ACTION_SCHEMA } from "./types";
+import { DELETE_WORKFLOW_ACTION_SCHEMA } from "./schema";
 
 export const deleteWorkflow = base
   .createServerAction()

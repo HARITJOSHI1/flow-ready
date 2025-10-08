@@ -11,7 +11,7 @@ import { ERROR_SCHEMA_v2 } from "@/schemas/errors";
 import { eq } from "drizzle-orm";
 import { revalidateTag } from "next/cache";
 import { base } from "../../base";
-import { SAVE_WORKFLOW_ACTION_SCHEMA } from "./types";
+import { SAVE_WORKFLOW_ACTION_SCHEMA } from "./schema";
 
 export const saveWorkflow = base
   .createServerAction()
