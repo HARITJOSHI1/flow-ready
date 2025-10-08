@@ -8,7 +8,6 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { useState } from "react";
 
 const createRetryFunction = () => (failureCount: number, error: unknown) => {
-  // TODO: isServerActionError is buggy strips error fix ikt later...
   const err = isServerActionError(error) ? error.error : undefined;
   const statusCode = typeof err?.code === "number" ? err.code : undefined;
 

@@ -3,22 +3,21 @@
 import { saveWorkflowSchema } from "@/components/forms/workflows/schema";
 import db from "@/db";
 import { workflow } from "@/db/schema";
+import ApiError from "@/lib/classes/Error/ApiError";
 import { createServerActionOutputSchema } from "@/lib/helpers";
-import { ERROR_SCHEMA, ERROR_TYPES } from "@/lib/types/errors/server.err";
 import { RESPONSE_STATUS } from "@/lib/types/server";
+import { WORKFLOW_STATUS } from "@/lib/workflow/type";
+import { ERROR_SCHEMA_v2 } from "@/schemas/errors";
 import { eq } from "drizzle-orm";
 import { revalidateTag } from "next/cache";
 import { base } from "../../base";
-import { SAVE_WORKFLOW_ACTION_SCHEMA } from "./types";
-import ApiError from "@/lib/classes/Error/ApiError";
-import { ActionError } from "@/lib/types/errors/base.action.err";
-import { WORKFLOW_STATUS } from "@/lib/workflow/type";
+import { SAVE_WORKFLOW_ACTION_SCHEMA } from "./schema";
 
 export const saveWorkflow = base
   .createServerAction()
   .input(saveWorkflowSchema)
   .output(
-    createServerActionOutputSchema(SAVE_WORKFLOW_ACTION_SCHEMA, ERROR_SCHEMA)
+    createServerActionOutputSchema(SAVE_WORKFLOW_ACTION_SCHEMA, ERROR_SCHEMA_v2)
   )
   .handler(async ({ ctx, input }) => {
     if (ctx.resolved === "error")
@@ -32,31 +31,26 @@ export const saveWorkflow = base
     ).pop();
 
     if (!w)
-      throw ApiError.notFound<ActionError>(
-        {
-          status: RESPONSE_STATUS.NOT_FOUND,
-          type: ERROR_TYPES.NO_WORKFLOWS,
-          message: "Workflow not found",
-          code: 404,
-        },
-        undefined,
+      throw ApiError.notFound(
+        "NO_WORKFLOWS",
+        404,
+        "Workflow not found",
         false,
-        false
+        {
+          environment: process.env.NODE_ENV,
+          functionName: "saveWorkflow()",
+        }
       );
     else if (w.status !== WORKFLOW_STATUS.DRAFT)
       throw ApiError.internal(
-        {
-          resolved: "error",
-          error: {
-            status: RESPONSE_STATUS.BAD_REQUEST,
-            type: ERROR_TYPES.WORKFLOW_NOT_IN_DRAFT_ERROR,
-            message: "Workflow must be in draft status to save",
-            code: 400,
-          },
-        },
-        undefined,
+        "WORKFLOW_NOT_IN_DRAFT_ERROR",
+        400,
+        "Workflow must be in draft status to save",
         false,
-        false
+        {
+          environment: process.env.NODE_ENV,
+          functionName: "saveWorkflow()",
+        }
       );
 
     await db

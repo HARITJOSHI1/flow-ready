@@ -1,11 +1,8 @@
 "use client";
 
 import { createWorkflow } from "@/actions/workflows/mutations/createWorkflow";
-import { isServerActionError } from "@/lib/types/react-query";
 import { useRouter } from "next/navigation";
-import {
-  useServerActionMutation
-} from "../global/server-action-hooks";
+import { useServerActionMutation } from "../global/server-action-hooks";
 import { toast } from "../global/use-toast";
 
 export const useCreateWorkflowMutation = () => {
@@ -32,8 +29,20 @@ export const useCreateWorkflowMutation = () => {
       },
 
       onError: (error) => {
+        if (
+          process.env.NODE_ENV === "development" ||
+          process.env.NODE_ENV === "test"
+        ) {
+          console.error("@ERROR", error);
+          return toast({
+            title: "Error executing workflow",
+            description: error.message,
+            variant: "destructive",
+          });
+        }
+
         return toast({
-          title: "Error creating workflow",
+          title: "Error executing workflow",
           description: "Something went wrong",
           variant: "destructive",
         });

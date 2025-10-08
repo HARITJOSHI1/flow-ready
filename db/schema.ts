@@ -11,7 +11,19 @@ import {
 
 export const workflowStatus = pgEnum("workflow_status", ["DRAFT", "PUBLISHED"]);
 export const workflowtrigger = pgEnum("workflow_trigger", ["MANUAL", "CRON"]);
-export const workflowExecutionStatus = pgEnum("workflow_execution_status", ["PENDING"]);
+export const workflowExecutionStatus = pgEnum("workflow_execution_status", [
+  "PENDING",
+  "RUNNING",
+  "FAILED",
+  "COMPLETED",
+]);
+export const executionPhaseStatus = pgEnum("execution_phase_status", [
+  "CREATED",
+  "PENDING",
+  "RUNNING",
+  "FAILED",
+  "COMPLETED",
+]);
 
 // Tables
 export const workflow = pgTable("workflow", {
@@ -49,7 +61,7 @@ export const executionPhase = pgTable("execution_phase", {
     .$default(() => crypto.randomUUID()),
 
   userId: text("user_id").notNull(),
-  status: varchar("status", { length: 50 }),
+  status: executionPhaseStatus("status").notNull(),
   phaseNumber: integer("phase_number"),
   node: text("node"),
   name: varchar("name", { length: 256 }),
@@ -100,3 +112,4 @@ export const workflowExecution__with__workflow = relations(
 
 // Types
 export type Workflow = typeof workflow.$inferSelect;
+export type ExecutionPhase = typeof executionPhase.$inferSelect;

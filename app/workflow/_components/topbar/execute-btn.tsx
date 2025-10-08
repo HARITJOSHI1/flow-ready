@@ -28,6 +28,8 @@ const ExecuteBtn = ({ workflowId }: Props) => {
         }
         const plan = generate();
         if (!plan) return;
+
+        // @ts-ignore
         mutate({ workflowId, flowDefination: JSON.stringify(toObject()) });
         console.log("----- plan -----");
         console.table(plan);

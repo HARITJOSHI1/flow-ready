@@ -1,6 +1,6 @@
-import { ERROR_TYPES } from "@/lib/types/errors/server.err";
-import { IErrorClassProps } from "../interface/IErrorClass";
+import { IErrorClassProps } from "./interface/IErrorClass";
 import { randomUUID } from "crypto";
+import { ErrorKeys } from "@/lib/types/errors/server/base";
 
 // GOOD TO HAVE: Add a log drain to stream logs to third party for error handling on a big
 // team level
@@ -25,7 +25,7 @@ type UnknownErrContext = {
 type UnknownErrorCallbackFn = (context?: UnknownErrContext) => void;
 
 class UnknownError<
-    C = keyof typeof ERROR_TYPES,
+    C = ErrorKeys,
     D = UnknownErrorDetails,
     O = any
   >
