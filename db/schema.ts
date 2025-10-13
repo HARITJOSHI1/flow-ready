@@ -33,7 +33,7 @@ export const workflow = pgTable("workflow", {
   name: varchar("name", { length: 255 }).notNull().unique(),
   description: varchar("description", { length: 255 }),
   userId: text("user_id").notNull(),
-  defination: text("defination").notNull(),
+  definition: text("definition").notNull(),
   status: workflowStatus("status").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
@@ -51,6 +51,7 @@ export const workflowExecution = pgTable("workflow_execution", {
   status: workflowExecutionStatus("status").notNull(),
   trigger: workflowtrigger("trigger").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
   startedAt: timestamp("started_at"),
   completedAt: timestamp("completed_at"),
 });
@@ -62,7 +63,7 @@ export const executionPhase = pgTable("execution_phase", {
 
   userId: text("user_id").notNull(),
   status: executionPhaseStatus("status").notNull(),
-  phaseNumber: integer("phase_number"),
+  phaseNumber: integer("phase_number").notNull(),
   node: text("node"),
   name: varchar("name", { length: 256 }),
   startedAt: timestamp("started_at"),
@@ -70,7 +71,7 @@ export const executionPhase = pgTable("execution_phase", {
   inputs: text("inputs"),
   outputs: text("outputs"),
   creditsConsumed: integer(),
-  workflowExecutionId: uuid("workflowId")
+  workflowExecutionId: uuid("workflow_execution_id")
     .references(() => workflowExecution.id, { onDelete: "cascade" })
     .notNull(),
 });
@@ -113,3 +114,4 @@ export const workflowExecution__with__workflow = relations(
 // Types
 export type Workflow = typeof workflow.$inferSelect;
 export type ExecutionPhase = typeof executionPhase.$inferSelect;
+export type WorkflowExecution = typeof workflowExecution.$inferSelect;

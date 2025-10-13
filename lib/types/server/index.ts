@@ -1,4 +1,4 @@
-import { createServerActionOutputSchema } from "@/lib/helpers";
+import { createServerActionOutputSchema } from "@/lib/helpers/global";
 
 export enum RESPONSE_STATUS {
   SUCCESS = "SUCCESS",
@@ -13,4 +13,4 @@ export enum RESPONSE_STATUS {
   CONFLICT = "CONFLICT",
 }
 
-export type ServerActionReturnType = ReturnType<typeof createServerActionOutputSchema>["_output"]
+export type ServerActionReturnType<T> = ReturnType<typeof createServerActionOutputSchema>["_output"]['resolved'] extends "success" ? T : never

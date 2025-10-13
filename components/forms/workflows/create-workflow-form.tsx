@@ -16,7 +16,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { useCreateWorkflowMutation } from "@/hooks/workflows/use-create-workflow";
+import { useCreateWorkflowMutation } from "@/hooks/workflows/mutations/use-create-workflow";
 import { Loader2 } from "lucide-react";
 
 const CreateWorkflowForm = () => {

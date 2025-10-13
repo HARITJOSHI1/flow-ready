@@ -1,31 +1,20 @@
 "use client";
 
-import { createWorkflow } from "@/actions/workflows/mutations/createWorkflow";
 import { useRouter } from "next/navigation";
-import { useServerActionMutation } from "../global/server-action-hooks";
-import { toast } from "../global/use-toast";
+import { useServerActionMutation } from "../../global/server-action-hooks";
+import { toast } from "../../global/use-toast";
+import { runWorkflow } from "@/actions/execution/mutations/runWorkflow";
 
-export const useCreateWorkflowMutation = () => {
+export const useRunWorkflowMutation = () => {
   const router = useRouter();
-
   const { mutate, isPending, isError, error, data, isSuccess } =
-    useServerActionMutation(createWorkflow, {
+    useServerActionMutation(runWorkflow, {
       onSuccess: async (data) => {
-        if (data.resolved === "error") {
-          return toast({
-            title: "Error creating workflow",
-            description: data.error.message,
-            variant: "destructive",
-          });
-        }
-
         toast({
-          title: "Workflow created successfully",
-          description: "You can now edit the workflow",
+          title: "Execution started",
         });
 
-        router.refresh();
-        router.push(data.result.redirect_url);
+        if (data.resolved === "success") router.push(data.result.redirect_url);
       },
 
       onError: (error) => {

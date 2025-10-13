@@ -12,7 +12,7 @@ import {
   AlertDialogAction,
 } from "@/components/ui/alert-dialog";
 import { Input } from "@/components/ui/input";
-import { useDeleteWorkflowMutation } from "@/hooks/workflows/use-delete-workflow";
+import { useDeleteWorkflowMutation } from "@/hooks/workflows/mutations/use-delete-workflow";
 import { Loader2 } from "lucide-react";
 
 type Props = {

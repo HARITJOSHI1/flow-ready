@@ -5,6 +5,7 @@ import { setupServerActionHooks, createServerActionsKeyFactory } from "zsa-react
 
 const QueryKeyFactory = createServerActionsKeyFactory({
   getWorkflow: (workflowId: string) => ["get-workflow", workflowId] as string[],
+  execution: (executionId: string) => ["execution", executionId] as string []
 });
 
 const {

@@ -1,8 +1,8 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import useExecutionPlan from "@/hooks/exec/useExecutionPlan";
-import { useRunWorkflowMutation } from "@/hooks/exec/useRunWorkflow";
+import useExecutionPlan from "@/hooks/exec/mutations/useExecutionPlan";
+import { useRunWorkflowMutation } from "@/hooks/exec/mutations/useRunWorkflow";
 import { useReactFlow } from "@xyflow/react";
 import { Loader2Icon, PlayIcon } from "lucide-react";
 

@@ -4,7 +4,7 @@ import { createWorkflowSchema } from "@/components/forms/workflows/schema";
 import db from "@/db";
 import { workflow } from "@/db/schema";
 import ApiError from "@/lib/classes/Error/ApiError";
-import { createServerActionOutputSchema } from "@/lib/helpers";
+import { createServerActionOutputSchema } from "@/lib/helpers/global";
 import { AppNode } from "@/lib/types/nodes";
 import { RESPONSE_STATUS } from "@/lib/types/server";
 import { TaskType } from "@/lib/types/tasks";
