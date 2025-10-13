@@ -1,6 +1,6 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { isErr } from "@/lib/helpers";
+import { isErr } from "@/lib/helpers/global";
 import { AppNode } from "@/lib/types/nodes";
 import { TaskType } from "@/lib/types/tasks";
 

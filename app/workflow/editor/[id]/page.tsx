@@ -1,7 +1,7 @@
 "use client";
 
 import ErrorWrapper from "@/components/error";
-import { useGetWorkflowQuery } from "@/hooks/workflows/use-get-workflow";
+import { useGetWorkflowQuery } from "@/hooks/workflows/queries/use-get-workflow";
 import { Loader2Icon } from "lucide-react";
 import Editor from "../_components/editor";
 import { parseError } from "@/lib/utils";

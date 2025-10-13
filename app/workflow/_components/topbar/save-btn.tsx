@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { useSaveWorkflowMutation } from "@/hooks/workflows/use-save-workflow";
+import { useSaveWorkflowMutation } from "@/hooks/workflows/mutations/use-save-workflow";
 import { useReactFlow } from "@xyflow/react";
 import { CheckIcon, Loader2Icon } from "lucide-react";
 

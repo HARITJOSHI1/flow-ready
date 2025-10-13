@@ -6,7 +6,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
-import { isErr } from "@/lib/helpers";
+import { isErr } from "@/lib/helpers/global";
 import { TaskType } from "@/lib/types/tasks";
 
 import { TaskRegistry } from "@/lib/workflow/task/registry";

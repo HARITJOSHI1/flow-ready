@@ -1,13 +1,12 @@
 "use server";
 
 import { base } from "@/actions/base";
-import db from "@/db";
-import { executionPhase } from "@/db/schema";
 import ApiError from "@/lib/classes/Error/ApiError";
-import { createServerActionOutputSchema } from "@/lib/helpers";
+import { createServerActionOutputSchema } from "@/lib/helpers/global";
 import { ERROR_SCHEMA_v2 } from "@/schemas/errors";
-import { asc, eq } from "drizzle-orm";
+import { unstable_cache } from "next/cache";
 import { z } from "zod";
+import { joinWorkfowExec__executionPhase } from "./helpers";
 import { WORKFLOW_EXEC_PHASES_ACTION_RESULT_SCHEMA } from "./schema";
 
 export const getWorkflowWithExecutionPhases = base
@@ -24,12 +23,16 @@ export const getWorkflowWithExecutionPhases = base
       return { resolved: "error", error: ctx.error };
 
     const { executionId } = input;
+    const { userId } = ctx.result;
 
-    const phases = await db
-      .select()
-      .from(executionPhase)
-      .where(eq(executionPhase.id, executionId))
-      .orderBy(asc(executionPhase.phaseNumber));
+    const phases = await unstable_cache(
+      joinWorkfowExec__executionPhase,
+      [`w_execution-user-${userId}`],
+      {
+        tags: [`w_execution-user-${userId}`],
+        revalidate: 15 * 60,
+      }
+    )(executionId, userId);
 
     if (!phases)
       throw ApiError.notFound(
@@ -46,7 +49,8 @@ export const getWorkflowWithExecutionPhases = base
     return {
       resolved: "success",
       result: {
-        phases,
+        workflow_execution: phases[0].workflow_execution,
+        phases: phases.map((p) => p.execution_phase!),
       },
     };
   });

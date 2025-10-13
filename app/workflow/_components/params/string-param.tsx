@@ -3,7 +3,7 @@
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useFlowValidation } from "@/hooks/validation/useFlowValidation";
-import { isErr } from "@/lib/helpers";
+import { isErr } from "@/lib/helpers/global";
 import { ParamProps } from "@/lib/types/nodes";
 import { Label } from "@radix-ui/react-label";
 import { useEffect, useId, useState } from "react";

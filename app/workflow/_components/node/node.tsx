@@ -1,4 +1,4 @@
-import { isErr } from "@/lib/helpers";
+import { isErr } from "@/lib/helpers/global";
 import { DataNode } from "@/lib/types/nodes";
 import { TaskRegistry } from "@/lib/workflow/task/registry";
 import { NodeProps } from "@xyflow/react";

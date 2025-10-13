@@ -1,5 +1,5 @@
 import ApiError from "@/lib/classes/Error/ApiError";
-import { createServerActionOutputSchema } from "@/lib/helpers";
+import { createServerActionOutputSchema } from "@/lib/helpers/global";
 import { BASE_RESULT_SCHEMA } from "@/schemas/base";
 import { ERROR_SCHEMA_v2 } from "@/schemas/errors";
 import { auth } from "@clerk/nextjs/server";

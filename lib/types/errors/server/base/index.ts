@@ -1,4 +1,4 @@
-import { createServerActionOutputSchema } from "@/lib/helpers";
+import { createServerActionOutputSchema } from "@/lib/helpers/global";
 import { ERROR_SCHEMA_v2 } from "@/schemas/errors";
 import { z } from "zod";
 import { AllErrorTypes } from "..";

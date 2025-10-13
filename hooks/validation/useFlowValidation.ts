@@ -2,7 +2,7 @@ import {
   FlowValidationContext,
   FlowValidationContextType,
 } from "@/components/contexts/flow-validation-context";
-import { Ok, err } from "@/lib/helpers";
+import { Ok, err } from "@/lib/helpers/global";
 import { Result } from "@/lib/types/errors/client/error";
 import { ActionError } from "@/lib/types/errors/server/base";
 import { useContext } from "react";

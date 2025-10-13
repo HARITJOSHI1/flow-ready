@@ -1,7 +1,7 @@
 "use client";
 
 import { useFlowValidation } from "@/hooks/validation/useFlowValidation";
-import { isErr } from "@/lib/helpers";
+import { isErr } from "@/lib/helpers/global";
 import { cn } from "@/lib/utils";
 import { useReactFlow } from "@xyflow/react";
 import React, { memo } from "react";

@@ -5,8 +5,8 @@ import { useQueryClient } from "@tanstack/react-query";
 import {
   QueryKeyFactory,
   useServerActionMutation,
-} from "../global/server-action-hooks";
-import { toast } from "../global/use-toast";
+} from "../../global/server-action-hooks";
+import { toast } from "../../global/use-toast";
 
 export const useSaveWorkflowMutation = (workflowId: string) => {
   const queryClient = useQueryClient();

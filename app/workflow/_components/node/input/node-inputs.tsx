@@ -8,7 +8,7 @@ import { TaskInputs } from "@/lib/types/tasks";
 import NodeParamField from "../params/node-param-field";
 import { colorForHandle } from "../common/colorHandle";
 import { useFlowValidation } from "@/hooks/validation/useFlowValidation";
-import { isErr } from "@/lib/helpers";
+import { isErr } from "@/lib/helpers/global";
 
 type Props = {
   children?: React.ReactNode;

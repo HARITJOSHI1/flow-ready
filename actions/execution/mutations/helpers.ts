@@ -1,7 +1,7 @@
 import db from "@/db";
 import { executionPhase, workflowExecution } from "@/db/schema";
 import ApiError from "@/lib/classes/Error/ApiError";
-import { isErr } from "@/lib/helpers";
+import { isErr } from "@/lib/helpers/global";
 import { TaskType } from "@/lib/types/tasks";
 import { TaskRegistry } from "@/lib/workflow/task/registry";
 import { WorkflowExecutionPlan } from "@/lib/workflow/type";

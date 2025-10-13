@@ -21,7 +21,7 @@ import NodeComponent from "../../_components/node/node";
 import { TaskRegistry } from "@/lib/workflow/task/registry";
 import { TaskInputs, TaskType } from "@/lib/types/tasks";
 import DeletableEdge from "../../_components/edges/deletable-edge";
-import { isErr, isOk } from "@/lib/helpers";
+import { isErr, isOk } from "@/lib/helpers/global";
 import { AppNode } from "@/lib/types/nodes";
 import { useFlowValidation } from "@/hooks/validation/useFlowValidation";
 
@@ -56,12 +56,12 @@ const FlowEditor = ({ workflow }: Props) => {
     if (!flow.viewport) return;
     const { x = 0, y = 0, zoom = 1 } = flow.viewport;
     setViewport({ x, y, zoom });
-  }, [workflow.defination, setEdges, setNodes, setViewport]);
+  }, [workflow.definition, setEdges, setNodes, setViewport]);
 
   if (isErr(result)) return null;
   const { invalidInputs, clearErrors } = result.data;
 
-  const flow = JSON.parse(workflow.defination) as ReactFlowJsonObject<
+  const flow = JSON.parse(workflow.definition) as ReactFlowJsonObject<
     Node,
     Edge
   >;

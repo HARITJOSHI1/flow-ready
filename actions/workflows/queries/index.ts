@@ -2,7 +2,7 @@
 
 import { Workflow } from "@/db/schema";
 import ApiError from "@/lib/classes/Error/ApiError";
-import { createServerActionOutputSchema } from "@/lib/helpers";
+import { createServerActionOutputSchema } from "@/lib/helpers/global";
 import { RESPONSE_STATUS } from "@/lib/types/server";
 import { ERROR_SCHEMA_v2 } from "@/schemas/errors";
 import { unstable_cache } from "next/cache";

@@ -4,7 +4,7 @@ import { getUserWorkflows, getWorkflow } from "@/actions/workflows/queries";
 import { Workflow } from "@/db/schema";
 import { BaseErrReturnType } from "@/lib/types/errors/server/base";
 import { ERROR_SCHEMA_v2 } from "@/schemas/errors";
-import { useServerActionQuery } from "../global/server-action-hooks";
+import { useServerActionQuery } from "../../global/server-action-hooks";
 
 const formatWorkflowInp = <K extends keyof Workflow>(
   id?: string,
