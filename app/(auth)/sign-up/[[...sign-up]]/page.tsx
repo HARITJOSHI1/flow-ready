@@ -13,7 +13,6 @@ const SignUpPage = () => {
       appearance={{
         baseTheme:
           resolvedTheme === "dark" ||
-          resolvedTheme === "system" ||
           resolvedTheme === undefined
             ? dark
             : undefined,

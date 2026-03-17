@@ -26,7 +26,7 @@ export function handleZSAError(
 
     case "ZodError":
       const originalError = error.data as ZodError;
-      const zodError = ZodValidationError.handle(originalError);      
+      const zodError = ZodValidationError.handle(originalError);
       errorLogger("ZodError", zodError);
       return handleZodError(originalError, zodError);
 

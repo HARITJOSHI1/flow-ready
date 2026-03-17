@@ -80,6 +80,7 @@ const ExecutionViewer = ({ initData }: Props) => {
         </div>
 
         <Separator />
+
         <div className="flex justify-center py-2 items-center">
           <div className="text-muted-foreground flex items-center gap-2">
             <WorkflowIcon size={20} className="stroke-muted-foreground/80" />
@@ -88,6 +89,7 @@ const ExecutionViewer = ({ initData }: Props) => {
         </div>
 
         <Separator />
+
         <div className="overflow-auto h-full px-2 py-4">
           {result.phases.map((phase) => (
             <Button
