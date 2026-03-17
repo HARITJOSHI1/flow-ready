@@ -45,7 +45,7 @@ export const createWorkflow = base
       .values({
         name,
         description,
-        defination: JSON.stringify(initFlow),
+        definition: JSON.stringify(initFlow),
         userId,
         status: WORKFLOW_STATUS.DRAFT,
       })

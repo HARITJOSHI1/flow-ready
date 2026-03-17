@@ -13,6 +13,7 @@ import Header from "./header";
 import Cta from "./cta";
 import Gradient from "./gradient";
 import { people } from "./constants/people";
+import WorkflowScrollStory from "./story/scroll-story";
 
 type Props = {
     userId?: string
@@ -86,7 +87,9 @@ const LandingPage = ({userId}: Props) => {
         </AuroraBackground>
       </section>
 
-      <section>yusdiisad</section>
+      <section>
+        <WorkflowScrollStory />
+      </section>
     </>
   );
 };

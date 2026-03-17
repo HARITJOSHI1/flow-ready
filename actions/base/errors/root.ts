@@ -9,7 +9,7 @@ import { handleZSAError } from "./handlers/zsa.err";
 export const handleErrors = (
   error: unknown
 ): BaseErrReturnType<typeof ERROR_SCHEMA_v2> => {
-  UnknownError.initialize();
+  // UnknownError.initialize();
 
   if (error instanceof ApiError) {
     const result = handleApiError(error as ApiError<ErrorKeys>);
