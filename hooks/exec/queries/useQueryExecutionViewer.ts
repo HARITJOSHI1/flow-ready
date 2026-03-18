@@ -10,7 +10,7 @@ import { WORKFLOW_EXEC_PHASES_ACTION_RESULT } from "@/actions/execution/queries/
 export const useQueryExecutionViewer = (
   initData: WORKFLOW_EXEC_PHASES_ACTION_RESULT
 ) => {
-  const { isPending, isError, error, data, isSuccess } = useServerActionQuery(
+  const { isPending, error, data, isSuccess } = useServerActionQuery(
     getWorkflowWithExecutionPhases,
     {
       input: {
@@ -26,5 +26,7 @@ export const useQueryExecutionViewer = (
     }
   );
 
-  return { isPending, isError, error, data, isSuccess };
+  if (data?.resolved === "error" || !data?.resolved) return { isPending, error};
+
+  return { isPending, data: data.result, isSuccess };
 };

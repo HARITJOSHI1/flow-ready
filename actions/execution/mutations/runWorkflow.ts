@@ -8,7 +8,7 @@ import { ERROR_SCHEMA_v2 } from "@/schemas/errors";
 import { z } from "zod";
 import { base } from "../../base";
 import { getWorkflowsFromDB } from "../../workflows/queries/helpers";
-import { createExecutionPlanInDB } from "./helpers";
+import { createExecutionPlanInDB, executeWorkflow } from "./helpers";
 import { RUN_WORKFLOW_ACTION_RESULT_SCHEMA } from "./schema";
 
 export const runWorkflow = base
@@ -111,6 +111,10 @@ export const runWorkflow = base
       userId: ctx.result.userId,
       executionPlan,
     });
+
+
+    // runs in bg
+    await executeWorkflow(execution.id);
 
     return {
       resolved: "success",
