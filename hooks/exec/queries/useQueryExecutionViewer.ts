@@ -18,15 +18,16 @@ export const useQueryExecutionViewer = (
       },
       queryKey: QueryKeyFactory.execution(initData.workflow_execution.id),
       refetchInterval: (q) => {
-        return q.state.data?.resolved === "success" &&
-          q.state.data.result.workflow_execution.status === "RUNNING"
-          ? 1000
-          : false;
+        const status =
+          q.state.data?.resolved === "success"
+            ? q.state.data.result.workflow_execution.status
+            : null;
+        return status === "RUNNING" || status === "PENDING" ? 1000 : false;
       },
     }
   );
 
-  if (data?.resolved === "error" || !data?.resolved) return { isPending, error};
+  if (data?.resolved === "error" || !data?.resolved) return { isPending, error };
 
   return { isPending, data: data.result, isSuccess };
 };

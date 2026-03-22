@@ -33,8 +33,11 @@ export const workflow = pgTable("workflow", {
   name: varchar("name", { length: 255 }).notNull().unique(),
   description: varchar("description", { length: 255 }),
   userId: text("user_id").notNull(),
-  definition: text("definition"),
+  defination: text("defination"),
   status: workflowStatus("status").notNull(),
+  lastRunAt: timestamp("last_run_at"),
+  lastRunId: text("last_run_id"),
+  lastRunStatus: workflowExecutionStatus("last_run_status"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
@@ -47,6 +50,7 @@ export const workflowExecution = pgTable("workflow_execution", {
     .references(() => workflow.id, { onDelete: "cascade" })
     .notNull(),
 
+  creditsConsumed: integer().default(0).notNull(),
   userId: text("user_id").notNull(),
   status: workflowExecutionStatus("status").notNull(),
   trigger: workflowtrigger("trigger").notNull(),

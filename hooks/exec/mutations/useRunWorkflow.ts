@@ -14,7 +14,7 @@ export const useRunWorkflowMutation = () => {
           title: "Execution started",
         });
 
-        if (data.resolved === "success") router.push(data.result.redirect_url);
+        // if (data.resolved === "success") router.push(data.result.redirect_url);
       },
 
       onError: (error) => {

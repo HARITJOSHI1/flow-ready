@@ -4,7 +4,6 @@ import { base } from "@/actions/base";
 import ApiError from "@/lib/classes/Error/ApiError";
 import { createServerActionOutputSchema } from "@/lib/helpers/global";
 import { ERROR_SCHEMA_v2 } from "@/schemas/errors";
-import { unstable_cache } from "next/cache";
 import { z } from "zod";
 import { joinWorkfowExec__executionPhase } from "./helpers";
 import { WORKFLOW_EXEC_PHASES_ACTION_RESULT_SCHEMA } from "./schema";
@@ -25,14 +24,8 @@ export const getWorkflowWithExecutionPhases = base
     const { executionId } = input;
     const { userId } = ctx.result;
 
-    const phases = await unstable_cache(
-      joinWorkfowExec__executionPhase,
-      [`w_execution-user-${userId}`],
-      {
-        tags: [`w_execution-user-${userId}`],
-        revalidate: 15 * 60,
-      }
-    )(executionId, userId);
+    // this query is polled live during execution
+    const phases = await joinWorkfowExec__executionPhase(executionId, userId);
 
     if (!phases)
       throw ApiError.notFound(

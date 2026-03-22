@@ -10,6 +10,7 @@ import { base } from "../../base";
 import { getWorkflowsFromDB } from "../../workflows/queries/helpers";
 import { createExecutionPlanInDB, executeWorkflow } from "./helpers";
 import { RUN_WORKFLOW_ACTION_RESULT_SCHEMA } from "./schema";
+import { redirect } from "next/navigation";
 
 export const runWorkflow = base
   .createServerAction()
@@ -114,12 +115,13 @@ export const runWorkflow = base
 
 
     // runs in bg
-    await executeWorkflow(execution.id);
+    executeWorkflow(execution.id);
+    redirect(`/workflow/runs/${workflowId}/${execution.id}`);
 
-    return {
-      resolved: "success",
-      result: {
-        redirect_url: `/workflow/runs/${workflowId}/${execution.id}`,
-      },
-    };
+    // return {
+    //   resolved: "success",
+    //   result: {
+    //     redirect_url: `/workflow/runs/${workflowId}/${execution.id}`,
+    //   },
+    // };
   });

@@ -44,7 +44,7 @@ const FlowEditor = ({ workflow }: Props) => {
   const [edges, setEdges, onEdgesChange] = useEdgesState([] as Edge[]);
   const { setViewport, screenToFlowPosition, updateNodeData } = useReactFlow();
   const result = useFlowValidation();
-  const flow = JSON.parse(workflow.definition!) as ReactFlowJsonObject<
+  const flow = JSON.parse(workflow.defination!) as ReactFlowJsonObject<
     Node,
     Edge
   >;
@@ -61,7 +61,7 @@ const FlowEditor = ({ workflow }: Props) => {
     if (!flow.viewport) return;
     const { x = 0, y = 0, zoom = 1 } = flow.viewport;
     setViewport({ x, y, zoom });
-  }, [workflow.definition, setEdges, setNodes, setViewport]);
+  }, [workflow.defination, setEdges, setNodes, setViewport]);
 
   if (isErr(result)) return null;
   const { invalidInputs, clearErrors } = result.data;
