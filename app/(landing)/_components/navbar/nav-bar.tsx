@@ -6,7 +6,7 @@ import { UserButton } from "@clerk/nextjs";
 import Link from "next/link";
 import React from "react";
 import { useState } from "react";
-import { Menu } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useTheme } from "next-themes";
 import { dark } from "@clerk/themes";
@@ -16,21 +16,36 @@ type Props = {
 };
 
 const NAV_LINKS = [
-  { href: "#", label: "Pricing" },
-  { href: "#", label: "About" },
-  { href: "#", label: "Contact" },
-  { href: "#", label: "Features" },
+  { href: "#features", label: "Features" },
+  { href: "#how-it-works", label: "How It Works" },
+  { href: "#pricing", label: "Pricing" },
+  { href: "#testimonials", label: "Testimonials" },
+  { href: "#faq", label: "FAQ" },
 ];
 
 const NavBar = ({ userId }: Props) => {
   const [open, setOpen] = useState(false);
   const { resolvedTheme } = useTheme();
 
+  const handleSmoothScroll = (
+    e: React.MouseEvent<HTMLAnchorElement>,
+    href: string
+  ) => {
+    if (href.startsWith("#")) {
+      e.preventDefault();
+      const el = document.getElementById(href.slice(1));
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth" });
+        setOpen(false);
+      }
+    }
+  };
+
   return (
     <div className="flex justify-center w-full">
       <nav
         className={cn(
-          "flex w-full items-center justify-between px-6 h-[60px] rounded-none border-b border-b-primary/20 dark:border-white/20 fixed dark:bg-neutral-500/15 backdrop-blur-2xl backdrop-saturate-150 shadow-lg z-40 md:w-[80%] md:rounded-full md:my-5 md:border md: border-primary/20"
+          "flex w-full items-center justify-between px-6 h-[60px] rounded-none border-b border-b-primary/20 dark:border-white/20 fixed dark:bg-neutral-500/15 backdrop-blur-2xl backdrop-saturate-150 shadow-lg z-40 md:w-[80%] md:rounded-full md:my-5 md:border md:border-primary/20"
         )}
       >
         {/* Desktop Nav */}
@@ -38,24 +53,25 @@ const NavBar = ({ userId }: Props) => {
           <aside>
             <Logo />
           </aside>
-          <ul className="flex items-center justify-center gap-8 w-full">
+          <ul className="flex items-center justify-center gap-6 w-full">
             {NAV_LINKS.map((link) => (
               <li key={link.label}>
-                <Link
+                <a
                   href={link.href}
-                  className="text-primary dark:text-white/90 font-medium px-4 py-2 rounded-md hover:bg-primary/10 transition"
+                  onClick={(e) => handleSmoothScroll(e, link.href)}
+                  className="text-sm text-foreground/70 dark:text-white/70 font-medium px-3 py-2 rounded-lg hover:text-foreground dark:hover:text-white hover:bg-primary/5 transition-all duration-200"
                 >
                   {link.label}
-                </Link>
+                </a>
               </li>
             ))}
           </ul>
           <aside className="flex gap-2 items-center ml-8">
             <Link
               href={"/dashboard"}
-              className="bg-primary text-white p-2 px-4 rounded-md hover:bg-primary/80 transition"
+              className="bg-primary text-white p-2 px-5 rounded-full text-sm font-medium hover:bg-primary/80 transition-all duration-200 shadow-md shadow-primary/20 hover:shadow-lg hover:shadow-primary/30 whitespace-nowrap"
             >
-              {userId ? "Dashboard" : "Join"}
+              {userId ? "Dashboard" : "Get Started"}
             </Link>
             <UserButton
               appearance={{
@@ -71,14 +87,12 @@ const NavBar = ({ userId }: Props) => {
           </aside>
         </div>
 
-        {/* Hamburger Icon for Mobile */}
+        {/* Mobile Nav */}
         <div className="flex md:hidden w-full items-center justify-between">
           <aside>
             <Logo />
           </aside>
-          <div />
-
-          <aside className="flex gap-2 items-center ml-8">
+          <aside className="flex gap-2 items-center">
             <UserButton
               appearance={{
                 baseTheme:
@@ -91,68 +105,57 @@ const NavBar = ({ userId }: Props) => {
             />
             <ModeToggle />
             <button
-              className="flex items-center justify-center p-2 rounded focus:outline-none focus:ring-2 focus:ring-primary/50 transition"
+              className="flex items-center justify-center p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 transition"
               aria-label="Open navigation menu"
               onClick={() => setOpen(true)}
             >
-              <Menu className="w-7 h-7 text-foreground" />
+              <Menu className="w-6 h-6 text-foreground" />
             </button>
           </aside>
         </div>
       </nav>
 
-      {/* Mobile Nav Dropdown */}
+      {/* Mobile Nav Overlay */}
       {open && (
         <>
-          {/* Overlay */}
           <div
             className="fixed h-screen inset-0 z-40 bg-black/30 dark:bg-black/50 backdrop-blur-sm transition-opacity duration-300"
             onClick={() => setOpen(false)}
           />
 
           <div
-            className="fixed h-full left-0 top-[60px] w-full z-50 dark:border-white/20 bg-white/80 dark:bg-neutral-500/15 backdrop-blur-2xl backdrop-saturate-150 shadow-lg animate-fadeInDown"
+            className="fixed h-full left-0 top-[60px] w-full z-50 bg-background/95 backdrop-blur-2xl backdrop-saturate-150 shadow-lg"
             style={{ animation: "fadeInDown 0.3s" }}
           >
-            <ul className="flex flex-col gap-2 px-6 py-10 w-full mt-2">
+            <ul className="flex flex-col gap-1 px-6 py-8 w-full">
               {NAV_LINKS.map((link) => (
                 <li key={link.label}>
-                  <Link
+                  <a
                     href={link.href}
-                    className="block text-lg font-medium text-primary dark:text-white/90 px-4 py-3 rounded-md hover:bg-primary/10 transition"
-                    onClick={() => setOpen(false)}
+                    className="block text-lg font-medium text-foreground/80 px-4 py-3.5 rounded-xl hover:bg-primary/5 hover:text-foreground transition-all duration-200"
+                    onClick={(e) => handleSmoothScroll(e, link.href)}
                   >
                     {link.label}
-                  </Link>
+                  </a>
                 </li>
               ))}
 
-              <Link
-                href={"/dashboard"}
-                className="bg-primary mt-4 text-white p-2 px-4 rounded-md hover:bg-primary/80 transition w-full text-center"
-              >
-                {userId ? "Dashboard" : "Join"}
-              </Link>
+              <div className="mt-4 px-4">
+                <Link
+                  href={"/dashboard"}
+                  className="block bg-primary text-white p-3 rounded-xl hover:bg-primary/80 transition w-full text-center font-medium"
+                >
+                  {userId ? "Dashboard" : "Get Started"}
+                </Link>
+              </div>
             </ul>
 
             <button
-              className="absolute top-4 right-6 p-2 rounded focus:outline-none focus:ring-2 focus:ring-primary/50 transition"
+              className="absolute top-4 right-6 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 transition hover:bg-primary/5"
               aria-label="Close navigation menu"
               onClick={() => setOpen(false)}
             >
-              <svg
-                className="w-6 h-6 text-primary"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth={2}
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
+              <X className="w-6 h-6 text-foreground" />
             </button>
           </div>
         </>
@@ -161,7 +164,7 @@ const NavBar = ({ userId }: Props) => {
         @keyframes fadeInDown {
           from {
             opacity: 0;
-            transform: translateY(-30px);
+            transform: translateY(-20px);
           }
           to {
             opacity: 1;

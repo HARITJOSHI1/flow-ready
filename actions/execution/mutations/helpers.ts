@@ -246,10 +246,18 @@ const executePhase = async (phase: ExecutionPhase) => {
   const success = Math.random() < 0.7;
 
   await finalisePhase(phase.id, success);
- 
+
   return success;
 }
 
+
+
+// const executor = async (phase: ExecutionPhase, node: AppNode): Promise<boolean> => {
+//   const rubFn = ExecutorRegistry.getExecutor(node.data.type as TaskType);
+//   if (isErr(rubFn)) return false;
+
+//   return await rubFn(node);
+// }
 
 const finalisePhase = async (phaseId: string, success: boolean) => {
   const finalStatus = success ? "COMPLETED" : "FAILED";

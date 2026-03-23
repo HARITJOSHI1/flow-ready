@@ -14,6 +14,13 @@ import Cta from "./cta";
 import Gradient from "./gradient";
 import { people } from "./constants/people";
 import WorkflowScrollStory from "./story/scroll-story";
+import FeaturesSection from "./features-section";
+import HowItWorksSection from "./how-it-works-section";
+import TestimonialsSection from "./testimonials-section";
+import PricingSection from "./pricing-section";
+import FaqSection from "./faq-section";
+import CtaSection from "./cta-section";
+import Footer from "./footer";
 
 type Props = {
     userId?: string
@@ -24,7 +31,8 @@ const LandingPage = ({userId}: Props) => {
 
   return (
     <>
-      <section className="flex flex-col h-screen">
+      {/* ===== HERO SECTION ===== */}
+      <section className="flex flex-col h-screen" id="hero">
         <NavBar userId={userId}/>
 
         <AuroraBackground
@@ -72,7 +80,7 @@ const LandingPage = ({userId}: Props) => {
               </span>
             </div>
 
-            <Cta text="Join now" />
+            <Cta text="Get Started Free" />
           </motion.div>
 
           <SparklesCore
@@ -87,9 +95,31 @@ const LandingPage = ({userId}: Props) => {
         </AuroraBackground>
       </section>
 
+      {/* ===== SCROLL STORY SECTION ===== */}
       <section>
         <WorkflowScrollStory />
       </section>
+
+      {/* ===== FEATURES SECTION ===== */}
+      <FeaturesSection />
+
+      {/* ===== HOW IT WORKS SECTION ===== */}
+      <HowItWorksSection />
+
+      {/* ===== TESTIMONIALS SECTION ===== */}
+      <TestimonialsSection />
+
+      {/* ===== PRICING SECTION ===== */}
+      <PricingSection />
+
+      {/* ===== FAQ SECTION ===== */}
+      <FaqSection />
+
+      {/* ===== CTA SECTION ===== */}
+      <CtaSection />
+
+      {/* ===== FOOTER ===== */}
+      <Footer />
     </>
   );
 };

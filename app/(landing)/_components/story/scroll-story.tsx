@@ -35,19 +35,19 @@ export default function WorkflowScrollStory() {
   });
 
   // === NODE ANIMATIONS ===
-  // Left node: appears first (0 - 0.12)
   const node1Opacity = useTransform(scrollYProgress, [0, 0.12], [0, 1]);
   const node1Scale = useTransform(scrollYProgress, [0, 0.12], [0.9, 1]);
   const node1Y = useTransform(scrollYProgress, [0, 0.12], [40, 0]);
 
-  // Right node: appears AFTER right blur disappears (0.40 - 0.52)
   const node2Opacity = useTransform(scrollYProgress, [0.40, 0.52], [0, 1]);
   const node2Scale = useTransform(scrollYProgress, [0.40, 0.52], [0.9, 1]);
   const node2Y = useTransform(scrollYProgress, [0.40, 0.52], [40, 0]);
 
-  // === BLUR OVERLAY ANIMATIONS - CRITICAL FIX ===
-  // Right blur (about left node): 0.14 - 0.38
-  // Blur fades in, stays, then fades out COMPLETELY before right node appears
+  // === SECTION TITLE ANIMATIONS ===
+  const sectionTitleOpacity = useTransform(scrollYProgress, [0, 0.04], [0, 1]);
+  const sectionTitleY = useTransform(scrollYProgress, [0, 0.06], [30, 0]);
+
+  // === BLUR OVERLAY ANIMATIONS ===
   const rightBlurOpacity = useTransform(
     scrollYProgress,
     [0.14, 0.18, 0.32, 0.38],
@@ -69,8 +69,6 @@ export default function WorkflowScrollStory() {
     [30, 0]
   );
 
-  // Left blur (about right node): 0.54 - 0.78
-  // Starts AFTER right node is visible, fades out before connection
   const leftBlurOpacity = useTransform(
     scrollYProgress,
     [0.54, 0.58, 0.72, 0.78],
@@ -93,10 +91,13 @@ export default function WorkflowScrollStory() {
   );
 
   // === CONNECTION ANIMATIONS ===
-  // Edge only appears after BOTH blur overlays are completely gone (0.80+)
   const edgeOpacity = useTransform(scrollYProgress, [0.80, 0.84], [0, 1]);
   const edgeDraw = useTransform(scrollYProgress, [0.84, 0.94], [0, 1]);
   const connectionGlow = useTransform(scrollYProgress, [0.94, 1], [0, 1]);
+
+  // === FINAL MESSAGE ===
+  const finalMessageOpacity = useTransform(scrollYProgress, [0.92, 0.98], [0, 1]);
+  const finalMessageY = useTransform(scrollYProgress, [0.92, 0.98], [20, 0]);
 
   // === BACKGROUND GLOW ANIMATIONS ===
   const leftGlowOpacity = useTransform(scrollYProgress, [0, 0.12], [0, 0.4]);
@@ -109,11 +110,32 @@ export default function WorkflowScrollStory() {
         <div className="sticky top-0 h-screen flex items-center justify-center overflow-hidden bg-background">
           
           {/* ============================================ */}
+          {/* SECTION HEADER - Fades in at scroll start */}
+          {/* ============================================ */}
+          <motion.div
+            style={{ opacity: sectionTitleOpacity, y: sectionTitleY }}
+            className="absolute top-8 md:top-12 left-0 right-0 z-30 text-center px-4"
+          >
+            <span className="inline-block px-4 py-1.5 rounded-full text-xs font-semibold tracking-widest uppercase bg-primary/10 text-primary dark:bg-primary/20 dark:text-violet-300 mb-3">
+              How It Connects
+            </span>
+            <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold tracking-tight text-foreground">
+              See your{" "}
+              <span className="bg-gradient-to-r from-violet-500 via-purple-500 to-cyan-400 bg-clip-text text-transparent">
+                workflow
+              </span>{" "}
+              come alive
+            </h2>
+            <p className="text-sm md:text-base text-muted-foreground mt-2 max-w-md mx-auto">
+              Scroll to watch nodes connect and data flow between automation steps
+            </p>
+          </motion.div>
+
+          {/* ============================================ */}
           {/* BACKGROUND GLOW EFFECTS */}
           {/* ============================================ */}
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
             
-            {/* Left node glow - appears with left node */}
             <LeftNodeGlow
               opacity={leftGlowOpacity}
               width={800}
@@ -121,7 +143,6 @@ export default function WorkflowScrollStory() {
               delay={1}
             />
 
-            {/* Right node glow - appears with right node */}
             <RightNodeGlow
               opacity={rightGlowOpacity}
               width={800}
@@ -129,7 +150,6 @@ export default function WorkflowScrollStory() {
               delay={1}
             />
 
-            {/* Center connection glow - appears when connection forms */}
             <CenterConnectionGlow
               opacity={centerGlowOpacity}
               width={1000}
@@ -139,7 +159,6 @@ export default function WorkflowScrollStory() {
 
             {/* ============================================ */}
             {/* BLUR OVERLAY: RIGHT SIDE (About Left Node) */}
-            {/* Appears: 0.14-0.38, BEFORE right node (0.40) */}
             {/* ============================================ */}
             <motion.div
               style={{ 
@@ -148,15 +167,12 @@ export default function WorkflowScrollStory() {
               }}
               className="absolute inset-0 flex items-stretch z-40"
             >
-              {/* Empty left half - left node shows through */}
               <div className="w-1/2 h-full" />
               
-              {/* Blurred right half with content */}
               <motion.div
                 style={{ x: rightBlurX }}
                 className="w-1/2 h-full relative"
               >
-                {/* Blur layer */}
                 <div 
                   className="absolute inset-0"
                   style={{
@@ -164,7 +180,6 @@ export default function WorkflowScrollStory() {
                     WebkitBackdropFilter: "blur(30px)"
                   }}
                 >
-                  {/* Light mode blended gradient */}
                   <div
                     className="absolute inset-0 block dark:hidden"
                     style={{
@@ -176,20 +191,18 @@ export default function WorkflowScrollStory() {
                           "rgba(190,177,255,0.12) 100%)"
                     }}
                   />
-                  {/* Dark mode blended, soft gradient for subtle seamlessness */}
                   <div
                     className="absolute inset-0 hidden dark:block"
                     style={{
                       background: 
                         "linear-gradient(93deg, " +
-                          "rgba(32,22,51,0.25) 8%, " + // makes it meld into background
+                          "rgba(32,22,51,0.25) 8%, " +
                           "rgba(69,50,120,0.23) 24%, " +
                           "rgba(105,82,159,0.21) 53%, " +
                           "rgba(120,101,181,0.14) 80%, " +
                           "rgba(32,22,51,0.16) 100%)"
                     }}
                   />
-                  {/* Soft vignette for truly seamless edges */}
                   <div
                     className="absolute inset-0 pointer-events-none mix-blend-multiply rounded-lg opacity-40"
                     style={{
@@ -198,7 +211,7 @@ export default function WorkflowScrollStory() {
                     }}
                   />
                 </div>
-                {/* Content - fades separately for smooth transition */}
+                {/* Content */}
                 <motion.div
                   style={{
                     opacity: rightBlurContentOpacity,
@@ -207,22 +220,27 @@ export default function WorkflowScrollStory() {
                   className="relative h-full flex flex-col justify-center items-end pr-6 md:pr-12 lg:pr-20 xl:pr-32"
                 >
                   <div className="max-w-md">
-                    <h4 className="mb-2 text-lg md:text-2xl font-semibold tracking-wide text-[#392780] dark:text-[#DBC6F7] drop-shadow-xl dark:drop-shadow-[0_3px_16px_rgba(135,90,255,0.12)]">
+                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-violet-500/10 dark:bg-violet-500/20 mb-4">
+                      <div className="w-2 h-2 rounded-full bg-violet-500 animate-pulse" />
+                      <span className="text-xs font-semibold tracking-wider uppercase text-violet-600 dark:text-violet-300">
+                        Entry Point
+                      </span>
+                    </div>
+                    <h4 className="mb-3 text-xl md:text-3xl font-bold tracking-tight text-[#392780] dark:text-[#DBC6F7]">
                       🚀 The Browser Node
                     </h4>
-                    <p className="text-base md:text-lg text-neutral-800/90 dark:text-neutral-200 drop-shadow dark:drop-shadow-[0_2px_18px_rgba(115,83,188,0.13)]">
-                      Launch a browser to visit your target website.
-                      <br />
-                      <span className="font-bold text-primary dark:text-[#D6CAFD]">
+                    <p className="text-base md:text-lg text-neutral-600 dark:text-neutral-300 leading-relaxed">
+                      Launch a browser to visit your target website.{" "}
+                      <span className="font-semibold text-violet-600 dark:text-violet-300">
                         Paste any web URL
                       </span>{" "}
-                      to get started!
+                      to get started—FastFlow handles the rest.
                     </p>
-                    <div className="mt-7 flex flex-row gap-2 text-xs">
-                      <span className="bg-primary/10 dark:bg-[#a991ff]/20 px-3 py-1 rounded-full font-medium text-[#ad7bee] dark:text-[#e7e2fa] shadow dark:shadow-[0_0_10px_2px_rgba(150,120,235,0.13)]">
+                    <div className="mt-6 flex flex-row gap-2 text-xs">
+                      <span className="bg-violet-500/10 dark:bg-violet-400/20 px-3 py-1.5 rounded-full font-semibold text-violet-600 dark:text-violet-200 border border-violet-500/20">
                         Entry Node
                       </span>
-                      <span className="bg-secondary/20 dark:bg-[#3c3262]/30 px-3 py-1 rounded-full text-neutral-600 dark:text-neutral-200 border border-transparent dark:border-[#7160a7]/30">
+                      <span className="bg-foreground/5 dark:bg-white/10 px-3 py-1.5 rounded-full text-muted-foreground border border-border/50">
                         Input: URL
                       </span>
                     </div>
@@ -233,7 +251,6 @@ export default function WorkflowScrollStory() {
 
             {/* ============================================ */}
             {/* BLUR OVERLAY: LEFT SIDE (About Right Node) */}
-            {/* Appears: 0.54-0.78, AFTER right node (0.52) */}
             {/* ============================================ */}
             <motion.div
               style={{
@@ -242,12 +259,10 @@ export default function WorkflowScrollStory() {
               }}
               className="absolute inset-0 flex items-stretch z-40"
             >
-              {/* Blurred left half with content */}
               <motion.div
                 style={{ x: leftBlurX }}
                 className="w-1/2 h-full relative"
               >
-                {/* Blur layer */}
                 <div 
                   className="absolute inset-0"
                   style={{
@@ -255,7 +270,6 @@ export default function WorkflowScrollStory() {
                     WebkitBackdropFilter: "blur(30px)"
                   }}
                 >
-                  {/* Light mode blended gradient */}
                   <div
                     className="absolute inset-0 block dark:hidden"
                     style={{
@@ -267,7 +281,6 @@ export default function WorkflowScrollStory() {
                           "rgba(104,235,255,0.12) 100%)"
                     }}
                   />
-                  {/* Dark mode very subtle and seamless, blue-cyan */}
                   <div
                     className="absolute inset-0 hidden dark:block"
                     style={{
@@ -280,7 +293,6 @@ export default function WorkflowScrollStory() {
                           "rgba(22,38,51,0.11) 100%)"
                     }}
                   />
-                  {/* Vignette for seamless edge */}
                   <div
                     className="absolute inset-0 pointer-events-none mix-blend-multiply rounded-lg opacity-40"
                     style={{
@@ -289,7 +301,7 @@ export default function WorkflowScrollStory() {
                     }}
                   />
                 </div>
-                {/* Content - fades separately for smooth transition */}
+                {/* Content */}
                 <motion.div
                   style={{
                     opacity: leftBlurContentOpacity,
@@ -298,22 +310,27 @@ export default function WorkflowScrollStory() {
                   className="relative h-full flex flex-col justify-center items-start pl-6 md:pl-12 lg:pl-20 xl:pl-32"
                 >
                   <div className="max-w-md">
-                    <h4 className="mb-2 text-lg md:text-2xl font-semibold tracking-wide text-cyan-800/90 dark:text-cyan-100 drop-shadow-xl dark:drop-shadow-[0_2px_16px_rgba(0,220,255,0.11)]">
+                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 dark:bg-cyan-500/20 mb-4">
+                      <div className="w-2 h-2 rounded-full bg-cyan-500 animate-pulse" />
+                      <span className="text-xs font-semibold tracking-wider uppercase text-cyan-600 dark:text-cyan-300">
+                        Transformer
+                      </span>
+                    </div>
+                    <h4 className="mb-3 text-xl md:text-3xl font-bold tracking-tight text-cyan-800/90 dark:text-cyan-100">
                       🧩 Extract Data Node
                     </h4>
-                    <p className="text-base md:text-lg text-neutral-800/90 dark:text-neutral-200 drop-shadow dark:drop-shadow-[0_2px_18px_rgba(21,220,230,0.10)]">
-                      Extract information from the loaded webpage in{" "}
-                      <span className="font-bold text-primary dark:text-cyan-50">
+                    <p className="text-base md:text-lg text-neutral-600 dark:text-neutral-300 leading-relaxed">
+                      Extract structured information from the loaded webpage in{" "}
+                      <span className="font-semibold text-cyan-600 dark:text-cyan-300">
                         HTML
-                      </span> format.
-                      <br />
-                      Ready for your next processing step!
+                      </span>{" "}
+                      format. Clean, parsed, and ready for your next processing step.
                     </p>
-                    <div className="mt-7 flex flex-row gap-2 text-xs">
-                      <span className="bg-cyan-100/20 dark:bg-cyan-400/20 px-3 py-1 rounded-full font-medium text-cyan-900 dark:text-cyan-50 shadow dark:shadow-[0_0_10px_2px_rgba(32,190,220,0.12)]">
+                    <div className="mt-6 flex flex-row gap-2 text-xs">
+                      <span className="bg-cyan-500/10 dark:bg-cyan-400/20 px-3 py-1.5 rounded-full font-semibold text-cyan-600 dark:text-cyan-200 border border-cyan-500/20">
                         Transformer Node
                       </span>
-                      <span className="bg-secondary/20 dark:bg-[#142d36]/40 px-3 py-1 rounded-full text-neutral-600 dark:text-cyan-50 border border-transparent dark:border-cyan-300/20">
+                      <span className="bg-foreground/5 dark:bg-white/10 px-3 py-1.5 rounded-full text-muted-foreground border border-border/50">
                         Output: HTML
                       </span>
                     </div>
@@ -321,7 +338,6 @@ export default function WorkflowScrollStory() {
                 </motion.div>
               </motion.div>
               
-              {/* Empty right half - right node shows through */}
               <div className="w-1/2 h-full" />
             </motion.div>
 
@@ -333,7 +349,6 @@ export default function WorkflowScrollStory() {
           <div className="relative w-full h-full flex items-center justify-center px-4 md:px-8 lg:px-16">
             <div className="flex flex-row justify-between items-center w-full h-full max-w-7xl mx-auto relative z-10">
               
-              {/* Left Node - Launch Browser */}
               <LeftNode
                 opacity={node1Opacity}
                 scale={node1Scale}
@@ -341,14 +356,12 @@ export default function WorkflowScrollStory() {
                 leftNodeRef={leftNodeRef}
               />
 
-              {/* Connection Wave - Between nodes */}
               <Wave
                 opacity={edgeOpacity}
                 scrollYProgress={scrollYProgress}
                 edgeDraw={edgeDraw}
               />
 
-              {/* Right Node - Extract Page Data */}
               <RightNode
                 rightNodeRef={rightNodeRef}
                 node2Opacity={node2Opacity}
@@ -359,6 +372,18 @@ export default function WorkflowScrollStory() {
 
             </div>
           </div>
+
+          {/* ============================================ */}
+          {/* FINAL MESSAGE - Shows when connection completes */}
+          {/* ============================================ */}
+          <motion.div
+            style={{ opacity: finalMessageOpacity, y: finalMessageY }}
+            className="absolute bottom-8 md:bottom-12 left-0 right-0 z-30 text-center px-4"
+          >
+            <p className="text-sm md:text-base font-medium text-primary/80 dark:text-violet-300/80">
+              ✨ Workflow connected — your data pipeline is live
+            </p>
+          </motion.div>
         </div>
       </div>
     </>
