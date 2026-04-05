@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import Logo from "@/components/logo";
+import Logo from "@/components/common/logo";
 import Link from "next/link";
 import {
   Github,

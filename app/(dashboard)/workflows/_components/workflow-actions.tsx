@@ -1,6 +1,6 @@
 "use client";
 
-import TooltipWrapper from "@/components/tooltip-wrapper";
+import TooltipWrapper from "@/components/common/tooltip-wrapper";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,

@@ -24,12 +24,12 @@ export const ExtractTextFrmElement = {
       type: TaskParamType.STRING,
       required: true,
     },
-  ],
+  ] as const,
 
   outputs: [
     {
       name: "Extracted text",
       type: TaskParamType.STRING,
     },
-  ],
-} satisfies Task<TaskType.EXTRACT_TEXT_FROM_ELEMENT>;
+  ] as const,
+} satisfies Task;

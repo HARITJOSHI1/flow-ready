@@ -1,6 +1,6 @@
 import React, { ReactNode } from "react";
 import { Separator } from "@/components/ui/separator";
-import Logo from "@/components/logo";
+import Logo from "@/components/common/logo";
 import { ModeToggle } from "@/components/modals/theme-modal-toggle";
 import "@xyflow/react/dist/style.css";
 

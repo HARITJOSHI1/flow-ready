@@ -5,7 +5,7 @@ import ApiError from "@/lib/classes/Error/ApiError";
 import { createServerActionOutputSchema } from "@/lib/helpers/global";
 import { ERROR_SCHEMA_v2 } from "@/schemas/errors";
 import { z } from "zod";
-import { joinWorkfowExec__executionPhase } from "./helpers";
+import { joinWorkfowExec__executionPhase } from "../functions/joinWorkfowExec__executionPhase";
 import { WORKFLOW_EXEC_PHASES_ACTION_RESULT_SCHEMA } from "./schema";
 
 export const getWorkflowWithExecutionPhases = base

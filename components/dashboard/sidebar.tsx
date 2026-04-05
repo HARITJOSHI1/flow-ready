@@ -7,11 +7,11 @@ import {
   ShieldCheckIcon,
 } from "lucide-react";
 import React from "react";
-import Logo from "./logo";
+import Logo from "../common/logo";
 import Link from "next/link";
-import { Button, buttonVariants } from "./ui/button";
+import { Button, buttonVariants } from "../ui/button";
 import { usePathname } from "next/navigation";
-import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
+import { Sheet, SheetContent, SheetTrigger } from "../ui/sheet";
 import { useState } from "react";
 
 type Props = {};

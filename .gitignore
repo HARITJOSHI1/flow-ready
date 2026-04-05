@@ -10,6 +10,7 @@
 .yarn/install-state.gz
 package-lock.json
 pnpm-lock.yaml
+/.cursor
 
 /out/
 

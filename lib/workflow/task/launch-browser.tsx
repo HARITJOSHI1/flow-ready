@@ -21,12 +21,12 @@ export const LaunchBrowserTask = {
       required: true,
       hideHandle: false,
     },
-  ],
+  ] as const,
 
   outputs: [
     {
       name: "Web Page",
       type: TaskParamType.BROWSER_INSTANCE,
     },
-  ],
-} satisfies Task<TaskType.LAUNCH_BROWSER>;
+  ] as const,
+} satisfies Task;

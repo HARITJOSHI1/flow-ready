@@ -1,5 +1,5 @@
 import React from "react";
-import Logo from "@/components/logo";
+import Logo from "@/components/common/logo";
 
 const layout = ({ children }: { children: React.ReactNode }) => {
   return (

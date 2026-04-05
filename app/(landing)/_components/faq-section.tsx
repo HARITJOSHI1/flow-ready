@@ -1,16 +1,30 @@
 "use client";
 
-import React, { useState } from "react";
-import { motion, AnimatePresence } from "motion/react";
+import React, { useState, useRef } from "react";
+import { motion, AnimatePresence, useScroll, useTransform } from "motion/react";
 import { faqs } from "./constants/faqs";
 import { cn } from "@/lib/utils";
 import { ChevronDown } from "lucide-react";
+import { SvgHighlight } from "./svg/svg-highlight";
+import { MorphingBlob, SectionBlend } from "./svg/section-dividers";
 
 const FaqSection = () => {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
+  const sectionRef = useRef<HTMLElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start end", "end start"],
+  });
+
+  const headingY = useTransform(scrollYProgress, [0, 0.3], [50, 0]);
+  const headingOpacity = useTransform(scrollYProgress, [0, 0.15], [0, 1]);
+  const contentY = useTransform(scrollYProgress, [0.1, 0.4], [40, 0]);
 
   return (
-    <section id="faq" className="relative py-28 md:py-36 overflow-hidden">
+    <section ref={sectionRef} id="faq" className="relative py-28 md:py-36 overflow-hidden">
+      {/* Section blend edges */}
+      <SectionBlend />
+
       {/* Background */}
       <div
         className={cn(
@@ -20,6 +34,17 @@ const FaqSection = () => {
           "dark:[background-image:radial-gradient(circle,#262626_1px,transparent_1px)]"
         )}
       />
+
+      {/* Morphing blobs */}
+      <MorphingBlob
+        className="absolute -top-16 -left-16 w-[380px] h-[380px] opacity-30 dark:opacity-15"
+        color="rgba(251,191,36,0.05)"
+      />
+      <MorphingBlob
+        className="absolute -bottom-16 -right-16 w-[350px] h-[350px] opacity-25 dark:opacity-[0.12]"
+        color="rgba(251,146,60,0.04)"
+      />
+
       {/* Animated Gradient Backgrounds */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <motion.div
@@ -52,13 +77,32 @@ const FaqSection = () => {
 
       <div className="absolute inset-0 bg-gradient-to-b from-background via-background/80 to-background pointer-events-none" />
 
-      <div className="relative z-10 max-w-3xl mx-auto px-6 md:px-8">
-        {/* Section Header */}
+      {/* Floating question mark SVG decoration */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 0.7 }}
+          className="absolute top-[12%] right-[8%] opacity-[0.05] dark:opacity-[0.025]"
+          animate={{ y: [0, -10, 0], rotate: [0, 8, 0] }}
+          transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+        >
+          <svg width="80" height="100" viewBox="0 0 80 100" fill="currentColor">
+            <path d="M40 0C22 0 8 14 8 30c0 6 4 10 8 10s8-4 8-10c0-8 8-14 16-14s16 6 16 14c0 6-4 10-8 14-6 4-8 10-8 18v4c0 6 4 10 8 10s8-4 8-10v-4c0-4 2-6 4-8 8-6 16-16 16-24C76 14 62 0 40 0zM40 88c-6 0-10 4-10 10s4 10 10 10 10-4 10-10-4-10-10-10z" />
+          </svg>
+        </motion.div>
+        <motion.div
+          className="absolute bottom-[15%] left-[5%] opacity-[0.04] dark:opacity-[0.02]"
+          animate={{ y: [0, 8, 0], rotate: [0, -5, 0] }}
+          transition={{ duration: 7, repeat: Infinity, ease: "easeInOut", delay: 0.8 }}
+        >
+          <svg width="50" height="60" viewBox="0 0 80 100" fill="currentColor">
+            <path d="M40 0C22 0 8 14 8 30c0 6 4 10 8 10s8-4 8-10c0-8 8-14 16-14s16 6 16 14c0 6-4 10-8 14-6 4-8 10-8 18v4c0 6 4 10 8 10s8-4 8-10v-4c0-4 2-6 4-8 8-6 16-16 16-24C76 14 62 0 40 0zM40 88c-6 0-10 4-10 10s4 10 10 10 10-4 10-10-4-10-10-10z" />
+          </svg>
+        </motion.div>
+      </div>
+
+      <div className="relative z-10 max-w-3xl mx-auto px-6 md:px-8">
+        {/* Section Header with parallax */}
+        <motion.div
+          style={{ y: headingY, opacity: headingOpacity }}
           className="text-center mb-16"
         >
           <span className="inline-block px-4 py-1.5 rounded-full text-xs font-semibold tracking-widest uppercase bg-amber-500/10 text-amber-600 dark:bg-amber-500/20 dark:text-amber-300 mb-6">
@@ -66,9 +110,11 @@ const FaqSection = () => {
           </span>
           <h2 className="text-4xl md:text-5xl font-bold tracking-tight text-foreground mb-6">
             Frequently asked{" "}
-            <span className="bg-gradient-to-r from-amber-400 to-orange-400 bg-clip-text text-transparent">
-              questions
-            </span>
+            <SvgHighlight color="rgba(251,191,36,0.15)" delay={0.3}>
+              <span className="bg-gradient-to-r from-amber-400 to-orange-400 bg-clip-text text-transparent">
+                questions
+              </span>
+            </SvgHighlight>
           </h2>
           <p className="text-lg text-muted-foreground max-w-xl mx-auto leading-relaxed">
             Everything you need to know about FastFlow. Can&apos;t find what you&apos;re
@@ -76,8 +122,8 @@ const FaqSection = () => {
           </p>
         </motion.div>
 
-        {/* FAQ Items */}
-        <div className="space-y-3">
+        {/* FAQ Items with parallax */}
+        <motion.div style={{ y: contentY }} className="space-y-3">
           {faqs.map((faq, index) => (
             <motion.div
               key={index}
@@ -103,12 +149,17 @@ const FaqSection = () => {
                   <span className="font-medium text-foreground text-[15px] leading-snug">
                     {faq.question}
                   </span>
-                  <ChevronDown
-                    className={cn(
-                      "w-5 h-5 text-muted-foreground flex-shrink-0 transition-transform duration-300",
-                      openIndex === index && "rotate-180 text-primary"
-                    )}
-                  />
+                  <motion.div
+                    animate={{ rotate: openIndex === index ? 180 : 0 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <ChevronDown
+                      className={cn(
+                        "w-5 h-5 flex-shrink-0 transition-colors duration-300",
+                        openIndex === index ? "text-primary" : "text-muted-foreground"
+                      )}
+                    />
+                  </motion.div>
                 </button>
                 <AnimatePresence>
                   {openIndex === index && (
@@ -128,7 +179,7 @@ const FaqSection = () => {
               </div>
             </motion.div>
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   );

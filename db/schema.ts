@@ -50,6 +50,7 @@ export const workflowExecution = pgTable("workflow_execution", {
     .references(() => workflow.id, { onDelete: "cascade" })
     .notNull(),
 
+  defination: text("defination").default("{}"),
   creditsConsumed: integer().default(0).notNull(),
   userId: text("user_id").notNull(),
   status: workflowExecutionStatus("status").notNull(),

@@ -19,7 +19,7 @@ export const PageToHTML = {
       type: TaskParamType.BROWSER_INSTANCE,
       required: true,
     },
-  ],
+  ] as const,
 
   outputs: [
     {
@@ -31,5 +31,5 @@ export const PageToHTML = {
       name: "Web page",
       type: TaskParamType.BROWSER_INSTANCE,
     },
-  ],
-} satisfies Task<TaskType.PAGE_TO_HTML>;
+  ] as const,
+} satisfies Task;

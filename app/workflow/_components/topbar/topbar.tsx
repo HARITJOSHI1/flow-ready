@@ -1,6 +1,6 @@
 "use client";
 
-import TooltipWrapper from "@/components/tooltip-wrapper";
+import TooltipWrapper from "@/components/common/tooltip-wrapper";
 import { Button } from "@/components/ui/button";
 import { ChevronLeftIcon } from "lucide-react";
 import { useRouter } from "next/navigation";

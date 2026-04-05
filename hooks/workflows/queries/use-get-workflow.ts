@@ -1,10 +1,11 @@
 "use client";
 
-import { getUserWorkflows, getWorkflow } from "@/actions/workflows/queries";
+import { getUserWorkflows } from "@/actions/workflows/queries/getUserWorkflows";
 import { Workflow } from "@/db/schema";
 import { BaseErrReturnType } from "@/lib/types/errors/server/base";
 import { ERROR_SCHEMA_v2 } from "@/schemas/errors";
 import { useServerActionQuery } from "../../global/server-action-hooks";
+import { getWorkflow } from "@/actions/workflows/queries/getWorkflow";
 
 const formatWorkflowInp = <K extends keyof Workflow>(
   id?: string,

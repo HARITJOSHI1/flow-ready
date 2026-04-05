@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Separator } from "@/components/ui/separator";
-import DesktopSidebar from "@/components/sidebar";
+import DesktopSidebar from "@/components/dashboard/sidebar";
 import BreadcrumbHeader from "@/components/header/breadcrumb-header";
 import { ModeToggle } from "@/components/modals/theme-modal-toggle";
 import { SignedIn, UserButton } from "@clerk/nextjs";

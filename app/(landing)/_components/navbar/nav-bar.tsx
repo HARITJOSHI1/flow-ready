@@ -1,6 +1,6 @@
 "use client";
 
-import Logo from "@/components/logo";
+import Logo from "@/components/common/logo";
 import { ModeToggle } from "@/components/modals/theme-modal-toggle";
 import { UserButton } from "@clerk/nextjs";
 import Link from "next/link";
@@ -26,6 +26,8 @@ const NAV_LINKS = [
 const NavBar = ({ userId }: Props) => {
   const [open, setOpen] = useState(false);
   const { resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+  React.useEffect(() => setMounted(true), []);
 
   const handleSmoothScroll = (
     e: React.MouseEvent<HTMLAnchorElement>,
@@ -76,9 +78,11 @@ const NavBar = ({ userId }: Props) => {
             <UserButton
               appearance={{
                 baseTheme:
-                  resolvedTheme === "dark" ||
-                  resolvedTheme === "system" ||
-                  resolvedTheme === undefined
+                  mounted && (
+                    resolvedTheme === "dark" ||
+                    resolvedTheme === "system" ||
+                    resolvedTheme === undefined
+                  )
                     ? dark
                     : undefined,
               }}
@@ -96,9 +100,11 @@ const NavBar = ({ userId }: Props) => {
             <UserButton
               appearance={{
                 baseTheme:
-                  resolvedTheme === "dark" ||
-                  resolvedTheme === "system" ||
-                  resolvedTheme === undefined
+                  mounted && (
+                    resolvedTheme === "dark" ||
+                    resolvedTheme === "system" ||
+                    resolvedTheme === undefined
+                  )
                     ? dark
                     : undefined,
               }}

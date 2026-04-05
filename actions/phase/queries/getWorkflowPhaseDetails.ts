@@ -5,7 +5,7 @@ import ApiError from "@/lib/classes/Error/ApiError";
 import { createServerActionOutputSchema } from "@/lib/helpers/global";
 import { ERROR_SCHEMA_v2 } from "@/schemas/errors";
 import { z } from "zod";
-import { getPhaseDetails } from "@/actions/phase/helpers";
+import { getPhaseDetails } from "@/actions/phase/functions/helpers";
 import { WORKFLOW_EXEC_PHASE_DETAILS_ACTION_RESULT_SCHEMA } from "./schema";
 
 

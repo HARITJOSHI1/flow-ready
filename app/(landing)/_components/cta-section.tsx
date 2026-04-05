@@ -1,16 +1,27 @@
 "use client";
 
-import React from "react";
-import { motion } from "motion/react";
-import { useRouter } from "next/navigation";
 import { ArrowRight, Sparkles } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { motion, useScroll, useTransform } from "motion/react";
+import { useRouter } from "next/navigation";
+import { useRef } from "react";
+import { SectionBlend, SparkleGroup } from "./svg/section-dividers";
 
 const CtaSection = () => {
   const router = useRouter();
+  const sectionRef = useRef<HTMLElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start end", "end start"],
+  });
+
+  const cardY = useTransform(scrollYProgress, [0, 0.4], [80, 0]);
+  const cardScale = useTransform(scrollYProgress, [0, 0.4], [0.92, 1]);
 
   return (
-    <section id="cta" className="relative py-28 md:py-36 overflow-hidden">
+    <section ref={sectionRef} id="cta" className="relative py-28 md:py-36 overflow-hidden">
+      {/* Section blend — only top needed, footer follows */}
+      <SectionBlend position="top" />
+
       {/* Animated Gradient Backgrounds */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <motion.div
@@ -46,10 +57,7 @@ const CtaSection = () => {
 
       <div className="relative z-10 max-w-5xl mx-auto px-6 md:px-8">
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 0.7 }}
+          style={{ y: cardY, scale: cardScale }}
           className="relative rounded-3xl overflow-hidden"
         >
           {/* Card background */}
@@ -59,6 +67,44 @@ const CtaSection = () => {
           {/* Glow effects */}
           <div className="absolute -top-32 -right-32 w-64 h-64 rounded-full bg-pink-500/30 blur-[120px]" />
           <div className="absolute -bottom-32 -left-32 w-64 h-64 rounded-full bg-cyan-500/20 blur-[120px]" />
+
+          {/* Animated sparkle decorations within the card */}
+          <SparkleGroup />
+
+          {/* Animated floating shapes inside the CTA card */}
+          <div className="absolute inset-0 pointer-events-none overflow-hidden">
+            {/* Top-left circle */}
+            <motion.div
+              className="absolute top-8 left-8 w-16 h-16 rounded-full border border-white/10"
+              animate={{ scale: [1, 1.2, 1], opacity: [0.15, 0.3, 0.15] }}
+              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+            />
+            {/* Bottom-right circle */}
+            <motion.div
+              className="absolute bottom-12 right-12 w-20 h-20 rounded-full border border-white/10"
+              animate={{ scale: [1, 1.15, 1], opacity: [0.1, 0.25, 0.1] }}
+              transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+            />
+            {/* Floating cross/plus */}
+            <motion.svg
+              className="absolute top-[20%] right-[15%] opacity-15"
+              width="24" height="24" viewBox="0 0 24 24"
+              animate={{ rotate: [0, 90, 180, 270, 360], y: [0, -8, 0] }}
+              transition={{ rotate: { duration: 20, repeat: Infinity, ease: "linear" }, y: { duration: 3, repeat: Infinity, ease: "easeInOut" } }}
+            >
+              <line x1="12" y1="4" x2="12" y2="20" stroke="white" strokeWidth="2" strokeLinecap="round" />
+              <line x1="4" y1="12" x2="20" y2="12" stroke="white" strokeWidth="2" strokeLinecap="round" />
+            </motion.svg>
+            {/* Floating diamond */}
+            <motion.svg
+              className="absolute bottom-[25%] left-[12%] opacity-10"
+              width="20" height="20" viewBox="0 0 20 20"
+              animate={{ rotate: [45, 50, 45], y: [0, 6, 0] }}
+              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
+            >
+              <rect x="3" y="3" width="14" height="14" rx="2" fill="white" />
+            </motion.svg>
+          </div>
 
           {/* Content */}
           <div className="relative px-8 py-16 md:px-16 md:py-24 text-center">

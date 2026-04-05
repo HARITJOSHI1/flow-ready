@@ -7,10 +7,11 @@ import { WorkflowExecutionPlan } from "@/lib/workflow/type";
 import { ERROR_SCHEMA_v2 } from "@/schemas/errors";
 import { z } from "zod";
 import { base } from "../../base";
-import { getWorkflowsFromDB } from "../../workflows/queries/helpers";
-import { createExecutionPlanInDB, executeWorkflow } from "./helpers";
+import { getWorkflowsFromDB } from "../../workflows/functions/getWorkflowsFromDB";
+import { executeWorkflow } from "../functions/executeWorkflow";
 import { RUN_WORKFLOW_ACTION_RESULT_SCHEMA } from "./schema";
 import { redirect } from "next/navigation";
+import { createExecutionPlanInDB } from "../functions/createExecutionPlanInDB";
 
 export const runWorkflow = base
   .createServerAction()
@@ -111,17 +112,11 @@ export const runWorkflow = base
       workflowId,
       userId: ctx.result.userId,
       executionPlan,
+      flowDefination
     });
 
 
     // runs in bg
     executeWorkflow(execution.id);
     redirect(`/workflow/runs/${workflowId}/${execution.id}`);
-
-    // return {
-    //   resolved: "success",
-    //   result: {
-    //     redirect_url: `/workflow/runs/${workflowId}/${execution.id}`,
-    //   },
-    // };
   });

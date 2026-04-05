@@ -1,8 +1,8 @@
 "use client";
 
 import { AuroraBackground } from "@/components/ui/aurora-background";
-import React from "react";
-import { motion } from "motion/react";
+import React, { useRef, useState, useEffect } from "react";
+import { motion, useScroll, useTransform } from "motion/react";
 import { SparklesCore } from "@/components/ui/sparkles";
 import { useTheme } from "next-themes";
 import { FlipWords } from "@/components/ui/flip-words";
@@ -21,6 +21,15 @@ import PricingSection from "./pricing-section";
 import FaqSection from "./faq-section";
 import CtaSection from "./cta-section";
 import Footer from "./footer";
+import ManifestoSection from "./manifesto-section";
+import {
+  FloatingBrowser,
+  FloatingWorkflow,
+  FloatingAI,
+  FloatingData,
+  FloatingZap,
+  FloatingShield,
+} from "./svg/floating-icons";
 
 type Props = {
     userId?: string
@@ -28,11 +37,34 @@ type Props = {
 
 const LandingPage = ({userId}: Props) => {
   const theme = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+  const heroRef = useRef<HTMLElement>(null);
+
+  // ── Parallax: track hero scroll progress ──
+  const { scrollYProgress: heroProgress } = useScroll({
+    target: heroRef,
+    offset: ["start start", "end start"],
+  });
+
+  // Each floating SVG drifts at a different parallax rate as user scrolls past hero
+  const parallax1 = useTransform(heroProgress, [0, 1], [0, 180]);
+  const parallax2 = useTransform(heroProgress, [0, 1], [0, 240]);
+  const parallax3 = useTransform(heroProgress, [0, 1], [0, 160]);
+  const parallax4 = useTransform(heroProgress, [0, 1], [0, 300]);
+  const parallax5 = useTransform(heroProgress, [0, 1], [0, 220]);
+  const parallax6 = useTransform(heroProgress, [0, 1], [0, 140]);
+  // Hero content drifts up gently  
+  const heroContentY = useTransform(heroProgress, [0, 1], [0, 80]);
+  const heroContentOpacity = useTransform(heroProgress, [0, 0.6, 1], [1, 0.8, 0]);
 
   return (
     <>
       {/* ===== HERO SECTION ===== */}
-      <section className="flex flex-col h-screen" id="hero">
+      <section ref={heroRef} className="flex flex-col h-screen relative" id="hero">
         <NavBar userId={userId}/>
 
         <AuroraBackground
@@ -45,14 +77,50 @@ const LandingPage = ({userId}: Props) => {
         >
           <Gradient />
 
+          {/* ── Floating SVGs with parallax scroll (onassemble-style) ── */}
+          <div className="absolute inset-0 pointer-events-none z-10 hidden md:block">
+            <FloatingBrowser
+              className="absolute top-[12%] left-[6%]"
+              size={90}
+              scrollY={parallax1}
+            />
+            <FloatingWorkflow
+              className="absolute top-[15%] right-[8%]"
+              size={78}
+              scrollY={parallax2}
+            />
+            <FloatingAI
+              className="absolute bottom-[28%] left-[10%]"
+              size={68}
+              scrollY={parallax3}
+            />
+            <FloatingData
+              className="absolute top-[55%] right-[6%]"
+              size={60}
+              scrollY={parallax4}
+            />
+            <FloatingZap
+              className="absolute bottom-[18%] right-[18%]"
+              size={54}
+              scrollY={parallax5}
+            />
+            <FloatingShield
+              className="absolute top-[40%] left-[4%]"
+              size={50}
+              scrollY={parallax6}
+            />
+          </div>
+
+          {/* ── Hero content with gentle scroll fade-out ── */}
           <motion.div
             initial={{ opacity: 0.0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{
               delay: 0.3,
               duration: 0.8,
               ease: "easeInOut",
             }}
+            style={{ y: heroContentY, opacity: heroContentOpacity }}
             className="flex flex-col gap-4 items-center justify-center px-4 py-2 w-full h-full absolute inset-0 top-0"
           >
             <div className="relative z-20 text-center select-none mt-6">
@@ -87,13 +155,16 @@ const LandingPage = ({userId}: Props) => {
             id="tsparticlesfullpage"
             background="transparent"
             minSize={0.6}
-            maxSize={theme.resolvedTheme !== "dark" ? 1 : 0.5}
+            maxSize={mounted && theme.resolvedTheme === "dark" ? 0.5 : 1}
             particleDensity={50}
             className="w-full h-full"
-            particleColor={theme.resolvedTheme !== "dark" ? "#000" : "#FFFFFF"}
+            particleColor={mounted && theme.resolvedTheme === "dark" ? "#FFFFFF" : "#000"}
           />
         </AuroraBackground>
       </section>
+
+      {/* ===== MANIFESTO / STORY SECTION (onassemble-style) ===== */}
+      <ManifestoSection />
 
       {/* ===== SCROLL STORY SECTION ===== */}
       <section>
