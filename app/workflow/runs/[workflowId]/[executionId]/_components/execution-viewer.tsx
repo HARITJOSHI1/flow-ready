@@ -119,7 +119,9 @@ const ExecutionViewer = ({ initData }: Props) => {
       </aside>
 
       <div className="flex w-full h-full justify-center items-center">
-        <pre className="text-sm p-4 w-full h-full overflow-auto break-words whitespace-pre-wrap">{JSON.stringify(phaseData?.phase, null, 2)}</pre>
+        <pre className="text-sm p-4 w-full h-full overflow-auto break-words whitespace-pre-wrap">{JSON.stringify(phaseData?.phase, null, 2)}
+        {JSON.stringify(phaseData?.logs, null, 2)}
+        </pre>
       </div>
     </div>
   );

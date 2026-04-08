@@ -81,6 +81,21 @@ export const executionPhase = pgTable("execution_phase", {
     .notNull(),
 });
 
+
+export const executionLogs = pgTable("execution_logs", {
+  id: uuid("id")
+    .primaryKey()
+    .$default(() => crypto.randomUUID()),
+
+  logLevel: text("log_level").notNull(),
+  message: text("message").notNull(),
+  timestamp: timestamp("timestamp").defaultNow().notNull(),
+  workflowExecutionPhaseId: uuid("workflow_execution_phase_id").references(() => executionPhase.id, {
+    onDelete: "cascade"
+  }).notNull()
+
+});
+
 // Relations
 export const workflowExecution__with__executionPhase = relations(
   workflowExecution,
@@ -116,7 +131,25 @@ export const workflowExecution__with__workflow = relations(
   })
 );
 
+export const executionPhase__with__executionLogs = relations(
+  executionPhase,
+  ({ many }) => ({
+    executionLogs: many(executionLogs),
+  }));
+
+export const executionLogs__with__executionPhase = relations(
+  executionLogs,
+  ({ one }) => ({
+    executionPhase: one(executionPhase, {
+      fields: [executionLogs.workflowExecutionPhaseId],
+      references: [executionPhase.id],
+    }),
+  }));
+
+
 // Types
 export type Workflow = typeof workflow.$inferSelect;
 export type ExecutionPhase = typeof executionPhase.$inferSelect;
 export type WorkflowExecution = typeof workflowExecution.$inferSelect;
+export type ExecutionLog = typeof executionLogs.$inferSelect;
+

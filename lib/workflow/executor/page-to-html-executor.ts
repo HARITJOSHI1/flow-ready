@@ -1,9 +1,7 @@
-import { ExcutorEnvironment } from "@/actions/execution/types";
+import { ExcutorEnvironment } from "@/actions/execution/types/executionEnv";
 import { PageToHTML } from "../task/page-to-html";
 
 export const PageToHtmlExecutor = async (environment: ExcutorEnvironment<typeof PageToHTML>) => {
-    console.log("Page to HTML...");
-
     try {
         const html = await environment.getPage()?.content();
         if (!html) return false;
@@ -11,8 +9,8 @@ export const PageToHtmlExecutor = async (environment: ExcutorEnvironment<typeof 
         environment.setOutput("HTML", html)
         return true;
 
-    } catch (error) {
-        console.error(error);
+    } catch (error: any) {
+        environment.log.error(error.message);
         return false;
     }
 

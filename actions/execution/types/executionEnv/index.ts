@@ -1,6 +1,7 @@
 import { Task } from "@/lib/types/tasks";
 import { WorkflowExecutionPlan } from "@/lib/workflow/type";
 import { Browser, Page } from "puppeteer";
+import { LogCollector } from "../log";
 
 export type CreateExecutionPlanInDBProps = {
     workflowId: string;
@@ -24,7 +25,6 @@ export type Environment = {
 };
 
 
-
 export type ExcutorEnvironment<T extends Task> = {
     getInput: (inputName: T["inputs"][number]["name"]) => string;
 
@@ -34,4 +34,5 @@ export type ExcutorEnvironment<T extends Task> = {
     getPage: () => Page | undefined;
     setPage: (page: Page) => void;
     setOutput: (name: T["outputs"][number]["name"], value: string) => void;
+    log: LogCollector;
 }

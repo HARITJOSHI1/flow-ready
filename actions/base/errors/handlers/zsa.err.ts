@@ -36,6 +36,8 @@ export function handleZSAError(
       return handleDBError(dbError);
 
     default:
+      console.log("ERROR", error);
+      
       errorLogger("UnknownError", error as any);
       return handleUnknownError(error);
   }

@@ -30,7 +30,7 @@ export type TaskOutputs = {
 };
 
 export type Task = {
-  type: string;
+  type: TaskType;
   label: string;
   icon: (props: LucideProps) => JSX.Element;
   isEntryPoint: boolean;

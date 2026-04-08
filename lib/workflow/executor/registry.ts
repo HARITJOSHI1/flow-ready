@@ -1,4 +1,4 @@
-import { ExcutorEnvironment } from "@/actions/execution/types";
+import { ExcutorEnvironment } from "@/actions/execution/types/executionEnv";
 import { Task, TaskType } from "@/lib/types/tasks";
 import { LaunchBrowserExecutor } from "./launch-browser-executor";
 import { PageToHtmlExecutor } from "./page-to-html-executor";

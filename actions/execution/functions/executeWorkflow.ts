@@ -1,15 +1,15 @@
 import db from "@/db";
 import { executionPhase, workflow, workflowExecution } from "@/db/schema";
 import ApiError from "@/lib/classes/Error/ApiError";
+import { Edge } from "@xyflow/react";
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
-import { Environment } from "../types";
+import { Environment } from "../types/executionEnv";
+import { cleanupEnvironment } from "./cleanupEnvironment";
 import { executePhase } from "./executePhase";
 import { finaliseExecution } from "./finaliseExecution";
 import { initializeExecutionPhaseStatus } from "./initializeExecutionPhaseStatus";
 import { initializeWorkflowExecution } from "./initializeWorkflowExecution";
-import { cleanupEnvironment } from "./cleanupEnvironment";
-import { Edge } from "@xyflow/react";
 
 
 export const executeWorkflow = async (executionId: string) => {
@@ -59,7 +59,9 @@ export const executeWorkflow = async (executionId: string) => {
 
   const flowDefinition = JSON.parse(execution.workflowExecution.defination!);
   const edges = (flowDefinition.edges || []) as Edge[];
-  
+
+
+
   for (const phase of execution.phases) {
     // Execute each phase
     const phaseExecution = await executePhase(phase, environment, edges);

@@ -39,9 +39,7 @@ class ApiError<C extends ErrorKeys, D = ExtractedDetails, O = any>
 
     if (shouldAddStack) {
       this.stack = new Error().stack;
-    }
-
-    this.stack = undefined;
+    } 
   }
 
   static auth<T extends ExtractedDetails>(

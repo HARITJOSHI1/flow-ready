@@ -43,6 +43,7 @@ export const getWorkflowPhaseDetails = base
             resolved: "success",
             result: {
                 phase: result[0].execution_phase!,
+                logs: result.map((r) => r.execution_logs!)
             },
         };
     });

@@ -1,30 +1,32 @@
-import { ExcutorEnvironment } from "@/actions/execution/types";
+import { ExcutorEnvironment } from "@/actions/execution/types/executionEnv";
 import { ExtractTextFrmElement } from "../task/extract-text-from-element";
 import * as cheerio from "cheerio";
 
 export const ExtractTextFromElementExecutor = async (environment: ExcutorEnvironment<typeof ExtractTextFrmElement>) => {
-    console.log("Extract text from element...");
-
     try {
         const selector = environment.getInput("Selector");
         if (!selector) {
-            console.error("Selector is not defined")
+            environment.log.error("Selector is not defined");
             return false;
         }
 
         const html = environment.getInput("Html");
         if (!html) {
-            console.error("html is not defined")
-            return false
+            environment.log.error("html is not defined");
+            return false;
         };
 
         const $ = cheerio.load(html);
         const element = $(selector);
-        if (!element) return false;
+
+        if (!element) {
+            environment.log.error("Element not found");
+            return false
+        };
 
         const text = element.text();
         if (!text) {
-            console.error("Element has no text")
+            environment.log.error("Element has no text");
             return false;
         }
 
@@ -32,8 +34,8 @@ export const ExtractTextFromElementExecutor = async (environment: ExcutorEnviron
 
         return true;
 
-    } catch (error) {
-        console.error(error);
+    } catch (error: any) {
+        environment.log.error(error.message);
         return false;
     }
 
