@@ -1,5 +1,4 @@
 import { ExcutorEnvironment } from "@/actions/execution/types/executionEnv";
-import { AppNode } from "@/lib/types/nodes";
 import puppeteer from "puppeteer";
 import { LaunchBrowserTask } from "../task/launch-browser";
 
@@ -24,6 +23,8 @@ export const LaunchBrowserExecutor = async (environment: ExcutorEnvironment<type
 
         // set page here to always get the current page on demand
         environment.setPage(page);
+        environment.log.info(`Opened page at: ${websiteUrl}`);
+
         return true;
 
     } catch (error: any) {

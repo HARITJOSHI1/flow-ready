@@ -1,6 +1,6 @@
 import db from "@/db";
 import { executionLogs, ExecutionPhase, executionPhase } from "@/db/schema";
-import { isErr } from "@/lib/helpers/global";
+import { isErr, wait } from "@/lib/helpers/global";
 import { AppNode } from "@/lib/types/nodes";
 import { TaskParamType, TaskType } from "@/lib/types/tasks";
 import { ExecutorRegistry } from "@/lib/workflow/executor/registry";
@@ -96,6 +96,7 @@ const executor = async (phase: ExecutionPhase, node: AppNode, environment: Envir
   if (!runFn) return false;
 
 
+  // await wait(3000); 
   const executorEnvironment: ExcutorEnvironment<any> = createExecutorEnvironment(node, environment, logCollector);
 
   return await runFn(executorEnvironment);
