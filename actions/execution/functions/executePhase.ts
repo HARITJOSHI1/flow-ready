@@ -1,20 +1,24 @@
 import db from "@/db";
-import { ExecutionPhase, executionPhase } from "@/db/schema";
-import { isErr } from "@/lib/helpers/global";
+import { executionLogs, ExecutionPhase, executionPhase } from "@/db/schema";
+import { isErr, wait } from "@/lib/helpers/global";
 import { AppNode } from "@/lib/types/nodes";
 import { TaskParamType, TaskType } from "@/lib/types/tasks";
-import { TaskRegistry } from "@/lib/workflow/task/registry";
-import { eq } from "drizzle-orm";
-import { Environment, ExcutorEnvironment } from "../types";
 import { ExecutorRegistry } from "@/lib/workflow/executor/registry";
-import { Browser, Page } from "puppeteer";
+import { TaskRegistry } from "@/lib/workflow/task/registry";
 import { Edge } from "@xyflow/react";
+import { eq } from "drizzle-orm";
+import { Browser, Page } from "puppeteer";
+import { Environment, ExcutorEnvironment } from "../types/executionEnv";
+import { LogCollector } from "../types/log";
+import { createLogCollector } from "./createLogCollector";
 
 
 export const executePhase = async (phase: ExecutionPhase, environment: Environment, edges: Edge[]) => {
 
+  const logCollector = createLogCollector();
   const startedAt = new Date();
   const node = JSON.parse(phase.node!) as AppNode;
+
 
   setupEnvironmentForPhase(node, environment, edges);
   // update phase status to RUNNING
@@ -34,12 +38,10 @@ export const executePhase = async (phase: ExecutionPhase, environment: Environme
 
   // Decrement user balance (with required credits)
 
-  const success = await executor(phase, node, environment);
-
+  const success = await executor(phase, node, environment, logCollector);
   const outputs = environment.phases[node.id].outputs
 
-  await finalisePhase(phase.id, success, outputs);
-
+  await finalisePhase(phase.id, success, outputs, logCollector);
   return success;
 }
 
@@ -89,19 +91,20 @@ const setupEnvironmentForPhase = (node: AppNode, environment: Environment, edges
 
 
 
-const executor = async (phase: ExecutionPhase, node: AppNode, environment: Environment): Promise<boolean> => {
+const executor = async (phase: ExecutionPhase, node: AppNode, environment: Environment, logCollector: LogCollector): Promise<boolean> => {
   const runFn = ExecutorRegistry[node.data.type as TaskType];
   if (!runFn) return false;
 
 
-  const executorEnvironment: ExcutorEnvironment<any> = createExecutorEnvironment(node, environment);
+  // await wait(3000); 
+  const executorEnvironment: ExcutorEnvironment<any> = createExecutorEnvironment(node, environment, logCollector);
 
   return await runFn(executorEnvironment);
 }
 
 
 
-const finalisePhase = async (phaseId: string, success: boolean, outputs: any) => {
+const finalisePhase = async (phaseId: string, success: boolean, outputs: any, logCollector: LogCollector) => {
   const finalStatus = success ? "COMPLETED" : "FAILED";
 
   await db.update(executionPhase)
@@ -111,11 +114,21 @@ const finalisePhase = async (phaseId: string, success: boolean, outputs: any) =>
       outputs: JSON.stringify(outputs)
     })
     .where(eq(executionPhase.id, phaseId));
+
+
+  const logs = logCollector.getAll().map((log) => {
+    return {
+      ...log,
+      workflowExecutionPhaseId: phaseId,
+    }
+  })
+
+  if (logs.length > 0)
+    await db.insert(executionLogs).values(logs);
+
 }
 
-
-
-const createExecutorEnvironment = (node: AppNode, environment: Environment): ExcutorEnvironment<any> => {
+const createExecutorEnvironment = (node: AppNode, environment: Environment, logCollector: LogCollector): ExcutorEnvironment<any> => {
   return {
     getInput: (inputName: string) => environment.phases[node.id]?.inputs[inputName],
 
@@ -126,6 +139,8 @@ const createExecutorEnvironment = (node: AppNode, environment: Environment): Exc
     setPage: (page: Page) => (environment.page = page),
     setOutput: (name: string, value: string) => {
       environment.phases[node.id].outputs[name] = value;
-    }
+    },
+
+    log: logCollector
   }
 }

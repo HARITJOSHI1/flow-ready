@@ -13,6 +13,8 @@ export const useQueryPhaseDetails = (
             },
             enabled: !!selectedPhase,
             queryKey: QueryKeyFactory.phaseDetails(selectedPhase),
+            staleTime: 0,
+            refetchOnMount: "always",
         }
     );
 

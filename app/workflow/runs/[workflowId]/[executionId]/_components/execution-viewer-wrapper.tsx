@@ -36,7 +36,7 @@ const ExecutionViewerWrapper = async ({ executionId }: Props) => {
     );
   }
   return (
-    <div>
+    <div className="w-full h-full">
       <ExecutionViewer initData={data.result} />
     </div>
   );

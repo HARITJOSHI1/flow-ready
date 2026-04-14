@@ -1,5 +1,4 @@
-import { ExcutorEnvironment } from "@/actions/execution/types";
-import { AppNode } from "@/lib/types/nodes";
+import { ExcutorEnvironment } from "@/actions/execution/types/executionEnv";
 import puppeteer from "puppeteer";
 import { LaunchBrowserTask } from "../task/launch-browser";
 
@@ -18,16 +17,18 @@ export const LaunchBrowserExecutor = async (environment: ExcutorEnvironment<type
         // set browser once so that after execution of the flow close the instabnce in cleanup
         environment.setBrowser(browser);
 
-        
+
         const page = await browser.newPage();
         await page.goto(websiteUrl);
 
         // set page here to always get the current page on demand
         environment.setPage(page);
+        environment.log.info(`Opened page at: ${websiteUrl}`);
+
         return true;
 
-    } catch (error) {
-        console.error(error);
+    } catch (error: any) {
+        environment.log.error(error.message);
         if (environment.getBrowser()) {
             await environment.getBrowser()?.close();
         }
