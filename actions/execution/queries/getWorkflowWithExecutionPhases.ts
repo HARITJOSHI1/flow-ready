@@ -1,19 +1,23 @@
 "use server";
 
 import { base } from "@/actions/base";
+import db from "@/db";
+import { WorkflowExecution, workflowExecution } from "@/db/schema";
 import ApiError from "@/lib/classes/Error/ApiError";
 import { createServerActionOutputSchema } from "@/lib/helpers/global";
 import { ERROR_SCHEMA_v2 } from "@/schemas/errors";
+import { and, desc, eq } from "drizzle-orm";
+import { unstable_cache } from "next/cache";
 import { z } from "zod";
-import { joinWorkfowExec__executionPhase } from "../functions/joinWorkfowExec__executionPhase";
-import { WORKFLOW_EXEC_PHASES_ACTION_RESULT_SCHEMA } from "./schema";
 
-export const getWorkflowWithExecutionPhases = base
+export const getWorkflowExecutions = base
   .createServerAction()
-  .input(z.object({ executionId: z.string() }))
+  .input(z.object({ workflowId: z.string() }))
   .output(
     createServerActionOutputSchema(
-      WORKFLOW_EXEC_PHASES_ACTION_RESULT_SCHEMA,
+      z.object({
+        workflow_execution: z.custom<WorkflowExecution[]>(),
+      }),
       ERROR_SCHEMA_v2
     )
   )
@@ -21,29 +25,24 @@ export const getWorkflowWithExecutionPhases = base
     if (ctx.resolved === "error")
       return { resolved: "error", error: ctx.error };
 
-    const { executionId } = input;
+    const { workflowId } = input;
     const { userId } = ctx.result;
 
-    // this query is polled live during execution
-    const phases = await joinWorkfowExec__executionPhase(executionId, userId);
+    const result = await unstable_cache(async () => {
+      return await db.select().from(workflowExecution)
+        .where(
+          and(eq(workflowExecution.workflowId, workflowId),
+            eq(workflowExecution.userId, userId)))
+        .orderBy(
+          desc(workflowExecution.createdAt))
 
-    if (!phases)
-      throw ApiError.notFound(
-        "NOT_FOUND",
-        404,
-        "There are no execution phases. Please execute a workflow.",
-        false,
-        {
-          environment: process.env.NODE_ENV,
-          functionName: "getWorkflowWithExecutionPhases()",
-        }
-      );
+    }, [workflowId, userId], { tags: [`execution-${workflowId}-${userId}`] })()
+
 
     return {
       resolved: "success",
       result: {
-        workflow_execution: phases[0].workflow_execution,
-        phases: phases.map((p) => p.execution_phase!),
+        workflow_execution: result
       },
     };
   });

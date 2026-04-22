@@ -1,6 +1,6 @@
 "use client";
 
-import { getWorkflowWithExecutionPhases } from "@/actions/execution/queries/getWorkflowWithExecutionPhases";
+import { getWorkflowWithExecutionPhases } from "@/actions/execution/queries/getWorkflowExecutions";
 import {
   QueryKeyFactory,
   useServerActionQuery,
