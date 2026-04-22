@@ -1,6 +1,7 @@
 "use client";
 
 import { WORKFLOW_EXEC_PHASES_ACTION_RESULT } from "@/actions/execution/queries/schema";
+import CountupWrapper from "@/components/common/countup-wrapper";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -105,7 +106,9 @@ const ExecutionViewer = ({ initData }: Props) => {
           <ExecutionLabel
             icon={CoinsIcon}
             label="Credits consumed"
-            value={creditConsumed}
+            value={
+              <CountupWrapper value={creditConsumed!} />
+            }
           />
         </div>
 
@@ -165,7 +168,7 @@ const ExecutionViewer = ({ initData }: Props) => {
                 <div className="flex items-center gap-1">
                   <CoinsIcon size={18} className="stroke-muted-foreground" />
                   <span>Credits</span>
-                  <span>TODO</span>
+                  <span>{phaseData.phase.creditsConsumed}</span>
                 </div>
               </Badge>
 

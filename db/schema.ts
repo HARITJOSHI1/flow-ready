@@ -96,6 +96,16 @@ export const executionLogs = pgTable("execution_logs", {
 
 });
 
+export const userBalance = pgTable("user_balance", {
+  id: uuid("id")
+    .primaryKey()
+    .$default(() => crypto.randomUUID()),
+  userId: text("user_id").notNull(),
+  credits: integer().default(1).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
 // Relations
 export const workflowExecution__with__executionPhase = relations(
   workflowExecution,

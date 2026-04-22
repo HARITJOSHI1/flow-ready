@@ -1,19 +1,19 @@
 import db from "@/db";
-import { executionLogs, ExecutionPhase, executionPhase } from "@/db/schema";
-import { isErr, wait } from "@/lib/helpers/global";
+import { executionLogs, ExecutionPhase, executionPhase, userBalance } from "@/db/schema";
+import { isErr } from "@/lib/helpers/global";
 import { AppNode } from "@/lib/types/nodes";
 import { TaskParamType, TaskType } from "@/lib/types/tasks";
 import { ExecutorRegistry } from "@/lib/workflow/executor/registry";
 import { TaskRegistry } from "@/lib/workflow/task/registry";
 import { Edge } from "@xyflow/react";
-import { eq } from "drizzle-orm";
+import { and, eq, gte, sql } from "drizzle-orm";
 import { Browser, Page } from "puppeteer";
 import { Environment, ExcutorEnvironment } from "../types/executionEnv";
 import { LogCollector } from "../types/log";
 import { createLogCollector } from "./createLogCollector";
 
 
-export const executePhase = async (phase: ExecutionPhase, environment: Environment, edges: Edge[]) => {
+export const executePhase = async (phase: ExecutionPhase, environment: Environment, edges: Edge[], userId: string) => {
 
   const logCollector = createLogCollector();
   const startedAt = new Date();
@@ -30,19 +30,22 @@ export const executePhase = async (phase: ExecutionPhase, environment: Environme
     })
     .where(eq(executionPhase.id, phase.id));
 
-  const creditsRequired = TaskRegistry.getTask(node.data.type as TaskType);
-  if (isErr(creditsRequired)) return;
-
-  // console.log(`Executing phase ${phase.name} with node ${node.data.type} with credits ${creditsRequired.data.credits}`);
+  const taskInfo = TaskRegistry.getTask(node.data.type as TaskType);
+  if (isErr(taskInfo)) return { success: false, creditsConsumed: 0 };
 
 
   // Decrement user balance (with required credits)
 
-  const success = await executor(phase, node, environment, logCollector);
+  let success = await decrementCredits(phase.userId, taskInfo.data.credits, logCollector);
+  const creditsConsumed = success ? taskInfo.data.credits : 0;
+
+  if (success)
+    success = await executor(phase, node, environment, logCollector);
+
   const outputs = environment.phases[node.id].outputs
 
-  await finalisePhase(phase.id, success, outputs, logCollector);
-  return success;
+  await finalisePhase(phase.id, success, outputs, logCollector, creditsConsumed);
+  return { success, creditsConsumed };
 }
 
 
@@ -95,23 +98,21 @@ const executor = async (phase: ExecutionPhase, node: AppNode, environment: Envir
   const runFn = ExecutorRegistry[node.data.type as TaskType];
   if (!runFn) return false;
 
-
-  // await wait(3000); 
   const executorEnvironment: ExcutorEnvironment<any> = createExecutorEnvironment(node, environment, logCollector);
-
   return await runFn(executorEnvironment);
 }
 
 
 
-const finalisePhase = async (phaseId: string, success: boolean, outputs: any, logCollector: LogCollector) => {
+const finalisePhase = async (phaseId: string, success: boolean, outputs: any, logCollector: LogCollector, creditsConsumed: number) => {
   const finalStatus = success ? "COMPLETED" : "FAILED";
 
   await db.update(executionPhase)
     .set({
       status: finalStatus,
       completedAt: new Date(),
-      outputs: JSON.stringify(outputs)
+      outputs: JSON.stringify(outputs),
+      creditsConsumed,
     })
     .where(eq(executionPhase.id, phaseId));
 
@@ -142,5 +143,29 @@ const createExecutorEnvironment = (node: AppNode, environment: Environment, logC
     },
 
     log: logCollector
+  }
+}
+
+
+async function decrementCredits(
+  userId: string, amount: number, logCollector: LogCollector
+) {
+  try {
+    const [result] = await db.update(userBalance).set({
+      credits: sql`${userBalance.credits} - ${amount}`,
+    })
+      .where(and(eq(userBalance.userId, userId), gte(userBalance.credits, amount)))
+      .returning({ userId: userBalance.userId });
+
+    if (!result) {
+      logCollector.error("Insufficient credits to execute this phase");
+      return false;
+    }
+
+    return true;
+
+  } catch (error) {
+    logCollector.error("Insufficient credits to execute this phase");
+    return false;
   }
 }
