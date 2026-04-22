@@ -64,9 +64,11 @@ export const executeWorkflow = async (executionId: string) => {
 
   for (const phase of execution.phases) {
     // Execute each phase
-    const phaseExecution = await executePhase(phase, environment, edges);
+    const phaseExecution = await executePhase(phase, environment, edges, execution.workflow.userId);
 
-    if (!phaseExecution) {
+    creditsConsumed += phaseExecution.creditsConsumed;
+
+    if (!phaseExecution.success) {
       executionFailed = true;
       break;
     }
@@ -80,4 +82,5 @@ export const executeWorkflow = async (executionId: string) => {
 
 
   revalidatePath("/workflows/runs");
+  revalidatePath('/dashboard');
 }

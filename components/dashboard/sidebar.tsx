@@ -13,6 +13,7 @@ import { Button, buttonVariants } from "../ui/button";
 import { usePathname } from "next/navigation";
 import { Sheet, SheetContent, SheetTrigger } from "../ui/sheet";
 import { useState } from "react";
+import UserAvailableCreditsBadge from "../credits/user-available-credits-badge";
 
 type Props = {};
 
@@ -54,7 +55,9 @@ const DesktopSidebar = (props: Props) => {
         <Logo />
       </div>
 
-      <div className="p-2">TODO CREDITS</div>
+      <div className="p-2">
+        <UserAvailableCreditsBadge />
+      </div>
       <div className="flex flex-col gap-1 px-2">
         {routes.map((route) => (
           <Link
@@ -101,6 +104,7 @@ export const MobileSidebar = () => {
             className="w-[400px] sm:w-[540px] space-y-4"
           >
             <Logo />
+            <UserAvailableCreditsBadge />
             <div className="flex flex-col gap-1">
               {routes.map((route) => (
                 <Link

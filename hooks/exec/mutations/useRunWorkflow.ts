@@ -1,20 +1,23 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { useServerActionMutation } from "../../global/server-action-hooks";
-import { toast } from "../../global/use-toast";
 import { runWorkflow } from "@/actions/execution/mutations/runWorkflow";
+import { useQueryClient } from "@tanstack/react-query";
+import { QueryKeyFactory, useServerActionMutation } from "../../global/server-action-hooks";
+import { toast } from "../../global/use-toast";
 
 export const useRunWorkflowMutation = () => {
-  const router = useRouter();
+  const queryClient = useQueryClient();
   const { mutate, isPending, isError, error, data, isSuccess } =
     useServerActionMutation(runWorkflow, {
-      onSuccess: async (data) => {
+      onSuccess: async () => {
         toast({
           title: "Execution started",
         });
 
-        // if (data.resolved === "success") router.push(data.result.redirect_url);
+        await queryClient.invalidateQueries({
+          queryKey: QueryKeyFactory.userAvailableCredits(),
+        });
+
       },
 
       onError: (error) => {
