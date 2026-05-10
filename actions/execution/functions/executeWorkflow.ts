@@ -3,7 +3,7 @@ import { executionPhase, workflow, workflowExecution } from "@/db/schema";
 import ApiError from "@/lib/classes/Error/ApiError";
 import { Edge } from "@xyflow/react";
 import { eq } from "drizzle-orm";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { Environment } from "../types/executionEnv";
 import { cleanupEnvironment } from "./cleanupEnvironment";
 import { executePhase } from "./executePhase";
@@ -82,5 +82,5 @@ export const executeWorkflow = async (executionId: string) => {
 
 
   revalidatePath("/workflows/runs");
-  revalidatePath('/dashboard');
+  revalidateTag(`execution-${execution.workflow.id}-${execution.workflowExecution.userId}`)
 }

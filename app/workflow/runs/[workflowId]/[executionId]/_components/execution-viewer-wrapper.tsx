@@ -1,4 +1,4 @@
-import { getWorkflowWithExecutionPhases } from "@/actions/execution/queries/getWorkflowWithExecutionPhases";
+import { getWorkflowWithExecutionPhases } from "@/actions/execution/queries/getWorkflowExecutions";
 import ErrorWrapper from "@/components/common/error";
 import { BaseErrReturnType } from "@/lib/types/errors/server/base";
 import { parseError } from "@/lib/utils";
