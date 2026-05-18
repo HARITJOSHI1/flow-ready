@@ -3,7 +3,6 @@
 import { base } from "@/actions/base";
 import db from "@/db";
 import { WorkflowExecution, workflowExecution } from "@/db/schema";
-import ApiError from "@/lib/classes/Error/ApiError";
 import { createServerActionOutputSchema } from "@/lib/helpers/global";
 import { ERROR_SCHEMA_v2 } from "@/schemas/errors";
 import { and, desc, eq } from "drizzle-orm";
