@@ -1,8 +1,8 @@
 import { intervalToDuration } from "date-fns";
 
 export const datesToDuration = (
+  endDate?: Date | null | string,
   startDate?: Date | null | string,
-  endDate?: Date | null | string
 ) => {
   if (!startDate || !endDate) return null;
 
@@ -14,6 +14,7 @@ export const datesToDuration = (
   const timeElasped = end.getTime() - start.getTime();
 
   if (timeElasped < 1000) return { dateString: `${timeElasped}ms` };
+
   const duration = intervalToDuration({
     start: 0,
     end: timeElasped,

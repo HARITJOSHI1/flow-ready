@@ -30,42 +30,41 @@ type Props = {
 };
 
 const ExecutionViewer = ({ initData }: Props) => {
-
   const [selectedPhase, setSelectedPhase] = useState<string | null>(null);
 
   const { data, error } = useQueryExecutionViewer(initData);
-  const { data: phaseData, error: phaseError } = useQueryPhaseDetails(selectedPhase || "");
-
-  if (error || phaseError) return;
-
-  const duration = datesToDuration(
-    data?.workflow_execution.startedAt,
-    data?.workflow_execution.completedAt
+  const { data: phaseData, error: phaseError } = useQueryPhaseDetails(
+    selectedPhase || "",
   );
 
   const isRunning = data?.workflow_execution.status === "RUNNING";
 
-  const creditConsumed = getPhasesTotalCost(data?.phases);
-
-  console.log("@PHASE__DATA", phaseData);
-
   useEffect(() => {
-
     // While running we auto-select the current running phase in the sidebar
     const phases = data?.phases || [];
     if (isRunning) {
-      const lastRunningPhase = phases.toSorted((a, b) => (a.startedAt! > b.startedAt!) ? -1 : 1)[0];
-
+      const lastRunningPhase = phases.toSorted((a, b) =>
+        a.startedAt! > b.startedAt! ? -1 : 1,
+      )[0];
       setSelectedPhase(lastRunningPhase?.id);
       return;
     }
 
-    const lastCompletedPhase = phases.toSorted((a, b) => (a.completedAt! > b.completedAt!) ? -1 : 1)[0];
+    const lastCompletedPhase = phases.toSorted((a, b) =>
+      a.completedAt! > b.completedAt! ? -1 : 1,
+    )[0];
+    setSelectedPhase(lastCompletedPhase?.id);
+  }, [isRunning, data?.phases, setSelectedPhase]);
 
-    setSelectedPhase(lastCompletedPhase?.id)
+  if (error || phaseError) return null;
 
-  }, [isRunning, data?.phases, setSelectedPhase])
+  const duration = datesToDuration(
+    data?.workflow_execution.completedAt,
+    data?.workflow_execution.startedAt,
+  );
 
+  const creditConsumed = getPhasesTotalCost(data?.phases);
+  console.log("@PHASE__DATA", phaseData);
 
   return (
     <div className="flex w-full h-full">
@@ -84,9 +83,9 @@ const ExecutionViewer = ({ initData }: Props) => {
               <div className="font-semibold lowercase flex gap-2 items-center">
                 {data?.workflow_execution.startedAt
                   ? formatDistanceToNow(
-                    new Date(data?.workflow_execution.startedAt),
-                    { addSuffix: true }
-                  )
+                      new Date(data?.workflow_execution.startedAt),
+                      { addSuffix: true },
+                    )
                   : "-"}
               </div>
             }
@@ -106,9 +105,7 @@ const ExecutionViewer = ({ initData }: Props) => {
           <ExecutionLabel
             icon={CoinsIcon}
             label="Credits consumed"
-            value={
-              <CountupWrapper value={creditConsumed!} />
-            }
+            value={<CountupWrapper value={creditConsumed!} />}
           />
         </div>
 
@@ -129,14 +126,18 @@ const ExecutionViewer = ({ initData }: Props) => {
               key={phase.id}
               className="w-full justify-between"
               variant={selectedPhase === phase.id ? "secondary" : "ghost"}
-              onClick={() => { if (!isRunning) setSelectedPhase(phase.id) }}
+              onClick={() => {
+                if (!isRunning) setSelectedPhase(phase.id);
+              }}
             >
               <div className="flex items-center gap-2">
                 <Badge variant="outline">{phase.phaseNumber}</Badge>
                 <p className="font-semibold">{phase.name}</p>
               </div>
 
-              <PhaseStatusBadge status={phase.status as EXECUTION_PHASE_STATUS} />
+              <PhaseStatusBadge
+                status={phase.status as EXECUTION_PHASE_STATUS}
+              />
             </Button>
           ))}
         </div>
@@ -150,21 +151,19 @@ const ExecutionViewer = ({ initData }: Props) => {
         )}
         {!isRunning && !selectedPhase && (
           <div className="flex items-center flex-col gap-1 justify-center w-full h-full text-center ">
-
             <div className="flex flex-col gap-1 text-center">
               <p className="font-bold">No phase selected</p>
-              <p className="text-sm text-muted-foreground">Select a phase to view details</p>
+              <p className="text-sm text-muted-foreground">
+                Select a phase to view details
+              </p>
             </div>
           </div>
         )}
 
         {!isRunning && selectedPhase && phaseData?.phase && (
           <div className="flex flex-col py-4 container gap-4 overflow-auto">
-
             <div className="flex items-center gap-2">
-
               <Badge variant="outline" className="space-x-4">
-
                 <div className="flex items-center gap-1">
                   <CoinsIcon size={18} className="stroke-muted-foreground" />
                   <span>Credits</span>
@@ -172,23 +171,28 @@ const ExecutionViewer = ({ initData }: Props) => {
                 </div>
               </Badge>
 
-
               <Badge variant="outline" className="space-x-4">
-
                 <div className="flex items-center gap-1">
                   <ClockIcon size={18} className="stroke-muted-foreground" />
                   <span>Duration</span>
-                  <span>{datesToDuration(phaseData.phase.startedAt, phaseData.phase.completedAt)?.dateString || '-'}</span>
+                  <span>
+                    {datesToDuration(
+                      phaseData.phase.completedAt,
+                      phaseData.phase.startedAt,
+                    )?.dateString || "-"}
+                  </span>
                 </div>
               </Badge>
             </div>
 
-            <ParameterViewer title="Inputs"
+            <ParameterViewer
+              title="Inputs"
               subtitle="Inputs used for this phase"
               paramsJSON={phaseData.phase.inputs}
             />
 
-            <ParameterViewer title="Outputs"
+            <ParameterViewer
+              title="Outputs"
               subtitle="Outputs generated by this phase"
               paramsJSON={phaseData.phase.outputs}
             />
