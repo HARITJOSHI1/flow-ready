@@ -67,7 +67,7 @@ const ExecutionTable = ({ workflowId, initData }: Props) => {
                     <span className="font-semibold">{execution.id}</span>
                     <div className="text-muted-foreground text-xs">
                       <span>Triggered via</span>
-                      <Badge variant={"outline"}>{execution.trigger}</Badge>
+                      <Badge variant={"outline"} className="ml-2">{execution.trigger}</Badge>
                     </div>
                   </div>
                 </TableCell>

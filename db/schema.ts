@@ -34,6 +34,8 @@ export const workflow = pgTable("workflow", {
   description: varchar("description", { length: 255 }),
   userId: text("user_id").notNull(),
   defination: text("defination"),
+  executionPlan: text("execution_plan"),
+  creditsCost: integer("credits_cost").default(0).notNull(),
   status: workflowStatus("status").notNull(),
   lastRunAt: timestamp("last_run_at"),
   lastRunId: text("last_run_id"),
@@ -81,7 +83,6 @@ export const executionPhase = pgTable("execution_phase", {
     .notNull(),
 });
 
-
 export const executionLogs = pgTable("execution_logs", {
   id: uuid("id")
     .primaryKey()
@@ -90,10 +91,11 @@ export const executionLogs = pgTable("execution_logs", {
   logLevel: text("log_level").notNull(),
   message: text("message").notNull(),
   timestamp: timestamp("timestamp").defaultNow().notNull(),
-  workflowExecutionPhaseId: uuid("workflow_execution_phase_id").references(() => executionPhase.id, {
-    onDelete: "cascade"
-  }).notNull()
-
+  workflowExecutionPhaseId: uuid("workflow_execution_phase_id")
+    .references(() => executionPhase.id, {
+      onDelete: "cascade",
+    })
+    .notNull(),
 });
 
 export const userBalance = pgTable("user_balance", {
@@ -111,7 +113,7 @@ export const workflowExecution__with__executionPhase = relations(
   workflowExecution,
   ({ many }) => ({
     executionPhase: many(executionPhase),
-  })
+  }),
 );
 
 export const executionPhase__with__workflowExecution = relations(
@@ -121,14 +123,14 @@ export const executionPhase__with__workflowExecution = relations(
       fields: [executionPhase.workflowExecutionId],
       references: [workflowExecution.id],
     }),
-  })
+  }),
 );
 
 export const workflow__with__workflowExecution = relations(
   workflow,
   ({ many }) => ({
     workflowExecution: many(workflowExecution),
-  })
+  }),
 );
 
 export const workflowExecution__with__workflow = relations(
@@ -138,14 +140,15 @@ export const workflowExecution__with__workflow = relations(
       fields: [workflowExecution.workflowId],
       references: [workflow.id],
     }),
-  })
+  }),
 );
 
 export const executionPhase__with__executionLogs = relations(
   executionPhase,
   ({ many }) => ({
     executionLogs: many(executionLogs),
-  }));
+  }),
+);
 
 export const executionLogs__with__executionPhase = relations(
   executionLogs,
@@ -154,12 +157,11 @@ export const executionLogs__with__executionPhase = relations(
       fields: [executionLogs.workflowExecutionPhaseId],
       references: [executionPhase.id],
     }),
-  }));
-
+  }),
+);
 
 // Types
 export type Workflow = typeof workflow.$inferSelect;
 export type ExecutionPhase = typeof executionPhase.$inferSelect;
 export type WorkflowExecution = typeof workflowExecution.$inferSelect;
 export type ExecutionLog = typeof executionLogs.$inferSelect;
-

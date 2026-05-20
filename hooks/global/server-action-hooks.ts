@@ -9,6 +9,7 @@ const QueryKeyFactory = createServerActionsKeyFactory({
   phaseDetails: (selectedPhase: string) => ["phaseDetails", selectedPhase] as string[],
   userAvailableCredits: () => ["user", "available-credits"] as string[],
   executionTable: (workflowId: string) => ["executionTable", workflowId] as string[],
+  publishWorkflow: (workflowId: string) => ["publishWorkflow", workflowId] as string[],
 });
 
 const {

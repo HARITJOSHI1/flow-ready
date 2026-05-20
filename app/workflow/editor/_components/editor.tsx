@@ -17,6 +17,7 @@ const Editor = ({ workflow }: { workflow: Workflow }) => {
             title="Workflow Editor"
             subtitle={workflow.name}
             workflowId={workflow.id}
+            isPublished={workflow.status === "PUBLISHED"}
           />
           <section className="flex h-full overflow-auto">
             <TaskMenu />

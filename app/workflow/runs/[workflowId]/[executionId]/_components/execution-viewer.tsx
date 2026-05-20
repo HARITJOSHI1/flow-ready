@@ -69,11 +69,21 @@ const ExecutionViewer = ({ initData }: Props) => {
   return (
     <div className="flex w-full h-full">
       <aside className="w-[440px] min-w-[440px] border-r-2 border-seperate flex flex-grow flex-col overflow-hidden">
-        <div className="py=4 px-2">
+        <div className="py-4 px-2">
           <ExecutionLabel
             icon={CircleDashedIcon}
             label="Status"
-            value={data?.workflow_execution.status}
+            value={
+              <div className="font-semibold capitalize flex gap-2 items-center">
+                <PhaseStatusBadge
+                  status={
+                    data?.workflow_execution.status as EXECUTION_PHASE_STATUS
+                  }
+                />
+
+                <span>{data?.workflow_execution.status}</span>
+              </div>
+            }
           />
 
           <ExecutionLabel
