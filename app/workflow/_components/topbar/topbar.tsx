@@ -7,15 +7,24 @@ import { useRouter } from "next/navigation";
 import SaveBtn from "./save-btn";
 import ExecuteBtn from "./execute-btn";
 import NavTabs from "./nav-tabs";
+import PublishBtn from "./publish-btn";
+import UnpublishBtn from "./unpublish-btn";
 
 type Props = {
   title: string;
   subtitle?: string;
   workflowId: string;
   hideBtn?: boolean;
+  isPublished?: boolean;
 };
 
-const Topbar = ({ title, subtitle, workflowId, hideBtn }: Props) => {
+const Topbar = ({
+  title,
+  subtitle,
+  workflowId,
+  hideBtn,
+  isPublished,
+}: Props) => {
   const router = useRouter();
 
   return (
@@ -34,7 +43,7 @@ const Topbar = ({ title, subtitle, workflowId, hideBtn }: Props) => {
               {subtitle}
             </p>
           )}
-        </div> 
+        </div>
       </div>
 
       <NavTabs workflowId={workflowId} />
@@ -43,7 +52,15 @@ const Topbar = ({ title, subtitle, workflowId, hideBtn }: Props) => {
         {!hideBtn && (
           <>
             <ExecuteBtn workflowId={workflowId} />
-            <SaveBtn workflowId={workflowId} />
+
+            {!isPublished && (
+              <>
+                <SaveBtn workflowId={workflowId} />
+                <PublishBtn workflowId={workflowId} />
+              </>
+            )}
+
+            {isPublished && <UnpublishBtn workflowId={workflowId} />}
           </>
         )}
       </div>

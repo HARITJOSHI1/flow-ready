@@ -2,17 +2,18 @@
 
 import { Button } from "@/components/ui/button";
 import useExecutionPlan from "@/hooks/exec/mutations/useExecutionPlan";
-import { useRunWorkflowMutation } from "@/hooks/exec/mutations/useRunWorkflow";
+import { toast } from "@/hooks/global/use-toast";
+import { usePublishWorkflowMutation } from "@/hooks/publishing/mutations/usePublishWorkflowMutation";
 import { useReactFlow } from "@xyflow/react";
-import { Loader2Icon, PlayIcon } from "lucide-react";
+import { DownloadIcon, Loader2Icon, UploadIcon } from "lucide-react";
 
 type Props = {
   workflowId: string;
 };
 
-const ExecuteBtn = ({ workflowId }: Props) => {
+const UnpublishBtn = ({ workflowId }: Props) => {
   const generate = useExecutionPlan();
-  const { mutate, isPending } = useRunWorkflowMutation();
+  const { mutate, isPending } = usePublishWorkflowMutation(workflowId);
   const { toObject } = useReactFlow();
 
   return (
@@ -28,18 +29,18 @@ const ExecuteBtn = ({ workflowId }: Props) => {
         const plan = generate();
         if (!plan) return;
 
-        // @ts-ignore
+        toast({ title: "Publishing workflow..."});
         mutate({ workflowId, flowDefination: JSON.stringify(toObject()) });
       }}
     >
       {isPending ? (
         <Loader2Icon size={20} className="stroke-primary stroke-2" />
       ) : (
-        <PlayIcon size={20} className=" stroke-tertiary stroke-2" />
+        <DownloadIcon size={20} className=" stroke-destructive/100 stroke-2" />
       )}
-      Execute
+      Unpublish
     </Button>
   );
 };
 
-export default ExecuteBtn;
+export default UnpublishBtn;
