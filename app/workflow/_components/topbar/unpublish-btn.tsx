@@ -3,9 +3,9 @@
 import { Button } from "@/components/ui/button";
 import useExecutionPlan from "@/hooks/exec/mutations/useExecutionPlan";
 import { toast } from "@/hooks/global/use-toast";
-import { usePublishWorkflowMutation } from "@/hooks/publishing/mutations/usePublishWorkflowMutation";
+import { useUnpublishWorkflowMutation } from "@/hooks/unpublishing/mutations/useUnpublishWorkflowMutation";
 import { useReactFlow } from "@xyflow/react";
-import { DownloadIcon, Loader2Icon, UploadIcon } from "lucide-react";
+import { DownloadIcon, Loader2Icon } from "lucide-react";
 
 type Props = {
   workflowId: string;
@@ -13,7 +13,7 @@ type Props = {
 
 const UnpublishBtn = ({ workflowId }: Props) => {
   const generate = useExecutionPlan();
-  const { mutate, isPending } = usePublishWorkflowMutation(workflowId);
+  const { mutate, isPending } = useUnpublishWorkflowMutation(workflowId);
   const { toObject } = useReactFlow();
 
   return (

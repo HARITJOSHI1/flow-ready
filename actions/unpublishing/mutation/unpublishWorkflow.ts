@@ -1,18 +1,15 @@
 "use server";
 
+import db from "@/db";
+import { workflow as workflowTable } from "@/db/schema";
 import ApiError from "@/lib/classes/Error/ApiError";
-import { isErr } from "@/lib/helpers/global";
+import { and, eq } from "drizzle-orm";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { z } from "zod";
 import { base } from "../../base";
 import { getWorkflowsFromDB } from "../../workflows/functions/getWorkflowsFromDB";
-import db from "@/db";
-import { workflow as workflowTable } from "@/db/schema";
-import { FlowToExecutionPlan } from "@/lib/executionPlan";
-import { and, eq } from "drizzle-orm";
-import { revalidatePath, revalidateTag } from "next/cache";
-import { calculateCostOfWorkflow } from "../functions/calculateCostOfWorkflow";
 
-export const publishWorkflow = base
+export const unpublishWorkflow = base
   .createServerAction()
   .input(
     z.object({
@@ -35,7 +32,7 @@ export const publishWorkflow = base
         false,
         {
           environment: process.env.NODE_ENV,
-          functionName: "publishWorkflow()",
+          functionName: "unpublishWorkflow()",
         },
       );
 
@@ -53,45 +50,28 @@ export const publishWorkflow = base
         false,
         {
           environment: process.env.NODE_ENV,
-          functionName: "publishWorkflow()",
+          functionName: "unpublishWorkflow()",
         },
       );
 
-    if (workflow.status !== "DRAFT")
-      throw ApiError.notFound(
-        "NOT_FOUND",
-        404,
-        "Workflow is not a draft",
-        false,
-        {
-          environment: process.env.NODE_ENV,
-          functionName: "publishWorkflow()",
-        },
-      );
-
-    const flow = JSON.parse(flowDefination);
-    const exexPlan = FlowToExecutionPlan(flow.nodes, flow.edges);
-
-    if (!exexPlan || isErr(exexPlan))
+    if (workflow.status !== "PUBLISHED")
       throw ApiError.internal(
-        "BAD_REQUEST",
-        400,
-        "No execution plan is generated",
+        "INTERNAL_ERROR",
+        500,
+        "Workflow is not a published workflow",
         false,
         {
           environment: process.env.NODE_ENV,
-          functionName: "publishWorkflow()",
+          functionName: "unpublishWorkflow()",
         },
       );
-
-    const costOfEntireWorkflow = calculateCostOfWorkflow(flow.nodes);
 
     await db
       .update(workflowTable)
       .set({
-        status: "PUBLISHED",
-        creditsCost: costOfEntireWorkflow,
-        executionPlan: JSON.stringify(exexPlan.data.executionPlan),
+        status: "DRAFT",
+        executionPlan: null,
+        creditsCost: 0,
       })
       .where(
         and(

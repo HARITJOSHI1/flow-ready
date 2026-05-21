@@ -30,7 +30,7 @@ export const useUserAvailableCredits = (): UserAvailableCreditsResult => {
 
   return {
     isPending: false,
-    isSuccess: true,
+    isSuccess,
     isError: false,
     data: data.result.balance,
     error: null,

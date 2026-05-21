@@ -19,7 +19,9 @@ import {
   Loader2Icon,
   WorkflowIcon,
 } from "lucide-react";
+import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
+import { QueryKeyFactory } from "@/hooks/global/server-action-hooks";
 import ExecutionLabel from "./execution-label";
 import LogViewer from "./log-viewer";
 import ParameterViewer from "./parameter-viewer";
@@ -31,6 +33,7 @@ type Props = {
 
 const ExecutionViewer = ({ initData }: Props) => {
   const [selectedPhase, setSelectedPhase] = useState<string | null>(null);
+  const queryClient = useQueryClient();
 
   const { data, error } = useQueryExecutionViewer(initData);
   const { data: phaseData, error: phaseError } = useQueryPhaseDetails(
@@ -55,6 +58,18 @@ const ExecutionViewer = ({ initData }: Props) => {
     )[0];
     setSelectedPhase(lastCompletedPhase?.id);
   }, [isRunning, data?.phases, setSelectedPhase]);
+
+
+  // watches `data?.workflow_execution.status`. Since `useQueryExecutionViewer` polls every 1s while RUNNING, it naturally catches the transition to COMPLETED/FAILED and fires the invalidation at exactly the right moment — after credits are actually deducted.
+
+  useEffect(() => {
+    const status = data?.workflow_execution.status;
+    if (status === "COMPLETED" || status === "FAILED") {
+      queryClient.invalidateQueries({
+        queryKey: QueryKeyFactory.userAvailableCredits(),
+      });
+    }
+  }, [data?.workflow_execution.status, queryClient]);
 
   if (error || phaseError) return null;
 

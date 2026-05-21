@@ -9,6 +9,7 @@ import Link from "next/link";
 import React from "react";
 import WorkflowActions from "./workflow-actions";
 import { WORKFLOW_STATUS } from "@/lib/workflow/type";
+import { RunBtn } from "./run-btn";
 
 type Props = {
   workflow: Pick<Workflow, "name" | "status" | "id">;
@@ -16,7 +17,7 @@ type Props = {
 
 const statusColor = {
   [WORKFLOW_STATUS.DRAFT]: "bg-primary text-yellow-600",
-  [WORKFLOW_STATUS.PUBLISHED]: "bg-yellow",
+  [WORKFLOW_STATUS.PUBLISHED]: "bg-tertiary",
 };
 
 const WorkflowCard = ({ workflow }: Props) => {
@@ -29,7 +30,7 @@ const WorkflowCard = ({ workflow }: Props) => {
           <div
             className={cn(
               "w-10 h-10 rounded-full flex items-center justify-center",
-              statusColor[workflow.status]
+              statusColor[workflow.status],
             )}
           >
             {isDraft ? (
@@ -56,11 +57,12 @@ const WorkflowCard = ({ workflow }: Props) => {
         </div>
 
         <div className="flex items-center space-x-2">
+          {!isDraft && <RunBtn workflowId={workflow.id} />}
           <Link
             href={`/workflow/editor/${workflow.id}`}
             className={cn(
               buttonVariants({ variant: "outline", size: "sm" }),
-              "flex items-center gap-2"
+              "flex items-center gap-2",
             )}
           >
             <ShuffleIcon size={16} />

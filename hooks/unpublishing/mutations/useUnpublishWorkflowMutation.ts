@@ -1,18 +1,24 @@
 "use client";
 
-import { runWorkflow } from "@/actions/execution/mutations/runWorkflow";
-import {
-    useServerActionMutation
-} from "../../global/server-action-hooks";
+import { useQueryClient } from "@tanstack/react-query";
+import { QueryKeyFactory, useServerActionMutation } from "../../global/server-action-hooks";
 import { toast } from "../../global/use-toast";
+import { unpublishWorkflow } from "@/actions/unpublishing/mutation/unpublishWorkflow";
 
-export const useRunWorkflowMutation = () => {
+export const useUnpublishWorkflowMutation = (workflowId: string) => {
+  const queryClient = useQueryClient();
   const { mutate, isPending, isError, error, data, isSuccess } =
-    useServerActionMutation(runWorkflow, {
+    useServerActionMutation(unpublishWorkflow, {
       onSuccess: async () => {
         toast({
-          title: "Execution started",
+          title: "Workflow unpublished",
         });
+
+
+        await queryClient.invalidateQueries({
+          queryKey: QueryKeyFactory.getWorkflow(workflowId),
+        });
+
       },
 
       onError: (error) => {
@@ -22,14 +28,14 @@ export const useRunWorkflowMutation = () => {
         ) {
           console.error("@ERROR", error);
           return toast({
-            title: "Error executing workflow",
+            title: "Error unpublishing workflow",
             description: error.message,
             variant: "destructive",
           });
         }
 
         return toast({
-          title: "Error executing workflow",
+          title: "Error unpublishing workflow",
           description: "Something went wrong",
           variant: "destructive",
         });
