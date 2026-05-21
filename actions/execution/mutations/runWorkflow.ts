@@ -5,13 +5,13 @@ import { FlowToExecutionPlan } from "@/lib/executionPlan";
 import { createServerActionOutputSchema, isErr } from "@/lib/helpers/global";
 import { WorkflowExecutionPlan } from "@/lib/workflow/type";
 import { ERROR_SCHEMA_v2 } from "@/schemas/errors";
+import { redirect } from "next/navigation";
 import { z } from "zod";
 import { base } from "../../base";
 import { getWorkflowsFromDB } from "../../workflows/functions/getWorkflowsFromDB";
+import { createExecutionPlanInDB } from "../functions/createExecutionPlanInDB";
 import { executeWorkflow } from "../functions/executeWorkflow";
 import { RUN_WORKFLOW_ACTION_RESULT_SCHEMA } from "./schema";
-import { redirect } from "next/navigation";
-import { createExecutionPlanInDB } from "../functions/createExecutionPlanInDB";
 
 export const runWorkflow = base
   .createServerAction()
@@ -19,13 +19,13 @@ export const runWorkflow = base
     z.object({
       workflowId: z.string(),
       flowDefination: z.string().optional(),
-    })
+    }),
   )
   .output(
     createServerActionOutputSchema(
       RUN_WORKFLOW_ACTION_RESULT_SCHEMA,
-      ERROR_SCHEMA_v2
-    )
+      ERROR_SCHEMA_v2,
+    ),
   )
   .handler(async ({ input, ctx }) => {
     if (ctx.resolved === "error")
@@ -42,13 +42,13 @@ export const runWorkflow = base
         {
           environment: process.env.NODE_ENV,
           functionName: "runWorkflow()",
-        }
+        },
       );
 
-    const workflow = await getWorkflowsFromDB(
+    const [workflow] = await getWorkflowsFromDB(
       ctx.result.userId,
       undefined,
-      workflowId
+      workflowId,
     );
 
     if (!workflow)
@@ -60,61 +60,79 @@ export const runWorkflow = base
         {
           environment: process.env.NODE_ENV,
           functionName: "runWorkflow()",
-        }
+        },
       );
 
     let executionPlan: WorkflowExecutionPlan;
-    if (!flowDefination)
-      throw ApiError.notFound(
-        "INTERNAL_ERROR",
-        400,
-        "Flow defination must be provided either at execution or after publish",
-        false,
-        {
-          environment: process.env.NODE_ENV,
-          functionName: "runWorkflow()",
-        }
-      );
 
-    const flow = JSON.parse(flowDefination);
-    const result = FlowToExecutionPlan(flow.nodes, flow.edges);
+    // Can be removed in future
+    if (workflow.status === "PUBLISHED") {
+      if (!workflow.executionPlan)
+        throw ApiError.internal(
+          "INTERNAL_ERROR",
+          500,
+          "Execution plan is not available for published workflow",
+          false,
+          {
+            environment: process.env.NODE_ENV,
+            functionName: "runWorkflow()",
+          },
+        );
 
-    if (isErr(result)) {
-      console.error(result.error);
+      const parsed = JSON.parse(workflow.executionPlan);
+      executionPlan = Array.isArray(parsed) ? parsed : parsed.executionPlan;
+    } else {
+      if (!flowDefination)
+        throw ApiError.notFound(
+          "INTERNAL_ERROR",
+          400,
+          "Flow defination must be provided either at execution or after publish",
+          false,
+          {
+            environment: process.env.NODE_ENV,
+            functionName: "runWorkflow()",
+          },
+        );
 
-      throw ApiError.internal(
-        result.error.type as any,
-        400,
-        result.error.message,
-        false,
-        {
-          environment: process.env.NODE_ENV,
-          functionName: "runWorkflow()",
-        }
-      );
+      const flow = JSON.parse(flowDefination);
+      const result = FlowToExecutionPlan(flow.nodes, flow.edges);
+
+      if (isErr(result)) {
+        console.error(result.error);
+
+        throw ApiError.internal(
+          result.error.type as any,
+          400,
+          result.error.message,
+          false,
+          {
+            environment: process.env.NODE_ENV,
+            functionName: "runWorkflow()",
+          },
+        );
+      }
+
+      if (!result.data.executionPlan)
+        throw ApiError.notFound(
+          "NO_EXECUTION_PLAN",
+          404,
+          "No execution plan is found",
+          false,
+          {
+            environment: process.env.NODE_ENV,
+            functionName: "runWorkflow()",
+          },
+        );
+
+      executionPlan = result.data.executionPlan;
     }
-
-    if (!result.data.executionPlan)
-      throw ApiError.notFound(
-        "NO_EXECUTION_PLAN",
-        404,
-        "No execution plan is found",
-        false,
-        {
-          environment: process.env.NODE_ENV,
-          functionName: "runWorkflow()",
-        }
-      );
-
-    executionPlan = result.data.executionPlan;
 
     const execution = await createExecutionPlanInDB({
       workflowId,
       userId: ctx.result.userId,
       executionPlan,
-      flowDefination
+      flowDefination,
     });
-
 
     // runs in bg
     executeWorkflow(execution.id);

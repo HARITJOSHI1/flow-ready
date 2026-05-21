@@ -7,7 +7,7 @@ export type CreateExecutionPlanInDBProps = {
     workflowId: string;
     userId: string;
     executionPlan: WorkflowExecutionPlan;
-    flowDefination: string;
+    flowDefination?: string;
 };
 
 
