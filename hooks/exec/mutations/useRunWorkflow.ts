@@ -11,7 +11,7 @@ export const useRunWorkflowMutation = () => {
     useServerActionMutation(runWorkflow, {
       onSuccess: async () => {
         toast({
-          title: "Execution started",
+          title: "Execution started...",
         });
       },
 
