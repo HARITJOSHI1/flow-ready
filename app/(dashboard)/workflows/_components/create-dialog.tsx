@@ -1,7 +1,7 @@
 "use client";
 
 import CreateWorkflowForm from "@/components/forms/workflows/create-workflow-form";
-import CustomDialogHeader from "@/components/header/custom-dialog-heade";
+import CustomDialogHeader from "@/components/header/custom-dialog-header";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogTrigger, DialogContent } from "@/components/ui/dialog";
 import { Layers2Icon } from "lucide-react";

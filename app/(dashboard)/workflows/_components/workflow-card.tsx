@@ -4,15 +4,15 @@ import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Workflow } from "@/db/schema";
 import { cn } from "@/lib/utils";
+import { WORKFLOW_STATUS } from "@/lib/workflow/type";
 import { FileTextIcon, PlayIcon, ShuffleIcon } from "lucide-react";
 import Link from "next/link";
-import React from "react";
-import WorkflowActions from "./workflow-actions";
-import { WORKFLOW_STATUS } from "@/lib/workflow/type";
 import { RunBtn } from "./run-btn";
+import ScheduleSection from "./schedule-section";
+import WorkflowActions from "./workflow-actions";
 
 type Props = {
-  workflow: Pick<Workflow, "name" | "status" | "id">;
+  workflow: Pick<Workflow, "name" | "status" | "id" | "creditsCost" | "cron">;
 };
 
 const statusColor = {
@@ -53,6 +53,12 @@ const WorkflowCard = ({ workflow }: Props) => {
                 </span>
               )}
             </h3>
+            <ScheduleSection
+              isDraft={isDraft}
+              creditsCost={workflow.creditsCost}
+              workflowId={workflow.id}
+              cronStr={workflow.cron}
+            />
           </div>
         </div>
 

@@ -86,6 +86,8 @@ export const publishWorkflow = base
 
     const costOfEntireWorkflow = calculateCostOfWorkflow(flow.nodes);
 
+    console.log("Total cost",  costOfEntireWorkflow)
+
     await db
       .update(workflowTable)
       .set({

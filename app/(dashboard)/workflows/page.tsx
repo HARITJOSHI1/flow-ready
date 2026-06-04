@@ -6,6 +6,7 @@ import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import CreateWorkflowDialog from "./_components/create-dialog";
 import ListWorkflows from "./_components/list-workflows";
+import { Workflow } from "@/db/schema";
 
 const page = () => {
   return (
@@ -41,11 +42,14 @@ const UserWorkflowsSkeleton = () => {
 };
 
 const UserWorkflows = async () => {
-  const selectable = {
+  const selectable: Partial<Record<keyof Workflow, boolean>> = {
     name: true,
     status: true,
     id: true,
+    cron: true,
+    creditsCost: true,
   };
+
 
   const [data] = await getUserWorkflows({ selectable });
   if (!data) return <ErrorAlert />;

@@ -14,9 +14,9 @@ import { toast } from "../../global/use-toast";
 const useExecutionPlan = () => {
   const { toObject } = useReactFlow();
   const result = useFlowValidation();
-  if (isErr(result)) return result.error;
 
-  const { clearErrors, setInvalidInputs } = result.data;
+  const clearErrors = !isErr(result) ? result.data.clearErrors : undefined;
+  const setInvalidInputs = !isErr(result) ? result.data.setInvalidInputs : undefined;
 
   const handleErrors = useCallback((err: WorkflowExecutionPlanError) => {
     switch (err.type) {
@@ -37,8 +37,8 @@ const useExecutionPlan = () => {
           description: err.message,
           duration: 3000,
         });
-        
-        setInvalidInputs(err?.data?.invalidElements!);
+
+        setInvalidInputs?.(err?.data?.invalidElements!);
         break;
 
       default:
@@ -63,9 +63,11 @@ const useExecutionPlan = () => {
     }
     const { executionPlan } = result.data;
 
-    clearErrors();
+    clearErrors?.();
     return executionPlan;
   }, [toObject, handleErrors, clearErrors]);
+
+  if (isErr(result)) return result.error;
 
   return generateExecutionPlan;
 };

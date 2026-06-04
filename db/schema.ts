@@ -14,7 +14,6 @@ export const workflowtrigger = pgEnum("workflow_trigger", ["MANUAL", "CRON"]);
 export const workflowExecutionStatus = pgEnum("workflow_execution_status", [
   "PENDING",
   "RUNNING",
-  "FAILED",
   "COMPLETED",
 ]);
 export const executionPhaseStatus = pgEnum("execution_phase_status", [
@@ -36,6 +35,8 @@ export const workflow = pgTable("workflow", {
   defination: text("defination"),
   executionPlan: text("execution_plan"),
   creditsCost: integer("credits_cost").default(0).notNull(),
+  cron: text("cron"),
+  nextRunAt: timestamp("next_run_at"),
   status: workflowStatus("status").notNull(),
   lastRunAt: timestamp("last_run_at"),
   lastRunId: text("last_run_id"),

@@ -9,7 +9,7 @@ import { Separator } from "../ui/separator";
 type Props = {
   icon: LucideIcon;
   title: string;
-  subtitle: string;
+  subtitle?: string;
   iconClassName?: string;
   titleClassName?: string;
   subtitleClassName?: string;
